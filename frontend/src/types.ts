@@ -17,3 +17,33 @@ export type Artifact = {
   status: string
   created_at?: string
 }
+
+export type Category = {
+  id: number
+  name: string
+  description: string
+}
+
+export type Gallery = {
+  id: number
+  owner?: number
+  owner_email?: string
+  name: string
+  theme: string
+  description: string
+  layout_3d_path: string
+  is_public: boolean
+  created_at?: string
+}
+
+export type SellerDashboardSummary = {
+  stats: {
+    total_listings: number
+    published_listings: number
+    pending_listings: number
+    sold_listings: number
+    total_galleries: number
+  }
+  recent_artifacts: Artifact[]
+  recent_galleries: Gallery[]
+}

@@ -62,3 +62,19 @@ class IsBuyerOwnedResource(BasePermission):
         if user_role(request.user) == 'admin':
             return True
         return getattr(obj, 'user', None) == request.user
+
+
+class IsSellerOrAdminRole(BasePermission):
+    def has_permission(self, request, view):
+        return user_role(request.user) in ('seller', 'admin')
+
+
+class IsSellerOwnedResource(BasePermission):
+    def has_permission(self, request, view):
+        return user_role(request.user) in ('seller', 'admin')
+
+    def has_object_permission(self, request, view, obj):
+        if user_role(request.user) == 'admin':
+            return True
+        owner = getattr(obj, 'seller', getattr(obj, 'owner', None))
+        return owner == request.user

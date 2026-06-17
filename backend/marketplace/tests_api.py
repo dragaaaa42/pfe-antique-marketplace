@@ -6,7 +6,7 @@ from rest_framework.test import APITestCase
 
 from users.models import UserProfile
 
-from .models import Artifact, CartItem, Category, Order, WishlistItem
+from .models import Artifact, CartItem, Category, Gallery, Order, WishlistItem
 
 User = get_user_model()
 
@@ -36,6 +36,13 @@ class MarketplaceApiTests(APITestCase):
         )
         self.buyer.profile.role = UserProfile.Role.BUYER
         self.buyer.profile.save(update_fields=['role'])
+        self.other_seller = User.objects.create_user(
+            username='other-seller-api@example.com',
+            email='other-seller-api@example.com',
+            password='strong-password-123',
+        )
+        self.other_seller.profile.role = UserProfile.Role.SELLER
+        self.other_seller.profile.save(update_fields=['role'])
 
     def test_public_artifact_list_only_shows_approved_items(self):
         Artifact.objects.create(
@@ -218,3 +225,128 @@ class MarketplaceApiTests(APITestCase):
         self.assertEqual(success_response.data['status'], Order.Status.PAID)
         artifact.refresh_from_db()
         self.assertEqual(artifact.status, Artifact.Status.SOLD)
+
+    def test_seller_dashboard_summary_and_own_crud(self):
+        approved_artifact = Artifact.objects.create(
+            seller=self.seller,
+            category=self.category,
+            title='Sold Table',
+            description='Approved and sold table.',
+            price=Decimal('1400.00'),
+            status=Artifact.Status.SOLD,
+        )
+        pending_artifact = Artifact.objects.create(
+            seller=self.seller,
+            category=self.category,
+            title='Pending Lamp',
+            description='Pending lamp.',
+            price=Decimal('200.00'),
+            status=Artifact.Status.PENDING,
+        )
+        gallery = Gallery.objects.create(
+            owner=self.seller,
+            name='My Gallery',
+            theme='Classic',
+            description='Primary seller gallery.',
+        )
+        Gallery.objects.create(
+            owner=self.other_seller,
+            name='Other Gallery',
+            theme='Modern',
+            description='Should stay hidden.',
+        )
+
+        self.client.force_authenticate(self.seller)
+        summary_response = self.client.get('/api/seller/dashboard/')
+        self.assertEqual(summary_response.status_code, status.HTTP_200_OK)
+        self.assertEqual(summary_response.data['stats']['total_listings'], 2)
+        self.assertEqual(summary_response.data['stats']['published_listings'], 0)
+        self.assertEqual(summary_response.data['stats']['pending_listings'], 1)
+        self.assertEqual(summary_response.data['stats']['sold_listings'], 1)
+        self.assertEqual(summary_response.data['stats']['total_galleries'], 1)
+
+        list_response = self.client.get('/api/seller/artifacts/')
+        self.assertEqual(list_response.status_code, status.HTTP_200_OK)
+        titles = {item['title'] for item in list_response.data}
+        self.assertEqual(titles, {'Sold Table', 'Pending Lamp'})
+        self.assertNotIn('Other Seller Piece', titles)
+
+        create_response = self.client.post(
+            '/api/seller/artifacts/',
+            {
+                'category': self.category.id,
+                'title': 'Seller Desk',
+                'description': 'Desk created from dashboard.',
+                'price': '770.00',
+            },
+            format='json',
+        )
+        self.assertEqual(create_response.status_code, status.HTTP_201_CREATED)
+        created_artifact = Artifact.objects.get(title='Seller Desk')
+        self.assertEqual(created_artifact.seller, self.seller)
+
+        patch_response = self.client.patch(
+            f'/api/seller/artifacts/{approved_artifact.id}/',
+            {'title': 'Sold Table Updated'},
+            format='json',
+        )
+        self.assertEqual(patch_response.status_code, status.HTTP_200_OK)
+        approved_artifact.refresh_from_db()
+        self.assertEqual(approved_artifact.title, 'Sold Table Updated')
+
+        delete_response = self.client.delete(f'/api/seller/artifacts/{pending_artifact.id}/')
+        self.assertEqual(delete_response.status_code, status.HTTP_204_NO_CONTENT)
+        self.assertFalse(Artifact.objects.filter(pk=pending_artifact.pk).exists())
+
+        gallery_list = self.client.get('/api/seller/galleries/')
+        self.assertEqual(gallery_list.status_code, status.HTTP_200_OK)
+        self.assertEqual(len(gallery_list.data), 1)
+        self.assertEqual(gallery_list.data[0]['name'], 'My Gallery')
+
+        gallery_create = self.client.post(
+            '/api/seller/galleries/',
+            {
+                'name': 'New Seller Gallery',
+                'theme': 'Minimal',
+                'description': 'Created in dashboard.',
+                'is_public': False,
+            },
+            format='json',
+        )
+        self.assertEqual(gallery_create.status_code, status.HTTP_201_CREATED)
+        created_gallery = Gallery.objects.get(name='New Seller Gallery')
+        self.assertEqual(created_gallery.owner, self.seller)
+
+        gallery_patch = self.client.patch(
+            f'/api/seller/galleries/{gallery.id}/',
+            {'theme': 'Updated Classic'},
+            format='json',
+        )
+        self.assertEqual(gallery_patch.status_code, status.HTTP_200_OK)
+        gallery.refresh_from_db()
+        self.assertEqual(gallery.theme, 'Updated Classic')
+
+        gallery_delete = self.client.delete(f'/api/seller/galleries/{gallery.id}/')
+        self.assertEqual(gallery_delete.status_code, status.HTTP_204_NO_CONTENT)
+        self.assertFalse(Gallery.objects.filter(pk=gallery.pk).exists())
+
+    def test_seller_dashboard_blocks_other_roles_and_other_seller_content(self):
+        other_artifact = Artifact.objects.create(
+            seller=self.other_seller,
+            category=self.category,
+            title='Other Owner Lamp',
+            description='Owned by other seller.',
+            price=Decimal('300.00'),
+            status=Artifact.Status.APPROVED,
+        )
+        self.client.force_authenticate(self.buyer)
+        buyer_response = self.client.get('/api/seller/dashboard/')
+        self.assertEqual(buyer_response.status_code, status.HTTP_403_FORBIDDEN)
+
+        self.client.force_authenticate(self.seller)
+        patch_response = self.client.patch(
+            f'/api/seller/artifacts/{other_artifact.id}/',
+            {'title': 'Not Allowed'},
+            format='json',
+        )
+        self.assertEqual(patch_response.status_code, status.HTTP_404_NOT_FOUND)

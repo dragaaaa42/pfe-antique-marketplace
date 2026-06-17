@@ -1,6 +1,6 @@
 import axios from 'axios'
 import heroImage from './assets/hero.png'
-import type { Artifact } from './types'
+import type { Artifact, Category, Gallery, SellerDashboardSummary } from './types'
 
 const api = axios.create({
   baseURL: import.meta.env.VITE_API_URL ?? 'http://127.0.0.1:8000/api',
@@ -373,6 +373,11 @@ export async function getArtifacts() {
   return response.data
 }
 
+export async function getCategories() {
+  const response = await api.get<Category[]>('/categories/')
+  return response.data
+}
+
 export async function getArtifact(id: string) {
   const response = await api.get<Artifact>(`/artifacts/${id}/`)
   return response.data
@@ -396,6 +401,52 @@ export async function refreshAccessToken(refresh: string) {
 export async function getCurrentUser() {
   const response = await api.get<AuthUser>('/auth/me/')
   return response.data
+}
+
+export async function getSellerDashboardSummary() {
+  const response = await api.get<SellerDashboardSummary>('/seller/dashboard/')
+  return response.data
+}
+
+export async function getSellerArtifacts() {
+  const response = await api.get<Artifact[]>('/seller/artifacts/')
+  return response.data
+}
+
+export async function createSellerArtifact(payload: FormData) {
+  const response = await api.post<Artifact>('/seller/artifacts/', payload)
+  return response.data
+}
+
+export async function updateSellerArtifact(id: number, payload: FormData) {
+  const response = await api.patch<Artifact>(`/seller/artifacts/${id}/`, payload)
+  return response.data
+}
+
+export async function deleteSellerArtifact(id: number) {
+  await api.delete(`/seller/artifacts/${id}/`)
+}
+
+export async function getSellerGalleries() {
+  const response = await api.get<Gallery[]>('/seller/galleries/')
+  return response.data
+}
+
+export async function createSellerGallery(payload: Pick<Gallery, 'name' | 'theme' | 'description' | 'layout_3d_path' | 'is_public'>) {
+  const response = await api.post<Gallery>('/seller/galleries/', payload)
+  return response.data
+}
+
+export async function updateSellerGallery(
+  id: number,
+  payload: Pick<Gallery, 'name' | 'theme' | 'description' | 'layout_3d_path' | 'is_public'>,
+) {
+  const response = await api.patch<Gallery>(`/seller/galleries/${id}/`, payload)
+  return response.data
+}
+
+export async function deleteSellerGallery(id: number) {
+  await api.delete(`/seller/galleries/${id}/`)
 }
 
 export async function getWishlist() {

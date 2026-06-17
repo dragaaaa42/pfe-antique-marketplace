@@ -6,6 +6,7 @@ from rest_framework import permissions, status, viewsets
 from rest_framework.decorators import action
 from rest_framework.exceptions import ValidationError
 from rest_framework.response import Response
+from rest_framework.views import APIView
 
 from users.permissions import IsBuyer
 
@@ -15,6 +16,8 @@ from .permissions import (
     IsBuyerOwnedResource,
     IsBuyerOwnerOrAdmin,
     IsGalleryOwnerOrAdminForWrites,
+    IsSellerOrAdminRole,
+    IsSellerOwnedResource,
     IsSellerOrAdminForWrites,
     user_role,
 )
@@ -89,6 +92,66 @@ class ExhibitViewSet(viewsets.ModelViewSet):
         if self.request.user.is_authenticated:
             return queryset.filter(Q(gallery__is_public=True) | Q(gallery__owner=self.request.user))
         return queryset.filter(gallery__is_public=True)
+
+
+class SellerDashboardView(APIView):
+    permission_classes = (IsSellerOrAdminRole,)
+
+    def get(self, request):
+        artifact_queryset = Artifact.objects.select_related('seller', 'category')
+        gallery_queryset = Gallery.objects.select_related('owner')
+        role = user_role(request.user)
+
+        if role != 'admin':
+            artifact_queryset = artifact_queryset.filter(seller=request.user)
+            gallery_queryset = gallery_queryset.filter(owner=request.user)
+
+        stats = {
+            'total_listings': artifact_queryset.count(),
+            'published_listings': artifact_queryset.filter(status=Artifact.Status.APPROVED).count(),
+            'pending_listings': artifact_queryset.filter(status=Artifact.Status.PENDING).count(),
+            'sold_listings': artifact_queryset.filter(status=Artifact.Status.SOLD).count(),
+            'total_galleries': gallery_queryset.count(),
+        }
+
+        recent_artifacts = artifact_queryset.order_by('-created_at')[:6]
+        recent_galleries = gallery_queryset.order_by('-created_at')[:4]
+
+        return Response(
+            {
+                'stats': stats,
+                'recent_artifacts': ArtifactSerializer(recent_artifacts, many=True).data,
+                'recent_galleries': GallerySerializer(recent_galleries, many=True).data,
+            }
+        )
+
+
+class SellerArtifactViewSet(viewsets.ModelViewSet):
+    serializer_class = ArtifactSerializer
+    permission_classes = (IsSellerOwnedResource,)
+
+    def get_queryset(self):
+        queryset = Artifact.objects.select_related('seller', 'category')
+        if user_role(self.request.user) == 'admin':
+            return queryset
+        return queryset.filter(seller=self.request.user)
+
+    def perform_create(self, serializer):
+        serializer.save(seller=self.request.user)
+
+
+class SellerGalleryViewSet(viewsets.ModelViewSet):
+    serializer_class = GallerySerializer
+    permission_classes = (IsSellerOwnedResource,)
+
+    def get_queryset(self):
+        queryset = Gallery.objects.select_related('owner').prefetch_related('exhibits__artifact')
+        if user_role(self.request.user) == 'admin':
+            return queryset
+        return queryset.filter(owner=self.request.user)
+
+    def perform_create(self, serializer):
+        serializer.save(owner=self.request.user)
 
 
 class WishlistViewSet(viewsets.ModelViewSet):

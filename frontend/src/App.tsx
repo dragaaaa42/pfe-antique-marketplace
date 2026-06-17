@@ -17,6 +17,7 @@ import {
 import { AuthProvider, useAuth } from './auth'
 import { CartPage, OrderDetailPage, OrdersPage, WishlistPage } from './buyer'
 import { Artifact3DViewer } from './components/Artifact3DViewer'
+import { SellerDashboardPage, SellerGalleriesPage, SellerProductsPage } from './seller'
 import type { Artifact } from './types'
 
 type Language = 'en' | 'fr'
@@ -230,6 +231,19 @@ function CatalogPage() {
                   </Link>
                   <Link className="ghost-button" to="/orders">
                     Orders
+                  </Link>
+                </>
+              )}
+              {(user?.role === 'seller' || user?.role === 'admin') && (
+                <>
+                  <Link className="ghost-button" to="/seller">
+                    Seller dashboard
+                  </Link>
+                  <Link className="ghost-button" to="/seller/products">
+                    Products
+                  </Link>
+                  <Link className="ghost-button" to="/seller/galleries">
+                    Galleries
                   </Link>
                 </>
               )}
@@ -1377,6 +1391,9 @@ function App() {
           <Route path="/cart" element={<CartPage />} />
           <Route path="/orders" element={<OrdersPage />} />
           <Route path="/orders/:id" element={<OrderDetailPage />} />
+          <Route path="/seller" element={<SellerDashboardPage />} />
+          <Route path="/seller/products" element={<SellerProductsPage />} />
+          <Route path="/seller/galleries" element={<SellerGalleriesPage />} />
           <Route path="/artifacts/:id" element={<ArtifactDetailPage />} />
         </Routes>
       </BrowserRouter>
