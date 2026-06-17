@@ -910,6 +910,18 @@ h3 {
   align-items: center;
 }
 
+.manage-actions input {
+  width: 4.5rem;
+  min-width: 4.5rem;
+  border-radius: 14px;
+  border: 1px solid rgba(80, 51, 27, 0.16);
+  background: rgba(255, 252, 248, 0.92);
+  color: var(--ink);
+  padding: 0.65rem 0.7rem;
+  text-align: center;
+  outline: none;
+}
+
 .product-page {
   display: grid;
   gap: 1rem;

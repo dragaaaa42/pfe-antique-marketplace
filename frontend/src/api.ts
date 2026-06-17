@@ -44,6 +44,46 @@ export type RegisterPayload = {
   last_name: string
 }
 
+export type WishlistItem = {
+  id: number
+  user: number
+  artifact: number
+  artifact_detail: Artifact
+  created_at: string
+}
+
+export type CartItem = {
+  id: number
+  user: number
+  artifact: number
+  artifact_detail: Artifact
+  quantity: number
+  subtotal: string
+  created_at: string
+  updated_at: string
+}
+
+export type OrderItem = {
+  id: number
+  order: number
+  artifact: number
+  artifact_detail: Artifact
+  artifact_title: string
+  quantity: number
+  price: string
+  subtotal: string
+}
+
+export type OrderRecord = {
+  id: number
+  buyer: number
+  buyer_email: string
+  total_amount: string
+  status: 'pending' | 'paid' | 'failed' | 'cancelled'
+  created_at: string
+  items: OrderItem[]
+}
+
 function persistAuthSession(session: AuthSession | null) {
   if (session) {
     localStorage.setItem(authStorageKey, JSON.stringify(session))
@@ -355,5 +395,58 @@ export async function refreshAccessToken(refresh: string) {
 
 export async function getCurrentUser() {
   const response = await api.get<AuthUser>('/auth/me/')
+  return response.data
+}
+
+export async function getWishlist() {
+  const response = await api.get<WishlistItem[]>('/wishlist/')
+  return response.data
+}
+
+export async function addWishlistItem(artifact: number) {
+  const response = await api.post<WishlistItem>('/wishlist/', { artifact })
+  return response.data
+}
+
+export async function removeWishlistItem(id: number) {
+  await api.delete(`/wishlist/${id}/`)
+}
+
+export async function getCart() {
+  const response = await api.get<CartItem[]>('/cart/')
+  return response.data
+}
+
+export async function addCartItem(artifact: number, quantity = 1) {
+  const response = await api.post<CartItem>('/cart/', { artifact, quantity })
+  return response.data
+}
+
+export async function updateCartItem(id: number, quantity: number) {
+  const response = await api.patch<CartItem>(`/cart/${id}/`, { quantity })
+  return response.data
+}
+
+export async function removeCartItem(id: number) {
+  await api.delete(`/cart/${id}/`)
+}
+
+export async function checkoutCart() {
+  const response = await api.post<OrderRecord>('/orders/checkout/', {})
+  return response.data
+}
+
+export async function getOrders() {
+  const response = await api.get<OrderRecord[]>('/orders/')
+  return response.data
+}
+
+export async function getOrder(id: number | string) {
+  const response = await api.get<OrderRecord>(`/orders/${id}/`)
+  return response.data
+}
+
+export async function simulateOrderPayment(id: number | string, success: boolean) {
+  const response = await api.post<OrderRecord>(`/orders/${id}/simulate_payment/`, { success })
   return response.data
 }

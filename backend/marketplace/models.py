@@ -118,6 +118,7 @@ class Order(models.Model):
     class Status(models.TextChoices):
         PENDING = 'pending', 'Pending'
         PAID = 'paid', 'Paid'
+        FAILED = 'failed', 'Failed'
         CANCELLED = 'cancelled', 'Cancelled'
 
     buyer = models.ForeignKey(
@@ -151,6 +152,7 @@ class OrderItem(models.Model):
         on_delete=models.PROTECT,
         related_name='order_items',
     )
+    quantity = models.PositiveIntegerField(default=1)
     price = models.DecimalField(max_digits=10, decimal_places=2)
 
     class Meta:
@@ -158,3 +160,47 @@ class OrderItem(models.Model):
 
     def __str__(self):
         return f'{self.artifact} - {self.price}'
+
+
+class WishlistItem(models.Model):
+    user = models.ForeignKey(
+        settings.AUTH_USER_MODEL,
+        on_delete=models.CASCADE,
+        related_name='wishlist_items',
+    )
+    artifact = models.ForeignKey(
+        Artifact,
+        on_delete=models.CASCADE,
+        related_name='wishlist_items',
+    )
+    created_at = models.DateTimeField(auto_now_add=True)
+
+    class Meta:
+        ordering = ('-created_at',)
+        unique_together = ('user', 'artifact')
+
+    def __str__(self):
+        return f'{self.artifact} saved by {self.user}'
+
+
+class CartItem(models.Model):
+    user = models.ForeignKey(
+        settings.AUTH_USER_MODEL,
+        on_delete=models.CASCADE,
+        related_name='cart_items',
+    )
+    artifact = models.ForeignKey(
+        Artifact,
+        on_delete=models.CASCADE,
+        related_name='cart_items',
+    )
+    quantity = models.PositiveIntegerField(default=1)
+    created_at = models.DateTimeField(auto_now_add=True)
+    updated_at = models.DateTimeField(auto_now=True)
+
+    class Meta:
+        ordering = ('-updated_at',)
+        unique_together = ('user', 'artifact')
+
+    def __str__(self):
+        return f'{self.quantity} x {self.artifact} in cart for {self.user}'

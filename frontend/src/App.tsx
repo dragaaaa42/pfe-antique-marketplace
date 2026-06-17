@@ -2,6 +2,11 @@ import { type FormEvent, useEffect, useMemo, useState } from 'react'
 import { BrowserRouter, Link, Route, Routes, useLocation, useNavigate, useParams } from 'react-router-dom'
 import './App.css'
 import {
+  addCartItem,
+  addWishlistItem,
+  getCart,
+  getWishlist,
+  removeWishlistItem,
   type RegisterPayload,
   demoArtifacts,
   fallbackArtifactImage,
@@ -10,6 +15,7 @@ import {
   registerUser,
 } from './api'
 import { AuthProvider, useAuth } from './auth'
+import { CartPage, OrderDetailPage, OrdersPage, WishlistPage } from './buyer'
 import { Artifact3DViewer } from './components/Artifact3DViewer'
 import type { Artifact } from './types'
 
@@ -214,6 +220,19 @@ function CatalogPage() {
         <nav className="public-actions" aria-label="Account">
           {isAuthenticated ? (
             <>
+              {user?.role === 'buyer' && (
+                <>
+                  <Link className="ghost-button" to="/wishlist">
+                    Wishlist
+                  </Link>
+                  <Link className="ghost-button" to="/cart">
+                    Cart
+                  </Link>
+                  <Link className="ghost-button" to="/orders">
+                    Orders
+                  </Link>
+                </>
+              )}
               <span className="account-summary">
                 {status === 'authenticated' && user
                   ? `${user.first_name || user.email} - ${user.role}`
@@ -883,13 +902,19 @@ function LoginPage() {
 
 function ArtifactDetailPage() {
   const { id } = useParams()
+  const navigate = useNavigate()
+  const { user } = useAuth()
   const [artifact, setArtifact] = useState<Artifact | undefined>(() =>
     demoArtifacts.find((item) => String(item.id) === id),
   )
   const [selectedImageIndex, setSelectedImageIndex] = useState(0)
-  const [isSaved, setIsSaved] = useState(false)
+  const [wishlistItemId, setWishlistItemId] = useState<number | null>(null)
+  const [cartItemId, setCartItemId] = useState<number | null>(null)
+  const [cartQuantity, setCartQuantity] = useState(0)
   const [inquiryMode, setInquiryMode] = useState<'purchase' | 'curator' | null>(null)
   const [conciergeMessage, setConciergeMessage] = useState('')
+  const [actionMessage, setActionMessage] = useState('')
+  const [actionStatus, setActionStatus] = useState<'idle' | 'loading' | 'success' | 'error'>('idle')
 
   useEffect(() => {
     if (!id) return
@@ -899,6 +924,95 @@ function ArtifactDetailPage() {
         setArtifact(demoArtifacts.find((item) => String(item.id) === id))
       })
   }, [id])
+
+  useEffect(() => {
+    if (!artifact || user?.role !== 'buyer') {
+      setWishlistItemId(null)
+      setCartItemId(null)
+      setCartQuantity(0)
+      return
+    }
+
+    let cancelled = false
+
+    const loadSelections = async () => {
+      try {
+        const [wishlist, cart] = await Promise.all([getWishlist(), getCart()])
+        if (cancelled) return
+
+        const savedItem = wishlist.find((item) => item.artifact_detail.id === artifact.id)
+        const cartedItem = cart.find((item) => item.artifact_detail.id === artifact.id)
+
+        setWishlistItemId(savedItem?.id ?? null)
+        setCartItemId(cartedItem?.id ?? null)
+        setCartQuantity(cartedItem?.quantity ?? 0)
+      } catch {
+        if (cancelled) return
+      }
+    }
+
+    void loadSelections()
+
+    return () => {
+      cancelled = true
+    }
+  }, [artifact, user?.role])
+
+  function requireBuyer() {
+    if (user?.role === 'buyer' && artifact) {
+      return true
+    }
+
+    if (!artifact) {
+      return false
+    }
+
+    navigate('/login', { state: { redirectTo: `/artifacts/${artifact.id}` } })
+    return false
+  }
+
+  async function handleWishlistToggle() {
+    if (!requireBuyer()) return
+    if (!artifact) return
+
+    setActionStatus('loading')
+    setActionMessage('')
+
+    try {
+      if (wishlistItemId) {
+        await removeWishlistItem(wishlistItemId)
+        setWishlistItemId(null)
+        setActionMessage('Removed from your wishlist.')
+      } else {
+        const saved = await addWishlistItem(artifact.id)
+        setWishlistItemId(saved.id)
+        setActionMessage('Saved to your wishlist.')
+      }
+      setActionStatus('success')
+    } catch {
+      setActionStatus('error')
+      setActionMessage('Wishlist update failed. Check that you are signed in as a collector.')
+    }
+  }
+
+  async function handleCartAdd() {
+    if (!requireBuyer()) return
+    if (!artifact) return
+
+    setActionStatus('loading')
+    setActionMessage('')
+
+    try {
+      const cartItem = await addCartItem(artifact.id, 1)
+      setCartItemId(cartItem.id)
+      setCartQuantity(cartItem.quantity)
+      setActionStatus('success')
+      setActionMessage('Added to your cart.')
+    } catch {
+      setActionStatus('error')
+      setActionMessage('Cart update failed. Check that you are signed in as a collector.')
+    }
+  }
 
   if (!artifact) {
     return (
@@ -962,22 +1076,31 @@ function ArtifactDetailPage() {
           <p>{artifact.description}</p>
           <div className="studio-actions">
             <button
+              className={cartQuantity > 0 ? 'saved' : ''}
               onClick={() => {
-                setInquiryMode('purchase')
-                setConciergeMessage('')
+                void handleCartAdd()
               }}
+              disabled={actionStatus === 'loading'}
               type="button"
             >
-              Request acquisition
+              {cartQuantity > 0 ? `Add one more (${cartQuantity})` : 'Add to cart'}
             </button>
             <button
-              className={isSaved ? 'saved' : ''}
-              onClick={() => setIsSaved((current) => !current)}
+              className={wishlistItemId ? 'saved' : ''}
+              onClick={() => {
+                void handleWishlistToggle()
+              }}
+              disabled={actionStatus === 'loading'}
               type="button"
             >
-              {isSaved ? 'Saved' : 'Save object'}
+              {wishlistItemId ? 'Remove from wishlist' : 'Save to wishlist'}
             </button>
           </div>
+          {actionMessage && (
+            <p className={actionStatus === 'error' ? 'error-message' : 'success-message'}>
+              {actionMessage}
+            </p>
+          )}
           <div className="studio-ledger">
             <article>
               <span>Price</span>
@@ -1031,27 +1154,33 @@ function ArtifactDetailPage() {
           <h2>Collector purchase panel</h2>
           <p className="product-price">{formatPrice(artifact.price)}</p>
           <p className="product-description">
-            Review condition, seller validation, 3D inspection, and concierge actions before moving
-            into the protected buying flow.
+            Review condition, seller validation, 3D inspection, and move approved objects into your
+            cart or wishlist before checkout.
           </p>
 
           <div className="purchase-panel">
             <button
               onClick={() => {
-                setInquiryMode('purchase')
-                setConciergeMessage('')
+                void handleCartAdd()
               }}
+              disabled={actionStatus === 'loading'}
               type="button"
             >
-              Request purchase
+              {cartQuantity > 0 ? 'Add another copy' : 'Add to cart'}
             </button>
             <button
-              className={isSaved ? 'saved' : ''}
-              onClick={() => setIsSaved((current) => !current)}
+              className={wishlistItemId ? 'saved' : ''}
+              onClick={() => {
+                void handleWishlistToggle()
+              }}
+              disabled={actionStatus === 'loading'}
               type="button"
             >
-              {isSaved ? 'Saved to wishlist' : 'Save to wishlist'}
+              {wishlistItemId ? 'Remove from wishlist' : 'Save to wishlist'}
             </button>
+            <Link className="ghost-button" to="/cart">
+              Go to cart
+            </Link>
             <button
               onClick={() => {
                 setInquiryMode('curator')
@@ -1063,9 +1192,13 @@ function ArtifactDetailPage() {
             </button>
           </div>
 
-          {isSaved && (
+          {(wishlistItemId || cartItemId) && (
             <p className="collector-action-message">
-              Saved for this visit. Account-backed wishlists are ready for the signup flow.
+              {wishlistItemId && cartItemId
+                ? 'Saved in your wishlist and added to your cart.'
+                : wishlistItemId
+                  ? 'Saved in your wishlist.'
+                  : 'Added to your cart.'}
             </p>
           )}
 
@@ -1240,6 +1373,10 @@ function App() {
           <Route path="/" element={<CatalogPage />} />
           <Route path="/login" element={<LoginPage />} />
           <Route path="/signup" element={<SignupPage />} />
+          <Route path="/wishlist" element={<WishlistPage />} />
+          <Route path="/cart" element={<CartPage />} />
+          <Route path="/orders" element={<OrdersPage />} />
+          <Route path="/orders/:id" element={<OrderDetailPage />} />
           <Route path="/artifacts/:id" element={<ArtifactDetailPage />} />
         </Routes>
       </BrowserRouter>
