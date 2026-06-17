@@ -1,5 +1,5 @@
 import { type FormEvent, useEffect, useMemo, useState } from 'react'
-import { BrowserRouter, Link, Route, Routes, useParams } from 'react-router-dom'
+import { BrowserRouter, Link, Route, Routes, useLocation, useNavigate, useParams } from 'react-router-dom'
 import './App.css'
 import {
   type RegisterPayload,
@@ -9,6 +9,7 @@ import {
   getArtifacts,
   registerUser,
 } from './api'
+import { AuthProvider, useAuth } from './auth'
 import { Artifact3DViewer } from './components/Artifact3DViewer'
 import type { Artifact } from './types'
 
@@ -124,6 +125,7 @@ function CatalogPage() {
   const [activeCategory, setActiveCategory] = useState('All')
   const [catalogOpen, setCatalogOpen] = useState(false)
   const [language, setLanguage] = useState<Language>('en')
+  const { isAuthenticated, logout, status, user } = useAuth()
   const t = siteCopy[language]
 
   useEffect(() => {
@@ -181,51 +183,69 @@ function CatalogPage() {
 
   return (
     <>
-      <header className="site-header">
-        <div className="utility-row">
-          <Link className="brand-mark" to="/">
-            Artisan&apos;s Echo
-          </Link>
-          <nav className="main-nav" aria-label="Marketplace navigation">
-            {navItems.map((item) => (
-              <a
-                href={navTargets[item]}
-                key={item}
-                onClick={() => {
-                  if (item === 'Catalogue') {
-                    setActiveCategory('All')
-                    setCatalogOpen(true)
-                  }
-                }}
-              >
-                {t.nav[item]}
-              </a>
-            ))}
-          </nav>
-          <div className="header-search">
-            <input
-              aria-label="Search antiques"
-              placeholder={t.search}
-              value={query}
-              onChange={(event) => setQuery(event.target.value)}
-            />
-          </div>
-          <nav className="account-nav" aria-label="Account">
-            <Link to="/signup">{t.signup}</Link>
-            <label className="language-select" title={t.language}>
-              <span className="language-icon" aria-hidden="true" />
-              <span>{t.language}</span>
-              <select
-                aria-label="Website language"
-                value={language}
-                onChange={(event) => setLanguage(event.target.value as Language)}
-              >
-                <option value="en">EN</option>
-                <option value="fr">FR</option>
-              </select>
-            </label>
-          </nav>
+      <header className="public-header">
+        <Link className="brand-mark" to="/">
+          Artisan&apos;s Echo
+        </Link>
+        <nav className="public-nav" aria-label="Marketplace navigation">
+          {navItems.map((item) => (
+            <a
+              href={navTargets[item]}
+              key={item}
+              onClick={() => {
+                if (item === 'Catalogue') {
+                  setActiveCategory('All')
+                  setCatalogOpen(true)
+                }
+              }}
+            >
+              {t.nav[item]}
+            </a>
+          ))}
+        </nav>
+        <div className="header-search">
+          <input
+            aria-label="Search antiques"
+            placeholder={t.search}
+            value={query}
+            onChange={(event) => setQuery(event.target.value)}
+          />
         </div>
+        <nav className="public-actions" aria-label="Account">
+          {isAuthenticated ? (
+            <>
+              <span className="account-summary">
+                {status === 'authenticated' && user
+                  ? `${user.first_name || user.email} - ${user.role}`
+                  : 'Signed in'}
+              </span>
+              <button className="ghost-button" onClick={logout} type="button">
+                Log out
+              </button>
+            </>
+          ) : (
+            <>
+              <Link className="ghost-button" to="/login">
+                Log in
+              </Link>
+              <Link className="solid-button" to="/signup">
+                {t.signup}
+              </Link>
+            </>
+          )}
+          <label className="language-select" title={t.language}>
+            <span className="language-icon" aria-hidden="true" />
+            <span>{t.language}</span>
+            <select
+              aria-label="Website language"
+              value={language}
+              onChange={(event) => setLanguage(event.target.value as Language)}
+            >
+              <option value="en">EN</option>
+              <option value="fr">FR</option>
+            </select>
+          </label>
+        </nav>
       </header>
 
       <main>
@@ -610,6 +630,8 @@ function CatalogPage() {
 }
 
 function SignupPage() {
+  const navigate = useNavigate()
+  const signupObjects = demoArtifacts.slice(0, 4)
   const [form, setForm] = useState<RegisterPayload>({
     email: '',
     password: '',
@@ -632,115 +654,229 @@ function SignupPage() {
     try {
       await registerUser(form)
       setStatus('success')
-      setMessage('Your gallery account is ready. You can now sign in through the API flow.')
+      setMessage('Your account is ready. Go to the login page to sign in with the same email.')
       setForm({ email: '', password: '', role: 'buyer', first_name: '', last_name: '' })
+      navigate('/login', { state: { email: form.email } })
     } catch {
       setStatus('error')
-      setMessage('The backend did not accept the signup yet. Check that Django is running on port 8000.')
+      setMessage('Signup was not accepted. Check that the backend is running on port 8000.')
     }
   }
 
-  const signupObjects = demoArtifacts.slice(0, 4)
-
   return (
-    <main className="signup-page">
-      <section className="signup-story">
-        <div className="signup-story-copy">
-          <p className="eyebrow">Private access</p>
-          <h1>Join a gallery built for objects with a past.</h1>
-          <p>
-            Create a buyer account to follow rare pieces, or join as a seller to prepare antiques for
-            curator validation and immersive 3D display.
-          </p>
-        </div>
-        <div className="signup-atelier" aria-hidden="true">
-          {signupObjects.map((artifact, index) => (
-            <figure className={`signup-object signup-object-${index + 1}`} key={`signup-${artifact.id}`}>
-              <img src={artifact.image || fallbackArtifactImage} alt="" />
-              <figcaption>{artifact.category_name}</figcaption>
-            </figure>
+    <main className="auth-page">
+      <section className="auth-hero">
+        <p className="eyebrow">Private access</p>
+        <h1>Join a gallery built for objects with a past.</h1>
+        <p>
+          Create a collector or seller account to follow rare pieces, prepare antiques for curator
+          validation, and access the marketplace with the right role.
+        </p>
+        <div className="auth-role-grid" aria-hidden="true">
+          {[
+            ['Collector', 'Browse, save, and request objects.'],
+            ['Seller', 'Prepare inventory for review.'],
+            ['3D ready', 'Every account can inspect the model view.'],
+            ['Verified flow', 'Login uses the same email you registered with.'],
+          ].map(([title, text]) => (
+            <article key={title}>
+              <strong>{title}</strong>
+              <p>{text}</p>
+            </article>
           ))}
-          <div className="signup-pass">
-            <span>Artisan&apos;s Echo</span>
-            <strong>Collector pass</strong>
-            <small>AE / private gallery access</small>
-          </div>
         </div>
-        <div className="signup-membership-card">
-          <span>Membership includes</span>
-          <strong>Verified profiles, saved collections, seller uploads, and 3D object previews.</strong>
-        </div>
-        <div className="signup-highlights">
-          <span>Collector wishlist</span>
-          <span>Seller inventory</span>
-          <span>3D gallery access</span>
+        <div className="hero-stats" aria-hidden="true">
+          {signupObjects.slice(0, 3).map((artifact) => (
+            <article key={artifact.id}>
+              <strong>{artifact.category_name}</strong>
+              <span>{artifact.title}</span>
+            </article>
+          ))}
         </div>
       </section>
-      <form className="signup-form" onSubmit={handleSubmit}>
-        <div className="form-heading">
+
+      <section className="auth-card">
+        <div className="auth-card-head">
           <p className="eyebrow">Artisan&apos;s Echo membership</p>
           <h2>Professional access request</h2>
-          <span>Build a verified collector or seller profile for curated antique discovery.</span>
+          <p>Build a verified collector or seller profile for curated antique discovery.</p>
         </div>
-        <div className="signup-progress" aria-label="Membership workflow">
-          {['Profile', 'Validation', 'Gallery access'].map((step, index) => (
-            <span key={step}>
-              {String(index + 1).padStart(2, '0')} {step}
-            </span>
+        <form className="auth-form" onSubmit={handleSubmit}>
+          <div className="role-toggle" aria-label="Account type">
+            {(['buyer', 'seller'] as const).map((role) => (
+              <button
+                className={form.role === role ? 'active' : ''}
+                key={role}
+                onClick={() => updateField('role', role)}
+                type="button"
+              >
+                {role === 'buyer' ? 'Collector' : 'Seller'}
+              </button>
+            ))}
+          </div>
+          <div className="editor-grid">
+            <label>
+              First name
+              <input
+                value={form.first_name}
+                onChange={(event) => updateField('first_name', event.target.value)}
+                required
+              />
+            </label>
+            <label>
+              Last name
+              <input
+                value={form.last_name}
+                onChange={(event) => updateField('last_name', event.target.value)}
+                required
+              />
+            </label>
+          </div>
+          <label className="full-field">
+            Email
+            <input
+              type="email"
+              value={form.email}
+              onChange={(event) => updateField('email', event.target.value)}
+              required
+            />
+          </label>
+          <label className="full-field">
+            Password
+            <input
+              minLength={8}
+              type="password"
+              value={form.password}
+              onChange={(event) => updateField('password', event.target.value)}
+              required
+            />
+          </label>
+          <button className="solid-button auth-submit" disabled={status === 'loading'} type="submit">
+            {status === 'loading' ? 'Creating account...' : 'Create account'}
+          </button>
+        </form>
+        {message && (
+          <p className={status === 'error' ? 'error-message' : 'success-message'}>{message}</p>
+        )}
+        <p className="auth-switch">
+          Already registered?{' '}
+          <Link to="/login" state={form.email ? { email: form.email } : undefined}>
+            Log in
+          </Link>
+        </p>
+      </section>
+    </main>
+  )
+}
+
+function LoginPage() {
+  const navigate = useNavigate()
+  const location = useLocation()
+  const { isAuthenticated, login } = useAuth()
+  const locationState = location.state as { email?: string; redirectTo?: string } | null
+  const [form, setForm] = useState({
+    email: locationState?.email ?? '',
+    password: '',
+  })
+  const [status, setStatus] = useState<'idle' | 'loading' | 'success' | 'error'>('idle')
+  const [message, setMessage] = useState('')
+
+  useEffect(() => {
+    if (isAuthenticated) {
+      navigate('/', { replace: true })
+    }
+  }, [isAuthenticated, navigate])
+
+  function updateField(field: keyof typeof form, value: string) {
+    setForm((current) => ({ ...current, [field]: value }))
+  }
+
+  async function handleSubmit(event: FormEvent<HTMLFormElement>) {
+    event.preventDefault()
+    setStatus('loading')
+    setMessage('')
+
+    try {
+      await login(form)
+      setStatus('success')
+      setMessage('You are signed in.')
+      navigate(locationState?.redirectTo ?? '/', { replace: true })
+    } catch {
+      setStatus('error')
+      setMessage('Login failed. Check your email, password, and backend server.')
+    }
+  }
+
+  const loginObjects = demoArtifacts.slice(4, 8)
+
+  return (
+    <main className="auth-page">
+      <section className="auth-hero">
+        <p className="eyebrow">Welcome back</p>
+        <h1>Sign in to continue your collection.</h1>
+        <p>
+          Use the same email you registered with to access your account, keep your place in the
+          marketplace, and continue into the protected flow later.
+        </p>
+        <div className="auth-role-grid" aria-hidden="true">
+          {[
+            ['Email login', 'The backend authenticates with JWT tokens.'],
+            ['Session restore', 'Stored credentials reload on page refresh.'],
+            ['Buyer ready', 'Collectors can continue browsing after sign in.'],
+            ['Seller ready', 'Sellers can return to their account later.'],
+          ].map(([title, text]) => (
+            <article key={title}>
+              <strong>{title}</strong>
+              <p>{text}</p>
+            </article>
           ))}
         </div>
-        <div className="role-switch" aria-label="Account type">
-          {(['buyer', 'seller'] as const).map((role) => (
-            <button
-              className={form.role === role ? 'active' : ''}
-              key={role}
-              onClick={() => updateField('role', role)}
-              type="button"
-            >
-              {role === 'buyer' ? 'Collector' : 'Seller'}
-            </button>
+        <div className="hero-stats" aria-hidden="true">
+          {loginObjects.slice(0, 3).map((artifact) => (
+            <article key={artifact.id}>
+              <strong>{artifact.category_name}</strong>
+              <span>{artifact.title}</span>
+            </article>
           ))}
         </div>
-        <label>
-          First name
-          <input
-            value={form.first_name}
-            onChange={(event) => updateField('first_name', event.target.value)}
-            required
-          />
-        </label>
-        <label>
-          Last name
-          <input
-            value={form.last_name}
-            onChange={(event) => updateField('last_name', event.target.value)}
-            required
-          />
-        </label>
-        <label className="full-field">
-          Email
-          <input
-            type="email"
-            value={form.email}
-            onChange={(event) => updateField('email', event.target.value)}
-            required
-          />
-        </label>
-        <label className="full-field">
-          Password
-          <input
-            minLength={8}
-            type="password"
-            value={form.password}
-            onChange={(event) => updateField('password', event.target.value)}
-            required
-          />
-        </label>
-        <button className="signup-submit" disabled={status === 'loading'} type="submit">
-          {status === 'loading' ? 'Creating account...' : 'Create account'}
-        </button>
-        {message && <p className={`signup-message ${status}`}>{message}</p>}
-      </form>
+      </section>
+
+      <section className="auth-card">
+        <div className="auth-card-head">
+          <p className="eyebrow">Account sign in</p>
+          <h2>Login to your gallery account</h2>
+          <p>Enter the email and password you used during signup.</p>
+        </div>
+        <form className="auth-form" onSubmit={handleSubmit}>
+          <label className="full-field">
+            Email
+            <input
+              type="email"
+              value={form.email}
+              onChange={(event) => updateField('email', event.target.value)}
+              required
+            />
+          </label>
+          <label className="full-field">
+            Password
+            <input
+              type="password"
+              value={form.password}
+              onChange={(event) => updateField('password', event.target.value)}
+              required
+            />
+          </label>
+          <button className="solid-button auth-submit" disabled={status === 'loading'} type="submit">
+            {status === 'loading' ? 'Signing in...' : 'Sign in'}
+          </button>
+        </form>
+        {message && (
+          <p className={status === 'error' ? 'error-message' : 'success-message'}>{message}</p>
+        )}
+        <p className="auth-switch">
+          Need an account? <Link to="/signup">Create one</Link>
+        </p>
+      </section>
     </main>
   )
 }
@@ -1098,13 +1234,16 @@ function ArtifactDetailPage() {
 
 function App() {
   return (
-    <BrowserRouter>
-      <Routes>
-        <Route path="/" element={<CatalogPage />} />
-        <Route path="/signup" element={<SignupPage />} />
-        <Route path="/artifacts/:id" element={<ArtifactDetailPage />} />
-      </Routes>
-    </BrowserRouter>
+    <AuthProvider>
+      <BrowserRouter>
+        <Routes>
+          <Route path="/" element={<CatalogPage />} />
+          <Route path="/login" element={<LoginPage />} />
+          <Route path="/signup" element={<SignupPage />} />
+          <Route path="/artifacts/:id" element={<ArtifactDetailPage />} />
+        </Routes>
+      </BrowserRouter>
+    </AuthProvider>
   )
 }
 

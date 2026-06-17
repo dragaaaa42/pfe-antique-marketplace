@@ -6,8 +6,35 @@ const api = axios.create({
   baseURL: import.meta.env.VITE_API_URL ?? 'http://127.0.0.1:8000/api',
 })
 
+const authStorageKey = 'artisan-echo-auth'
+
 const commonsImage = (fileName: string) =>
   `https://commons.wikimedia.org/wiki/Special:FilePath/${encodeURIComponent(fileName)}?width=1200`
+
+export type AuthUser = {
+  id: number
+  username: string
+  email: string
+  first_name: string
+  last_name: string
+  role: 'buyer' | 'seller' | 'admin'
+  profile?: {
+    role: 'buyer' | 'seller' | 'admin'
+    avatar_3d_path: string
+    created_at: string
+  }
+}
+
+export type AuthSession = {
+  access: string
+  refresh: string
+  user: AuthUser
+}
+
+export type LoginPayload = {
+  email: string
+  password: string
+}
 
 export type RegisterPayload = {
   email: string
@@ -15,6 +42,60 @@ export type RegisterPayload = {
   role: 'buyer' | 'seller'
   first_name: string
   last_name: string
+}
+
+function persistAuthSession(session: AuthSession | null) {
+  if (session) {
+    localStorage.setItem(authStorageKey, JSON.stringify(session))
+    api.defaults.headers.common.Authorization = `Bearer ${session.access}`
+    return
+  }
+
+  localStorage.removeItem(authStorageKey)
+  delete api.defaults.headers.common.Authorization
+}
+
+export function loadAuthSession() {
+  if (typeof window === 'undefined') {
+    return null
+  }
+
+  const rawSession = window.localStorage.getItem(authStorageKey)
+  if (!rawSession) {
+    return null
+  }
+
+  try {
+    return JSON.parse(rawSession) as AuthSession
+  } catch {
+    window.localStorage.removeItem(authStorageKey)
+    return null
+  }
+}
+
+export function saveAuthSession(session: AuthSession) {
+  if (typeof window === 'undefined') {
+    return
+  }
+
+  persistAuthSession(session)
+}
+
+export function clearAuthSession() {
+  if (typeof window === 'undefined') {
+    return
+  }
+
+  persistAuthSession(null)
+}
+
+export function applyAccessToken(accessToken: string | null) {
+  if (accessToken) {
+    api.defaults.headers.common.Authorization = `Bearer ${accessToken}`
+    return
+  }
+
+  delete api.defaults.headers.common.Authorization
 }
 
 export const demoArtifacts: Artifact[] = [
@@ -259,5 +340,20 @@ export async function getArtifact(id: string) {
 
 export async function registerUser(payload: RegisterPayload) {
   const response = await api.post('/auth/register/', payload)
+  return response.data
+}
+
+export async function loginUser(payload: LoginPayload) {
+  const response = await api.post<AuthSession>('/auth/login/', payload)
+  return response.data
+}
+
+export async function refreshAccessToken(refresh: string) {
+  const response = await api.post<{ access: string }>('/auth/token/refresh/', { refresh })
+  return response.data
+}
+
+export async function getCurrentUser() {
+  const response = await api.get<AuthUser>('/auth/me/')
   return response.data
 }

@@ -27,7 +27,10 @@ class UserSerializer(serializers.ModelSerializer):
 class RegisterSerializer(serializers.ModelSerializer):
     password = serializers.CharField(write_only=True, min_length=8)
     role = serializers.ChoiceField(
-        choices=UserProfile.Role.choices,
+        choices=(
+            (UserProfile.Role.BUYER, UserProfile.Role.BUYER),
+            (UserProfile.Role.SELLER, UserProfile.Role.SELLER),
+        ),
         default=UserProfile.Role.BUYER,
         write_only=True,
     )

@@ -26,6 +26,22 @@ class AuthApiTests(APITestCase):
         self.assertEqual(user.profile.role, UserProfile.Role.SELLER)
         self.assertEqual(response.data['role'], UserProfile.Role.SELLER)
 
+    def test_register_rejects_admin_role(self):
+        response = self.client.post(
+            '/api/auth/register/',
+            {
+                'email': 'admin@example.com',
+                'password': 'strong-password-123',
+                'role': UserProfile.Role.ADMIN,
+                'first_name': 'Ada',
+                'last_name': 'Admin',
+            },
+            format='json',
+        )
+
+        self.assertEqual(response.status_code, status.HTTP_400_BAD_REQUEST)
+        self.assertFalse(User.objects.filter(email='admin@example.com').exists())
+
     def test_login_returns_tokens_and_me_returns_user(self):
         user = User.objects.create_user(
             username='buyer@example.com',

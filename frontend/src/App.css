@@ -170,6 +170,69 @@ h3 {
   justify-content: flex-end;
 }
 
+.header-search {
+  min-width: min(22rem, 100%);
+}
+
+.header-search input {
+  width: 100%;
+  border-radius: 999px;
+  border: 1px solid var(--line);
+  background: rgba(255, 255, 255, 0.74);
+  padding: 0.8rem 1rem;
+  color: var(--ink);
+  outline: none;
+  transition:
+    border-color 180ms ease,
+    box-shadow 180ms ease;
+}
+
+.header-search input:focus {
+  border-color: rgba(140, 79, 39, 0.72);
+  box-shadow: 0 0 0 4px rgba(140, 79, 39, 0.1);
+}
+
+.account-summary {
+  display: inline-flex;
+  align-items: center;
+  padding: 0.75rem 0.95rem;
+  border: 1px solid var(--line);
+  border-radius: 999px;
+  background: rgba(255, 255, 255, 0.72);
+  color: var(--muted);
+  font-size: 0.82rem;
+  font-weight: 700;
+}
+
+.language-select {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.45rem;
+  padding: 0.72rem 0.95rem;
+  border: 1px solid var(--line);
+  border-radius: 999px;
+  background: rgba(255, 255, 255, 0.72);
+  color: var(--muted);
+  font-size: 0.82rem;
+  font-weight: 700;
+}
+
+.language-select select {
+  border: none;
+  background: transparent;
+  color: inherit;
+  padding-right: 0.4rem;
+  outline: none;
+}
+
+.language-icon {
+  width: 0.62rem;
+  height: 0.62rem;
+  border-radius: 50%;
+  background: linear-gradient(135deg, var(--accent), #d8a06c);
+  box-shadow: 0 0 0 3px rgba(140, 79, 39, 0.08);
+}
+
 .solid-button,
 .ghost-button {
   display: inline-flex;
