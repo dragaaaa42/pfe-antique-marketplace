@@ -1,0 +1,1111 @@
+import { type FormEvent, useEffect, useMemo, useState } from 'react'
+import { BrowserRouter, Link, Route, Routes, useParams } from 'react-router-dom'
+import './App.css'
+import {
+  type RegisterPayload,
+  demoArtifacts,
+  fallbackArtifactImage,
+  getArtifact,
+  getArtifacts,
+  registerUser,
+} from './api'
+import { Artifact3DViewer } from './components/Artifact3DViewer'
+import type { Artifact } from './types'
+
+type Language = 'en' | 'fr'
+
+const siteCopy = {
+  en: {
+    nav: {
+      Catalogue: 'Catalogue',
+      Galleries: 'Galleries',
+      Curators: 'Curators',
+      Journal: 'Journal',
+    },
+    search: 'Search collection',
+    signup: 'Sign up',
+    language: 'Language',
+    hero:
+      'Browse Old Master art, period fashion, carved furniture, lighting and textiles in a cinematic marketplace built for 3D discovery.',
+    enterCollection: 'Enter the collection',
+    viewAll: 'View all objects',
+    departments: 'Departments',
+    chooseRoom: 'Choose a room to reveal the collection.',
+    showAll: 'Show all',
+    selectedAntiques: 'Selected antiques',
+    curatedResults: 'curated results',
+    footerEyebrow: 'Collector services',
+    footerTitle: 'Confidence for rare objects.',
+    footerText: 'Antique marketplace and immersive virtual gallery for collectors, sellers, and curators.',
+    joinGallery: 'Join the gallery',
+  },
+  fr: {
+    nav: {
+      Catalogue: 'Catalogue',
+      Galleries: 'Galeries',
+      Curators: 'Curateurs',
+      Journal: 'Journal',
+    },
+    search: 'Rechercher dans la collection',
+    signup: "S'inscrire",
+    language: 'Langue',
+    hero:
+      "Explorez l'art ancien, la mode d'epoque, le mobilier sculpte, les luminaires et les textiles dans une marketplace cinematographique avec inspection 3D.",
+    enterCollection: 'Entrer dans la collection',
+    viewAll: 'Voir les objets',
+    departments: 'Departements',
+    chooseRoom: 'Choisissez une salle pour reveler la collection.',
+    showAll: 'Tout voir',
+    selectedAntiques: 'Antiquites selectionnees',
+    curatedResults: 'resultats curates',
+    footerEyebrow: 'Services collectionneurs',
+    footerTitle: 'Confiance pour les objets rares.',
+    footerText:
+      'Marketplace antiquaire et galerie virtuelle immersive pour collectionneurs, vendeurs et curateurs.',
+    joinGallery: 'Rejoindre la galerie',
+  },
+} satisfies Record<
+  Language,
+  {
+    nav: Record<string, string>
+    search: string
+    signup: string
+    language: string
+    hero: string
+    enterCollection: string
+    viewAll: string
+    departments: string
+    chooseRoom: string
+    showAll: string
+    selectedAntiques: string
+    curatedResults: string
+    footerEyebrow: string
+    footerTitle: string
+    footerText: string
+    joinGallery: string
+  }
+>
+
+function formatPrice(value: string) {
+  return new Intl.NumberFormat('en-US', {
+    style: 'currency',
+    currency: 'USD',
+    maximumFractionDigits: 0,
+  }).format(Number(value))
+}
+
+function ArtifactCard({ artifact }: { artifact: Artifact }) {
+  return (
+    <article className="artifact-card">
+      <Link className="artifact-image" to={`/artifacts/${artifact.id}`}>
+        <img alt={artifact.title} src={artifact.image || fallbackArtifactImage} />
+      </Link>
+      <div className="artifact-body">
+        <div className="artifact-meta">
+          <span>{artifact.category_name ?? 'Uncategorized'}</span>
+          <strong>{formatPrice(artifact.price)}</strong>
+        </div>
+        <h3>{artifact.title}</h3>
+        <p>{artifact.description}</p>
+        <div className="artifact-foot">
+          <span className={`status-pill status-${artifact.status}`}>{artifact.status}</span>
+          <Link className="text-link" to={`/artifacts/${artifact.id}`}>
+            View
+          </Link>
+        </div>
+      </div>
+    </article>
+  )
+}
+
+function CatalogPage() {
+  const [artifacts, setArtifacts] = useState<Artifact[]>(demoArtifacts)
+  const [query, setQuery] = useState('')
+  const [activeCategory, setActiveCategory] = useState('All')
+  const [catalogOpen, setCatalogOpen] = useState(false)
+  const [language, setLanguage] = useState<Language>('en')
+  const t = siteCopy[language]
+
+  useEffect(() => {
+    getArtifacts()
+      .then((items) => {
+        if (items.length > 0) {
+          setArtifacts(items)
+        }
+      })
+      .catch(() => undefined)
+  }, [])
+
+  const categories = useMemo(
+    () => ['All', ...Array.from(new Set(artifacts.map((item) => item.category_name ?? 'Uncategorized')))],
+    [artifacts],
+  )
+
+  const visibleArtifacts = artifacts.filter((artifact) => {
+    const matchesCategory =
+      activeCategory === 'All' || (artifact.category_name ?? 'Uncategorized') === activeCategory
+    const text = `${artifact.title} ${artifact.description} ${artifact.provenance ?? ''}`.toLowerCase()
+    return matchesCategory && text.includes(query.toLowerCase())
+  })
+
+  const featuredArtifact = artifacts[0] ?? demoArtifacts[0]
+  const heroArtifacts = artifacts.slice(0, 8)
+  const navItems = ['Catalogue', 'Galleries', 'Curators', 'Journal'] as const
+  const navTargets: Record<(typeof navItems)[number], string> = {
+    Catalogue: '#catalog',
+    Galleries: '#departments',
+    Curators: '#curators',
+    Journal: '#journal',
+  }
+  const categoryTiles = categories
+    .filter((category) => category !== 'All')
+    .slice(0, 4)
+    .map((category, index) => {
+      const categoryArtifacts = artifacts.filter(
+        (item) => (item.category_name ?? 'Uncategorized') === category,
+      )
+      const artifact = categoryArtifacts[0]
+      return {
+        name: category,
+        count: categoryArtifacts.length,
+        image: artifact?.image || fallbackArtifactImage,
+        caption:
+          [
+            'Salon-worthy pieces with documented character.',
+            'Aged surfaces, handwork, and serious collector presence.',
+            'Statement objects selected for rooms with memory.',
+            'Museum mood, marketplace practicality.',
+          ][index % 4],
+      }
+    })
+
+  return (
+    <>
+      <header className="site-header">
+        <div className="utility-row">
+          <Link className="brand-mark" to="/">
+            Artisan&apos;s Echo
+          </Link>
+          <nav className="main-nav" aria-label="Marketplace navigation">
+            {navItems.map((item) => (
+              <a
+                href={navTargets[item]}
+                key={item}
+                onClick={() => {
+                  if (item === 'Catalogue') {
+                    setActiveCategory('All')
+                    setCatalogOpen(true)
+                  }
+                }}
+              >
+                {t.nav[item]}
+              </a>
+            ))}
+          </nav>
+          <div className="header-search">
+            <input
+              aria-label="Search antiques"
+              placeholder={t.search}
+              value={query}
+              onChange={(event) => setQuery(event.target.value)}
+            />
+          </div>
+          <nav className="account-nav" aria-label="Account">
+            <Link to="/signup">{t.signup}</Link>
+            <label className="language-select" title={t.language}>
+              <span className="language-icon" aria-hidden="true" />
+              <span>{t.language}</span>
+              <select
+                aria-label="Website language"
+                value={language}
+                onChange={(event) => setLanguage(event.target.value as Language)}
+              >
+                <option value="en">EN</option>
+                <option value="fr">FR</option>
+              </select>
+            </label>
+          </nav>
+        </div>
+      </header>
+
+      <main>
+        <section className="cinema-hero" aria-label="Featured antique collection">
+          <div className="hero-film" aria-hidden="true">
+            <div className="film-track">
+              {[...heroArtifacts, ...heroArtifacts].map((artifact, index) => (
+                <figure className="film-frame" key={`${artifact.id}-${index}`}>
+                  <img src={artifact.image || fallbackArtifactImage} alt="" />
+                  <figcaption>{artifact.category_name}</figcaption>
+                </figure>
+              ))}
+            </div>
+          </div>
+
+          <div className="hero-vignette" />
+          <div className="hero-grain" />
+
+          <div className="hero-content">
+            <div className="hero-copy">
+              <p>{t.hero}</p>
+              <div className="hero-actions">
+                <Link className="hero-primary" to={`/artifacts/${featuredArtifact.id}`}>
+                  {t.enterCollection}
+                </Link>
+                <a
+                  className="hero-secondary"
+                  href="#catalog"
+                  onClick={() => {
+                    setActiveCategory('All')
+                    setCatalogOpen(true)
+                  }}
+                >
+                  {t.viewAll}
+                </a>
+              </div>
+            </div>
+
+            <div className="hero-showcase" aria-label="Featured objects">
+              {heroArtifacts.slice(0, 4).map((artifact, index) => (
+                <Link
+                  className={`showcase-card showcase-card-${index + 1}`}
+                  key={artifact.id}
+                  to={`/artifacts/${artifact.id}`}
+                >
+                  <img src={artifact.image || fallbackArtifactImage} alt={artifact.title} />
+                  <span>{artifact.category_name}</span>
+                  <strong>{artifact.title}</strong>
+                </Link>
+              ))}
+            </div>
+          </div>
+
+          <div className="hero-card-river" aria-hidden="true">
+            <div className="river-track">
+              {[...heroArtifacts, ...heroArtifacts].map((artifact, index) => (
+                <div className="river-card" key={`river-${artifact.id}-${index}`}>
+                  <img src={artifact.image || fallbackArtifactImage} alt="" />
+                  <span>{artifact.category_name}</span>
+                </div>
+              ))}
+            </div>
+          </div>
+
+          <div className="hero-marquee" aria-hidden="true">
+            <span>Old Master Art</span>
+            <span>Carved Furniture</span>
+            <span>Period Fashion</span>
+            <span>Gilt Lighting</span>
+            <span>Historic Textiles</span>
+            <span>3D Inspection</span>
+          </div>
+        </section>
+
+        <section className="page-section departments-section" id="departments">
+          <div className="section-heading stacked-heading">
+            <p className="eyebrow">{t.departments}</p>
+            <div>
+              <h2>{t.chooseRoom}</h2>
+              <button
+                className="section-button"
+                onClick={() => {
+                  setActiveCategory('All')
+                  setCatalogOpen(true)
+                }}
+                type="button"
+              >
+                {t.showAll}
+              </button>
+            </div>
+          </div>
+          <div className="department-carousel">
+            <div className="department-track">
+              {[...categoryTiles, ...categoryTiles].map((category, index) => (
+                <button
+                  className={
+                    category.name === activeCategory ? 'department-card active' : 'department-card'
+                  }
+                  key={`${category.name}-${index}`}
+                  onClick={() => {
+                    setActiveCategory('All')
+                    setCatalogOpen(true)
+                  }}
+                  type="button"
+                >
+                  <span className="department-index">{String(category.count).padStart(2, '0')}</span>
+                  <img src={category.image} alt="" />
+                  <span className="department-name">{category.name}</span>
+                  <span className="department-caption">{category.caption}</span>
+                </button>
+              ))}
+            </div>
+          </div>
+        </section>
+
+        <section className="page-section catalog-shell" id="catalog">
+          {catalogOpen && (
+            <>
+              <div className="section-heading catalog-heading">
+                <div>
+                  <h2>{t.selectedAntiques}</h2>
+                  <p>{`${visibleArtifacts.length} ${t.curatedResults}`}</p>
+                </div>
+                <div className="category-tabs" role="tablist" aria-label="Categories">
+                  {categories.map((category) => (
+                    <button
+                      className={category === activeCategory ? 'active' : ''}
+                      key={category}
+                      onClick={() => setActiveCategory(category)}
+                      type="button"
+                    >
+                      {category}
+                    </button>
+                  ))}
+                </div>
+              </div>
+
+              <section className="artifact-grid" aria-label="Artifacts">
+                {visibleArtifacts.map((artifact) => (
+                  <ArtifactCard artifact={artifact} key={artifact.id} />
+                ))}
+              </section>
+            </>
+          )}
+        </section>
+
+        <section className="story-section" aria-label="About Artisan&apos;s Echo">
+          <div className="story-copy">
+            <p className="eyebrow">About Artisan&apos;s Echo</p>
+            <h2>We turn antique listings into living archives.</h2>
+            <p>
+              Artisan&apos;s Echo is built for objects that deserve atmosphere: pieces with provenance,
+              age, surface, and story. Sellers can prepare rare finds for curator review, while
+              collectors explore them through editorial catalogues, vintage film moments, and 3D
+              inspection.
+            </p>
+            <div className="story-stats" aria-label="Marketplace values">
+              <span>Curated provenance</span>
+              <span>Seller validation</span>
+              <span>3D object previews</span>
+            </div>
+          </div>
+          <div className="story-video" aria-label="Vintage film preview">
+            <div className="story-reel">
+              {[...heroArtifacts.slice(0, 6), ...heroArtifacts.slice(0, 6)].map((artifact, index) => (
+                <figure className="story-frame" key={`story-${artifact.id}-${index}`}>
+                  <img src={artifact.image || fallbackArtifactImage} alt="" />
+                  <figcaption>{artifact.title}</figcaption>
+                </figure>
+              ))}
+            </div>
+            <div className="story-video-overlay">
+              <span>Archive film 01</span>
+              <strong>Objects, rooms, memory.</strong>
+            </div>
+          </div>
+        </section>
+
+        <section className="curators-section" id="curators" aria-label="Curator services">
+          <div className="curator-atlas">
+            <div className="curator-intro">
+              <div>
+                <p className="eyebrow">Curators</p>
+                <h2>Expert review before an object enters the room.</h2>
+              </div>
+              <p>
+                Our curatorial desk gives the marketplace a professional layer: every seller story,
+                condition note, 3D preview, and acquisition request can be reviewed before collectors
+                commit.
+              </p>
+              <div className="curator-metrics" aria-label="Curator desk metrics">
+                <span>3 desks</span>
+                <span>Provenance first</span>
+                <span>Buyer confidence</span>
+              </div>
+            </div>
+
+            <div className="curator-desk">
+              <div className="curator-object-orbit" aria-hidden="true">
+                {heroArtifacts.slice(0, 5).map((artifact, index) => (
+                  <img
+                    className={`curator-orbit-image curator-orbit-image-${index + 1}`}
+                    key={`curator-orbit-${artifact.id}`}
+                    src={artifact.image || fallbackArtifactImage}
+                    alt=""
+                  />
+                ))}
+              </div>
+
+              <div className="curator-board">
+                {[
+                  {
+                    name: 'Mina El Idrissi',
+                    role: 'Old Master and provenance review',
+                    image: artifacts[0]?.image || fallbackArtifactImage,
+                    note: 'Checks archive notes, attribution language, and collector-facing history.',
+                  },
+                  {
+                    name: 'Lucien Darrow',
+                    role: 'Furniture and restoration desk',
+                    image: artifacts[3]?.image || fallbackArtifactImage,
+                    note: 'Reviews patina, restoration status, material claims, and room-readiness.',
+                  },
+                  {
+                    name: 'Sofia Marchand',
+                    role: 'Fashion and textile specialist',
+                    image: artifacts[2]?.image || fallbackArtifactImage,
+                    note: 'Validates period garments, fragile textiles, display care, and condition language.',
+                  },
+                ].map((curator, index) => (
+                  <article className={`curator-card curator-card-${index + 1}`} key={curator.name}>
+                    <img src={curator.image} alt="" />
+                    <div>
+                      <span>{curator.role}</span>
+                      <strong>{curator.name}</strong>
+                      <p>{curator.note}</p>
+                    </div>
+                  </article>
+                ))}
+              </div>
+            </div>
+          </div>
+
+          <div className="curator-process" aria-label="Curator workflow">
+            {[
+              ['01', 'Seller dossier', 'Images, history, price, category, and 3D files are prepared.'],
+              ['02', 'Desk review', 'Curators inspect provenance, condition, and marketplace readiness.'],
+              ['03', 'Collector release', 'Approved objects become part of the public catalogue experience.'],
+            ].map(([number, title, text]) => (
+              <article key={title}>
+                <span>{number}</span>
+                <strong>{title}</strong>
+                <p>{text}</p>
+              </article>
+            ))}
+          </div>
+        </section>
+
+        <section className="journal-section" id="journal" aria-label="Marketplace journal">
+          <div className="journal-heading">
+            <div>
+              <p className="eyebrow">Journal</p>
+              <h2>Editorial notes for collectors with taste and patience.</h2>
+            </div>
+            <Link className="section-button journal-link" to={`/artifacts/${featuredArtifact.id}`}>
+              Read the featured dossier
+            </Link>
+          </div>
+
+          <div className="journal-issue-strip" aria-hidden="true">
+            <div>
+              <span>Condition reports</span>
+              <span>Dealer interviews</span>
+              <span>Room studies</span>
+              <span>Object care</span>
+              <span>Provenance language</span>
+              <span>Market notes</span>
+              <span>Condition reports</span>
+              <span>Dealer interviews</span>
+              <span>Room studies</span>
+              <span>Object care</span>
+              <span>Provenance language</span>
+              <span>Market notes</span>
+            </div>
+          </div>
+
+          <div className="journal-layout">
+            <article className="journal-feature">
+              <img src={featuredArtifact.image || fallbackArtifactImage} alt="" />
+              <div>
+                <span>Collector essay</span>
+                <h3>How to read age, surface, and story before buying online.</h3>
+                <p>
+                  A good antique page should do more than show a price. It should explain why the
+                  object matters, how it has aged, and what a collector can inspect before purchase.
+                </p>
+                <Link to={`/artifacts/${featuredArtifact.id}`}>Open article</Link>
+              </div>
+            </article>
+
+            <div className="journal-stack">
+              {[
+                {
+                  title: 'The quiet value of restored furniture',
+                  type: 'Guide',
+                  image: artifacts[1]?.image || fallbackArtifactImage,
+                },
+                {
+                  title: 'Why old textiles need careful product photography',
+                  type: 'Essay',
+                  image: artifacts[8]?.image || fallbackArtifactImage,
+                },
+                {
+                  title: 'Building collector trust through provenance language',
+                  type: 'Notes',
+                  image: artifacts[5]?.image || fallbackArtifactImage,
+                },
+              ].map((entry) => (
+                <article className="journal-card" key={entry.title}>
+                  <img src={entry.image} alt="" />
+                  <div>
+                    <span>{entry.type}</span>
+                    <strong>{entry.title}</strong>
+                  </div>
+                </article>
+              ))}
+            </div>
+          </div>
+        </section>
+
+        <section className="promise-section">
+          <div className="promise-copy">
+            <p className="eyebrow">{t.footerEyebrow}</p>
+            <h2>{t.footerTitle}</h2>
+            <p>{t.footerText}</p>
+            <Link className="promise-cta" to="/signup">
+              {t.joinGallery}
+            </Link>
+          </div>
+          <div className="promise-objects" aria-hidden="true">
+            <div className="promise-seal">
+              <span>AE</span>
+              <strong>Protected</strong>
+            </div>
+            {[...heroArtifacts.slice(0, 4)].map((artifact, index) => (
+              <img
+                className={`promise-object promise-object-${index + 1}`}
+                key={`promise-${artifact.id}`}
+                src={artifact.image || fallbackArtifactImage}
+                alt=""
+              />
+            ))}
+          </div>
+          <div className="promise-grid">
+            {[
+              ['Protected checkout', 'The MVP simulates protected buying before real payment integration.'],
+              ['Seller onboarding', 'Role-based signup helps separate collectors from sellers.'],
+              ['Virtual rooms', 'Objects can be staged in immersive gallery settings.'],
+              ['Curated archive', 'Editorial product pages keep the marketplace feeling premium.'],
+            ].map(([title, text], index) => (
+              <article key={title}>
+                <span>{String(index + 1).padStart(2, '0')}</span>
+                <strong>{title}</strong>
+                <p>{text}</p>
+              </article>
+            ))}
+          </div>
+        </section>
+
+        <section className="footer-bottom">
+          <Link className="brand-mark" to="/">
+            Artisan&apos;s Echo
+          </Link>
+          <p>{t.footerText}</p>
+          <Link className="footer-cta" to="/signup">
+            {t.joinGallery}
+          </Link>
+        </section>
+      </main>
+    </>
+  )
+}
+
+function SignupPage() {
+  const [form, setForm] = useState<RegisterPayload>({
+    email: '',
+    password: '',
+    role: 'buyer',
+    first_name: '',
+    last_name: '',
+  })
+  const [status, setStatus] = useState<'idle' | 'loading' | 'success' | 'error'>('idle')
+  const [message, setMessage] = useState('')
+
+  function updateField(field: keyof RegisterPayload, value: string) {
+    setForm((current) => ({ ...current, [field]: value }))
+  }
+
+  async function handleSubmit(event: FormEvent<HTMLFormElement>) {
+    event.preventDefault()
+    setStatus('loading')
+    setMessage('')
+
+    try {
+      await registerUser(form)
+      setStatus('success')
+      setMessage('Your gallery account is ready. You can now sign in through the API flow.')
+      setForm({ email: '', password: '', role: 'buyer', first_name: '', last_name: '' })
+    } catch {
+      setStatus('error')
+      setMessage('The backend did not accept the signup yet. Check that Django is running on port 8000.')
+    }
+  }
+
+  const signupObjects = demoArtifacts.slice(0, 4)
+
+  return (
+    <main className="signup-page">
+      <section className="signup-story">
+        <div className="signup-story-copy">
+          <p className="eyebrow">Private access</p>
+          <h1>Join a gallery built for objects with a past.</h1>
+          <p>
+            Create a buyer account to follow rare pieces, or join as a seller to prepare antiques for
+            curator validation and immersive 3D display.
+          </p>
+        </div>
+        <div className="signup-atelier" aria-hidden="true">
+          {signupObjects.map((artifact, index) => (
+            <figure className={`signup-object signup-object-${index + 1}`} key={`signup-${artifact.id}`}>
+              <img src={artifact.image || fallbackArtifactImage} alt="" />
+              <figcaption>{artifact.category_name}</figcaption>
+            </figure>
+          ))}
+          <div className="signup-pass">
+            <span>Artisan&apos;s Echo</span>
+            <strong>Collector pass</strong>
+            <small>AE / private gallery access</small>
+          </div>
+        </div>
+        <div className="signup-membership-card">
+          <span>Membership includes</span>
+          <strong>Verified profiles, saved collections, seller uploads, and 3D object previews.</strong>
+        </div>
+        <div className="signup-highlights">
+          <span>Collector wishlist</span>
+          <span>Seller inventory</span>
+          <span>3D gallery access</span>
+        </div>
+      </section>
+      <form className="signup-form" onSubmit={handleSubmit}>
+        <div className="form-heading">
+          <p className="eyebrow">Artisan&apos;s Echo membership</p>
+          <h2>Professional access request</h2>
+          <span>Build a verified collector or seller profile for curated antique discovery.</span>
+        </div>
+        <div className="signup-progress" aria-label="Membership workflow">
+          {['Profile', 'Validation', 'Gallery access'].map((step, index) => (
+            <span key={step}>
+              {String(index + 1).padStart(2, '0')} {step}
+            </span>
+          ))}
+        </div>
+        <div className="role-switch" aria-label="Account type">
+          {(['buyer', 'seller'] as const).map((role) => (
+            <button
+              className={form.role === role ? 'active' : ''}
+              key={role}
+              onClick={() => updateField('role', role)}
+              type="button"
+            >
+              {role === 'buyer' ? 'Collector' : 'Seller'}
+            </button>
+          ))}
+        </div>
+        <label>
+          First name
+          <input
+            value={form.first_name}
+            onChange={(event) => updateField('first_name', event.target.value)}
+            required
+          />
+        </label>
+        <label>
+          Last name
+          <input
+            value={form.last_name}
+            onChange={(event) => updateField('last_name', event.target.value)}
+            required
+          />
+        </label>
+        <label className="full-field">
+          Email
+          <input
+            type="email"
+            value={form.email}
+            onChange={(event) => updateField('email', event.target.value)}
+            required
+          />
+        </label>
+        <label className="full-field">
+          Password
+          <input
+            minLength={8}
+            type="password"
+            value={form.password}
+            onChange={(event) => updateField('password', event.target.value)}
+            required
+          />
+        </label>
+        <button className="signup-submit" disabled={status === 'loading'} type="submit">
+          {status === 'loading' ? 'Creating account...' : 'Create account'}
+        </button>
+        {message && <p className={`signup-message ${status}`}>{message}</p>}
+      </form>
+    </main>
+  )
+}
+
+function ArtifactDetailPage() {
+  const { id } = useParams()
+  const [artifact, setArtifact] = useState<Artifact | undefined>(() =>
+    demoArtifacts.find((item) => String(item.id) === id),
+  )
+  const [selectedImageIndex, setSelectedImageIndex] = useState(0)
+  const [isSaved, setIsSaved] = useState(false)
+  const [inquiryMode, setInquiryMode] = useState<'purchase' | 'curator' | null>(null)
+  const [conciergeMessage, setConciergeMessage] = useState('')
+
+  useEffect(() => {
+    if (!id) return
+    getArtifact(id)
+      .then(setArtifact)
+      .catch(() => {
+        setArtifact(demoArtifacts.find((item) => String(item.id) === id))
+      })
+  }, [id])
+
+  if (!artifact) {
+    return (
+      <main className="app-shell empty-state">
+        <Link to="/">Back to catalog</Link>
+        <h1>Artifact not found</h1>
+      </main>
+    )
+  }
+
+  const relatedArtifacts = demoArtifacts
+    .filter((item) => item.id !== artifact.id)
+    .filter((item) => item.category_name === artifact.category_name)
+    .concat(demoArtifacts.filter((item) => item.id !== artifact.id))
+    .slice(0, 4)
+
+  const galleryImages = [
+    artifact.image || fallbackArtifactImage,
+    ...relatedArtifacts.slice(0, 3).map((item) => item.image || fallbackArtifactImage),
+  ]
+
+  const selectedImage = galleryImages[selectedImageIndex] ?? galleryImages[0]
+
+  const inspectionNotes = [
+    ['Surface', `${artifact.condition} collector presentation with visible age and character.`],
+    ['Dossier', artifact.provenance || 'Seller provenance is pending curator validation.'],
+    ['Handling', 'White-glove delivery path prepared for the demo marketplace.'],
+    ['Room fit', 'Best suited for a library, private salon, studio, or gallery wall.'],
+  ]
+
+  function handleConciergeSubmit(event: FormEvent<HTMLFormElement>) {
+    event.preventDefault()
+    setConciergeMessage(
+      inquiryMode === 'curator'
+        ? 'Curator question prepared. In the full product flow this becomes a protected message thread.'
+        : 'Purchase request prepared. In the full product flow this moves into checkout and seller review.',
+    )
+  }
+
+  return (
+    <main className="product-page">
+      <nav className="product-topbar" aria-label="Product navigation">
+        <Link className="back-link" to="/">
+          Marketplace
+        </Link>
+        <span>{artifact.category_name ?? 'Uncategorized'}</span>
+        <span>Lot AE-{String(artifact.id).padStart(4, '0')}</span>
+      </nav>
+
+      <section className="product-studio" aria-label="Product studio overview">
+        <div className="product-studio-media">
+          <img src={artifact.image || fallbackArtifactImage} alt="" />
+          <div className="studio-proof">
+            <span>AE-{String(artifact.id).padStart(4, '0')}</span>
+            <strong>{artifact.condition}</strong>
+          </div>
+        </div>
+        <div className="product-studio-copy">
+          <p className="eyebrow">{artifact.category_name ?? 'Uncategorized'}</p>
+          <h1>{artifact.title}</h1>
+          <p>{artifact.description}</p>
+          <div className="studio-actions">
+            <button
+              onClick={() => {
+                setInquiryMode('purchase')
+                setConciergeMessage('')
+              }}
+              type="button"
+            >
+              Request acquisition
+            </button>
+            <button
+              className={isSaved ? 'saved' : ''}
+              onClick={() => setIsSaved((current) => !current)}
+              type="button"
+            >
+              {isSaved ? 'Saved' : 'Save object'}
+            </button>
+          </div>
+          <div className="studio-ledger">
+            <article>
+              <span>Price</span>
+              <strong>{formatPrice(artifact.price)}</strong>
+            </article>
+            <article>
+              <span>Inspection</span>
+              <strong>{artifact.model_3d ? '3D ready' : 'Demo 3D'}</strong>
+            </article>
+            <article>
+              <span>Status</span>
+              <strong>{artifact.status}</strong>
+            </article>
+          </div>
+        </div>
+      </section>
+
+      <section className="product-hero-detail">
+        <div className="product-gallery">
+          <figure className="product-primary-image">
+            <img src={selectedImage} alt={artifact.title} />
+            <figcaption>
+              <span>Curated object</span>
+              <strong>{artifact.condition}</strong>
+            </figcaption>
+          </figure>
+          <div className="product-thumbs" aria-label="Object image set">
+            {galleryImages.map((image, index) => (
+              <button
+                aria-label={`View product image ${index + 1}`}
+                className={index === selectedImageIndex ? 'active' : ''}
+                key={`${image}-${index}`}
+                onClick={() => setSelectedImageIndex(index)}
+                type="button"
+              >
+                <img alt="" src={image} />
+              </button>
+            ))}
+          </div>
+          <section className="viewer-dossier">
+            <div>
+              <p className="eyebrow">3D inspection</p>
+              <h2>Rotate, inspect, and study the object surface.</h2>
+            </div>
+            <Artifact3DViewer modelUrl={artifact.model_3d || '/models/demo-antique.glb'} />
+          </section>
+        </div>
+
+        <aside className="product-summary">
+          <p className="eyebrow">Acquisition dossier</p>
+          <h2>Collector purchase panel</h2>
+          <p className="product-price">{formatPrice(artifact.price)}</p>
+          <p className="product-description">
+            Review condition, seller validation, 3D inspection, and concierge actions before moving
+            into the protected buying flow.
+          </p>
+
+          <div className="purchase-panel">
+            <button
+              onClick={() => {
+                setInquiryMode('purchase')
+                setConciergeMessage('')
+              }}
+              type="button"
+            >
+              Request purchase
+            </button>
+            <button
+              className={isSaved ? 'saved' : ''}
+              onClick={() => setIsSaved((current) => !current)}
+              type="button"
+            >
+              {isSaved ? 'Saved to wishlist' : 'Save to wishlist'}
+            </button>
+            <button
+              onClick={() => {
+                setInquiryMode('curator')
+                setConciergeMessage('')
+              }}
+              type="button"
+            >
+              Ask curator
+            </button>
+          </div>
+
+          {isSaved && (
+            <p className="collector-action-message">
+              Saved for this visit. Account-backed wishlists are ready for the signup flow.
+            </p>
+          )}
+
+          <dl className="product-facts">
+            <div>
+              <dt>Condition</dt>
+              <dd>{artifact.condition}</dd>
+            </div>
+            <div>
+              <dt>Status</dt>
+              <dd>{artifact.status}</dd>
+            </div>
+            <div>
+              <dt>Inspection</dt>
+              <dd>{artifact.model_3d ? '3D model available' : 'Demo 3D model available'}</dd>
+            </div>
+            <div>
+              <dt>Catalogue ID</dt>
+              <dd>AE-{String(artifact.id).padStart(4, '0')}</dd>
+            </div>
+          </dl>
+
+          <section className="seller-card">
+            <span>Presented by</span>
+            <strong>Artisan&apos;s Echo Curatorial Desk</strong>
+            <p>Validated seller dossier, provenance notes, and buyer protection prepared for demo.</p>
+          </section>
+
+          {inquiryMode && (
+            <form className="concierge-panel" onSubmit={handleConciergeSubmit}>
+              <div>
+                <span>Collector concierge</span>
+                <strong>
+                  {inquiryMode === 'curator'
+                    ? 'Send a focused curator question'
+                    : 'Prepare a protected purchase request'}
+                </strong>
+              </div>
+              <label>
+                Email or phone
+                <input required placeholder="collector@example.com" />
+              </label>
+              <label>
+                Message
+                <textarea
+                  required
+                  rows={4}
+                  placeholder={
+                    inquiryMode === 'curator'
+                      ? 'Ask about provenance, restoration, scale, or condition.'
+                      : 'Share delivery city, viewing needs, or offer details.'
+                  }
+                />
+              </label>
+              <button type="submit">
+                {inquiryMode === 'curator' ? 'Send question' : 'Submit request'}
+              </button>
+              {conciergeMessage && <p>{conciergeMessage}</p>}
+            </form>
+          )}
+        </aside>
+      </section>
+
+      <section className="condition-report" aria-label="Condition and acquisition report">
+        <div className="report-heading">
+          <p className="eyebrow">Acquisition report</p>
+          <h2>Everything a collector checks before saying yes.</h2>
+        </div>
+        <div className="report-grid">
+          {inspectionNotes.map(([title, text], index) => (
+            <article key={title}>
+              <span>{String(index + 1).padStart(2, '0')}</span>
+              <strong>{title}</strong>
+              <p>{text}</p>
+            </article>
+          ))}
+        </div>
+      </section>
+
+      <section className="product-story-grid">
+        <article className="provenance-chapter">
+          <p className="eyebrow">Provenance</p>
+          <h2>Known story and collector notes.</h2>
+          <p>{artifact.provenance || 'Seller provenance is pending curator validation.'}</p>
+          <ol>
+            <li>
+              <span>01</span>
+              <strong>Origin record</strong>
+              <p>{artifact.history || 'Historic context is prepared from seller and curator notes.'}</p>
+            </li>
+            <li>
+              <span>02</span>
+              <strong>Condition review</strong>
+              <p>Surface, restoration, and display readiness are recorded before marketplace approval.</p>
+            </li>
+            <li>
+              <span>03</span>
+              <strong>Digital exhibit</strong>
+              <p>The object can be placed in a virtual gallery with scale, lighting, and inspection data.</p>
+            </li>
+          </ol>
+        </article>
+
+        <article className="curator-note">
+          <p className="eyebrow">Curator note</p>
+          <h2>Why it matters</h2>
+          <p>
+            This listing is composed like a collector dossier: image evidence, object story, 3D
+            presence, and purchase confidence in one focused experience.
+          </p>
+          <div className="curator-seal">
+            <span>Archive grade</span>
+            <strong>{artifact.condition}</strong>
+          </div>
+        </article>
+      </section>
+
+        <section className="service-strip" aria-label="Buyer services">
+          {[
+          ['Protected checkout', 'Simulated payment workflow for the PFE demo.'],
+          ['Curator validation', 'Admin review can approve or reject marketplace objects.'],
+          ['Seller contact', 'Buyer and seller flows are prepared for marketplace expansion.'],
+          ['Gallery placement', 'Artifacts can be arranged as exhibits in 3D rooms.'],
+        ].map(([title, text]) => (
+          <article key={title}>
+            <strong>{title}</strong>
+            <span>{text}</span>
+          </article>
+        ))}
+      </section>
+
+      <section className="collector-room" aria-label="Collector room preview">
+        <div className="collector-room-copy">
+          <p className="eyebrow">Room staging</p>
+          <h2>Picture the object inside a private interior.</h2>
+          <p>
+            The product page now behaves like a gallery dossier: image study, 3D inspection,
+            condition review, concierge action, and nearby objects for a complete acquisition path.
+          </p>
+        </div>
+        <div className="collector-room-board">
+          {relatedArtifacts.slice(0, 3).map((item, index) => (
+            <Link className={`room-object room-object-${index + 1}`} key={item.id} to={`/artifacts/${item.id}`}>
+              <img src={item.image || fallbackArtifactImage} alt={item.title} />
+              <span>{item.category_name}</span>
+              <strong>{item.title}</strong>
+            </Link>
+          ))}
+        </div>
+      </section>
+
+      <section className="related-section">
+        <div className="section-heading">
+          <h2>Related objects</h2>
+          <Link to="/">Return to collection</Link>
+        </div>
+        <div className="product-rail">
+          {relatedArtifacts.map((item) => (
+            <ArtifactCard artifact={item} key={`related-${item.id}`} />
+          ))}
+        </div>
+      </section>
+    </main>
+  )
+}
+
+function App() {
+  return (
+    <BrowserRouter>
+      <Routes>
+        <Route path="/" element={<CatalogPage />} />
+        <Route path="/signup" element={<SignupPage />} />
+        <Route path="/artifacts/:id" element={<ArtifactDetailPage />} />
+      </Routes>
+    </BrowserRouter>
+  )
+}
+
+export default App
