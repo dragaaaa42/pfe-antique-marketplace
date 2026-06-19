@@ -1,5 +1,7 @@
 import { type FormEvent, useEffect, useMemo, useState } from 'react'
 import { BrowserRouter, Link, Route, Routes, useLocation, useNavigate, useParams } from 'react-router-dom'
+import { ArrowUpRight, ChevronRight, Sparkles } from 'lucide-react'
+import { motion } from 'motion/react'
 import './App.css'
 import {
   addCartItem,
@@ -15,9 +17,26 @@ import {
   registerUser,
 } from './api'
 import { AuthProvider, useAuth } from './auth'
-import { CartPage, OrderDetailPage, OrdersPage, WishlistPage } from './buyer'
+import { AccountPage } from './account'
+import { CartPage, CollectorDashboardPage, OrderDetailPage, OrdersPage, WishlistPage } from './buyer'
+import {
+  AdminArtifactsPage,
+  AdminAuditPage,
+  AdminDashboardPage,
+  AdminGalleriesPage,
+  AdminUserDetailPage,
+  AdminUsersPage,
+} from './admin'
 import { Artifact3DViewer } from './components/Artifact3DViewer'
-import { SellerDashboardPage, SellerGalleriesPage, SellerProductsPage } from './seller'
+import { MarketplaceImage } from './components/MarketplaceImage'
+import {
+  SellerDashboardPage,
+  SellerGalleriesPage,
+  SellerOrderDetailPage,
+  SellerOrdersPage,
+  SellerProductsPage,
+} from './seller'
+import { resolveMarketplaceImage } from './marketplaceImages'
 import type { Artifact } from './types'
 
 type Language = 'en' | 'fr'
@@ -102,31 +121,46 @@ function formatPrice(value: string) {
   }).format(Number(value))
 }
 
-function ArtifactCard({ artifact }: { artifact: Artifact }) {
+function ArtifactCard({
+  artifact,
+  variant = 'default',
+}: {
+  artifact: Artifact
+  variant?: 'default' | 'compact'
+}) {
+  const sourceLabel = 'Verified seller'
+
   return (
-    <article className="artifact-card">
+    <motion.article
+      className={variant === 'compact' ? 'artifact-card is-compact' : 'artifact-card'}
+      initial={{ opacity: 0, y: 18 }}
+      animate={{ opacity: 1, y: 0 }}
+      whileHover={{ y: -4 }}
+      transition={{ duration: 0.35, ease: 'easeOut' }}
+    >
       <Link className="artifact-image" to={`/artifacts/${artifact.id}`}>
-        <img alt={artifact.title} src={artifact.image || fallbackArtifactImage} />
+        <MarketplaceImage alt={artifact.title} src={resolveMarketplaceImage(artifact)} />
+        <span className="artifact-ribbon">{artifact.category_name ?? 'Uncategorized'}</span>
+        <span className="artifact-price-badge">{formatPrice(artifact.price)}</span>
       </Link>
       <div className="artifact-body">
-        <div className="artifact-meta">
-          <span>{artifact.category_name ?? 'Uncategorized'}</span>
-          <strong>{formatPrice(artifact.price)}</strong>
+        <div className="artifact-topline">
+          <span>{sourceLabel}</span>
+          <span className="artifact-condition">{artifact.condition}</span>
         </div>
         <h3>{artifact.title}</h3>
-        <p>{artifact.description}</p>
+        <p className="artifact-excerpt">{artifact.description}</p>
         <div className="artifact-foot">
-          <span className={`status-pill status-${artifact.status}`}>{artifact.status}</span>
           <Link className="text-link" to={`/artifacts/${artifact.id}`}>
-            View
+            View dossier <ArrowUpRight aria-hidden="true" size={14} />
           </Link>
         </div>
       </div>
-    </article>
+    </motion.article>
   )
 }
 
-function CatalogPage() {
+function LegacyCatalogPage() {
   const [artifacts, setArtifacts] = useState<Artifact[]>(demoArtifacts)
   const [query, setQuery] = useState('')
   const [activeCategory, setActiveCategory] = useState('All')
@@ -662,6 +696,415 @@ function CatalogPage() {
   )
 }
 
+function CatalogPage() {
+  const [artifacts, setArtifacts] = useState<Artifact[]>(demoArtifacts)
+  const [query, setQuery] = useState('')
+  const [activeCategory, setActiveCategory] = useState('All')
+  const [sortBy, setSortBy] = useState<'featured' | 'price-asc' | 'price-desc' | 'title'>('featured')
+  const { user } = useAuth()
+
+  useEffect(() => {
+    getArtifacts()
+      .then((items) => {
+        if (items.length > 0) {
+          setArtifacts(items)
+        }
+      })
+      .catch(() => undefined)
+  }, [])
+
+  const marketplaceArtifacts =
+    artifacts.length > 0
+      ? [...artifacts, ...demoArtifacts.filter((demo) => !artifacts.some((item) => item.id === demo.id))]
+      : demoArtifacts
+  const publicArtifacts = marketplaceArtifacts.filter((artifact) => artifact.status === 'approved')
+  const catalogSource = publicArtifacts.length >= 4 ? publicArtifacts : marketplaceArtifacts
+
+  const categories = useMemo(
+    () => ['All', ...Array.from(new Set(catalogSource.map((item) => item.category_name ?? 'Uncategorized')))],
+    [catalogSource],
+  )
+
+  const visibleArtifacts = catalogSource.filter((artifact) => {
+    const matchesCategory =
+      activeCategory === 'All' || (artifact.category_name ?? 'Uncategorized') === activeCategory
+    const text = `${artifact.title} ${artifact.description} ${artifact.provenance ?? ''}`.toLowerCase()
+    return matchesCategory && text.includes(query.toLowerCase())
+  })
+
+  const sortedArtifacts = useMemo(() => {
+    const items = [...visibleArtifacts]
+
+    switch (sortBy) {
+      case 'price-asc':
+        return items.sort((left, right) => Number(left.price) - Number(right.price))
+      case 'price-desc':
+        return items.sort((left, right) => Number(right.price) - Number(left.price))
+      case 'title':
+        return items.sort((left, right) => left.title.localeCompare(right.title))
+      default:
+        return items
+    }
+  }, [sortBy, visibleArtifacts])
+
+  const homeFeatureCategories = new Set(['Luxury Bags', 'Traditional Clothing', 'Watches'])
+  const homeArrivalCategories = new Set(['Historical Artifacts', 'Ceramics', 'Rugs and Textiles', 'Vintage Collectibles'])
+  const featuredPieces = catalogSource.filter((artifact) => homeFeatureCategories.has(artifact.category_name ?? ''))
+  const newArrivals = catalogSource
+    .filter((artifact) => homeArrivalCategories.has(artifact.category_name ?? ''))
+    .slice(0, 3)
+  const catalogPreviewArtifacts = sortedArtifacts
+  const catalogResultCount = catalogPreviewArtifacts.length
+  const categoryCount = Math.max(categories.length - 1, 0)
+  const heroArtifact = featuredPieces[0] ?? catalogSource[0] ?? demoArtifacts[0]
+  const heroStats = [
+    ['Curated lots', String(catalogSource.length).padStart(2, '0')],
+    ['Featured pieces', String(featuredPieces.length).padStart(2, '0')],
+    ['New arrivals', String(newArrivals.length).padStart(2, '0')],
+  ]
+  const heroMenuItems = [
+    { label: 'Catalogue', target: 'All', hasDropdown: false },
+    { label: 'Furniture', target: 'Furniture', hasDropdown: true },
+    { label: 'Jewelry', target: 'Jewelry', hasDropdown: false },
+    { label: 'Decor', target: 'Decor', hasDropdown: true },
+  ]
+  const popularSearches = ['Watches', 'Jewelry', 'Ceramics', 'Textiles']
+  const dashboardPath =
+    user?.role === 'buyer' ? '/collector' : user?.role === 'seller' ? '/seller' : user?.role === 'admin' ? '/admin' : '/login'
+  const dashboardLabel =
+    user?.role === 'buyer'
+      ? 'Collector room'
+      : user?.role === 'seller'
+        ? 'Seller studio'
+        : user?.role === 'admin'
+          ? 'Admin desk'
+          : 'Sign in'
+  const sortLabel =
+    sortBy === 'featured'
+      ? 'Featured'
+      : sortBy === 'price-asc'
+        ? 'Price low to high'
+        : sortBy === 'price-desc'
+          ? 'Price high to low'
+          : 'Title'
+  const countByCategory = (category: string) =>
+    catalogSource.filter((artifact) => (artifact.category_name ?? '').toLowerCase().includes(category)).length
+  const applyHeroFilter = (value: string) => {
+    if (value === 'All') {
+      setActiveCategory('All')
+      setQuery('')
+    } else {
+      const matchingCategory = categories.find((category) =>
+        category.toLowerCase().includes(value.toLowerCase()),
+      )
+      setActiveCategory(matchingCategory ?? 'All')
+      setQuery(matchingCategory ? '' : value)
+    }
+
+    document.getElementById('catalog')?.scrollIntoView({ behavior: 'smooth' })
+  }
+
+  return (
+    <main>
+      <div className="video-hero-wrap">
+        <motion.section
+          animate={{ opacity: 1, scale: 1 }}
+          aria-labelledby="marketplace-hero-title"
+          className="video-hero"
+          initial={{ opacity: 0, scale: 0.985 }}
+          transition={{ duration: 0.75 }}
+        >
+          <video
+            aria-hidden="true"
+            autoPlay
+            className="video-hero-bg"
+            loop
+            muted
+            playsInline
+            src="https://d8j0ntlcm91z4.cloudfront.net/user_38xzZboKViGWJOttwIXH07lWA1P/hf_20260428_193507_4286c423-2fd9-4efd-92bd-91a939453fc1.mp4"
+          />
+          <div className="video-hero-scrim" />
+
+          <div className="video-hero-layer">
+            <nav className="video-hero-nav" aria-label="Hero catalogue shortcuts">
+              <div className="video-hero-spacer" />
+              <ul>
+                {heroMenuItems.map((item) => (
+                  <li key={item.label}>
+                    <button onClick={() => applyHeroFilter(item.target)} type="button">
+                      <span>{item.label}</span>
+                      {item.hasDropdown && <ChevronRight aria-hidden="true" size={16} />}
+                    </button>
+                  </li>
+                ))}
+              </ul>
+              <div className="video-hero-action">
+                <Link className="video-pill-button" to={dashboardPath}>
+                  <span>
+                    <ArrowUpRight aria-hidden="true" size={18} />
+                  </span>
+                  {dashboardLabel}
+                </Link>
+              </div>
+            </nav>
+
+            <div className="video-hero-copy">
+              <motion.div
+                animate={{ opacity: 1, y: 0 }}
+                className="hero-badge"
+                initial={{ opacity: 0, y: 20 }}
+                transition={{ duration: 0.6, ease: 'easeOut' }}
+              >
+                <Sparkles aria-hidden="true" size={16} />
+                <span>Verified provenance</span>
+              </motion.div>
+              <motion.h1
+                animate={{ opacity: 1, scale: 1 }}
+                id="marketplace-hero-title"
+                initial={{ opacity: 0, scale: 0.98 }}
+                transition={{ duration: 0.8, delay: 0.2 }}
+              >
+                Rare Object Streams
+              </motion.h1>
+              <motion.p
+                animate={{ opacity: 1 }}
+                initial={{ opacity: 0 }}
+                transition={{ duration: 0.8, delay: 0.4 }}
+              >
+                Move from cinematic discovery to a filtered catalogue of antiques, jewelry,
+                furniture, art, and decor from verified sellers.
+              </motion.p>
+              <form
+                className="video-hero-search"
+                onSubmit={(event) => {
+                  event.preventDefault()
+                  setActiveCategory('All')
+                  document.getElementById('catalog')?.scrollIntoView({ behavior: 'smooth' })
+                }}
+              >
+                <input
+                  aria-label="Search the antique catalogue"
+                  placeholder="Search watches, porcelain, textiles..."
+                  value={query}
+                  onChange={(event) => setQuery(event.target.value)}
+                />
+                <button type="submit">Search</button>
+              </form>
+              <div className="video-hero-chips" aria-label="Popular searches">
+                {popularSearches.map((term) => (
+                  <button key={term} onClick={() => applyHeroFilter(term)} type="button">
+                    {term}
+                  </button>
+                ))}
+              </div>
+            </div>
+
+            <motion.aside
+              animate={{ x: 0, opacity: 1 }}
+              className="video-hero-card"
+              initial={{ x: -20, opacity: 0 }}
+              transition={{ duration: 0.8, delay: 0.2 }}
+            >
+              <div>
+                <strong>{String(catalogSource.length).padStart(2, '0')}</strong>
+                <span>Curated listings</span>
+              </div>
+              <button onClick={() => applyHeroFilter('All')} type="button">
+                <span>
+                  <ArrowUpRight aria-hidden="true" size={15} />
+                </span>
+                Open catalogue
+              </button>
+            </motion.aside>
+
+            <motion.aside
+              animate={{ y: 0, opacity: 1 }}
+              className="video-hero-corner"
+              initial={{ y: 20, opacity: 0 }}
+              transition={{ duration: 0.8, delay: 0.4 }}
+            >
+              <Link className="corner-icon" to={`/artifacts/${heroArtifact.id}`}>
+                <ArrowUpRight aria-hidden="true" size={22} />
+              </Link>
+              <div>
+                <strong>{heroArtifact.title}</strong>
+                <Link to={`/artifacts/${heroArtifact.id}`}>
+                  <span>{heroArtifact.category_name ?? 'Featured object'}</span>
+                  <ChevronRight aria-hidden="true" size={15} />
+                </Link>
+              </div>
+            </motion.aside>
+
+            <div className="video-hero-stats" aria-label="Marketplace summary">
+              {heroStats.map(([label, value]) => (
+                <article key={label}>
+                  <strong>{value}</strong>
+                  <span>{label}</span>
+                </article>
+              ))}
+            </div>
+          </div>
+        </motion.section>
+      </div>
+
+      <section className="page-section marketplace-section" id="featured-pieces">
+        <div className="section-heading marketplace-heading">
+          <div>
+            <p className="eyebrow">Featured pieces</p>
+            <h2>Pieces worth opening first</h2>
+          </div>
+          <span className="section-caption">Freshly curated from the marketplace</span>
+        </div>
+        <div className="artifact-grid marketplace-grid">
+          {featuredPieces.map((artifact) => (
+            <ArtifactCard artifact={artifact} key={`featured-${artifact.id}`} />
+          ))}
+        </div>
+      </section>
+
+      <section className="page-section marketplace-section" id="new-arrivals">
+        <div className="section-heading marketplace-heading">
+          <div>
+            <p className="eyebrow">New arrivals</p>
+            <h2>Recently added objects</h2>
+          </div>
+          <span className="section-caption">Newest listings from verified sellers</span>
+        </div>
+        <div className="artifact-grid marketplace-grid">
+          {newArrivals.map((artifact) => (
+            <ArtifactCard artifact={artifact} key={`new-${artifact.id}`} />
+          ))}
+        </div>
+      </section>
+
+      <section className="page-section marketplace-intro">
+        <div className="marketplace-intro-copy">
+          <p className="eyebrow">Marketplace intelligence</p>
+          <h2>Built for confident buying, clean selling, and curated discovery.</h2>
+          <p>
+            Search quickly, inspect detailed listings, save objects, and move from discovery to
+            checkout with clear role-based dashboards.
+          </p>
+          <div className="marketplace-intro-actions">
+            <a className="hero-primary" href="#catalog">
+              Browse catalogue
+            </a>
+            <Link className="hero-secondary" to="/signup">
+              Create account
+            </Link>
+          </div>
+        </div>
+        <div className="marketplace-quicklist" aria-label="Quick categories">
+          {[
+            ['Featured', featuredPieces.length],
+            ['New arrivals', newArrivals.length],
+            ['Furniture', countByCategory('furniture')],
+            ['Art', countByCategory('art')],
+            ['Jewelry', countByCategory('jewel')],
+          ].map(([label, count]) => (
+            <a
+              className="quicklist-chip"
+              href={label === 'Featured' ? '#featured-pieces' : '#catalog'}
+              key={label}
+            >
+              <span>{label}</span>
+              <strong>{String(count).padStart(2, '0')}</strong>
+            </a>
+          ))}
+        </div>
+      </section>
+
+      <section className="page-section catalog-shell" id="catalog">
+        <div className="catalog-header">
+          <div className="catalog-copy">
+            <p className="eyebrow">Browse catalogue</p>
+            <h2>Curated collection atlas</h2>
+            <p className="catalog-summary">
+              A live index of verified listings, tuned for quick comparison and cleaner discovery.
+            </p>
+            <div className="catalog-metrics" aria-label="Catalogue highlights">
+              <article>
+                <strong>{String(catalogResultCount).padStart(2, '0')}</strong>
+                <span>{catalogResultCount === 1 ? 'Live listing' : 'Live listings'}</span>
+              </article>
+              <article>
+                <strong>{String(categoryCount).padStart(2, '0')}</strong>
+                <span>{categoryCount === 1 ? 'Curated category' : 'Curated categories'}</span>
+              </article>
+              <article>
+                <strong>{String(featuredPieces.length).padStart(2, '0')}</strong>
+                <span>{featuredPieces.length === 1 ? 'Featured pick' : 'Featured picks'}</span>
+              </article>
+            </div>
+          </div>
+          <div className="catalog-controls">
+            <label className="catalog-sort">
+              <span>Sort by</span>
+              <select value={sortBy} onChange={(event) => setSortBy(event.target.value as typeof sortBy)}>
+                <option value="featured">Featured</option>
+                <option value="price-asc">Price: low to high</option>
+                <option value="price-desc">Price: high to low</option>
+                <option value="title">Title</option>
+              </select>
+            </label>
+            <div className="catalog-badges" aria-label="Browse status">
+              <span className="catalog-status">Verified sellers</span>
+              <span className="catalog-status">{sortLabel}</span>
+            </div>
+          </div>
+        </div>
+
+        <div className="catalog-layout">
+          <aside className="catalog-sidebar" aria-label="Catalogue filters">
+            <div className="sidebar-section">
+              <p className="eyebrow">Filters</p>
+              <h3>Refine collection</h3>
+              <p className="sidebar-copy">Pick a lane to keep the grid focused and easy to compare.</p>
+              <div className="filter-list">
+                {categories.map((category) => (
+                  <button
+                    className={category === activeCategory ? 'filter-chip active' : 'filter-chip'}
+                    key={category}
+                    onClick={() => setActiveCategory(category)}
+                    type="button"
+                  >
+                    <span>{category}</span>
+                    <strong>
+                      {category === 'All'
+                        ? catalogSource.length
+                        : catalogSource.filter(
+                            (item) => (item.category_name ?? 'Uncategorized') === category,
+                          ).length}
+                    </strong>
+                  </button>
+                ))}
+              </div>
+            </div>
+
+            <div className="sidebar-section">
+              <p className="eyebrow">Search</p>
+              <h3>Search intent</h3>
+              <p>Use the hero search bar to narrow by title, history, or provenance.</p>
+            </div>
+          </aside>
+
+          <div className="catalog-results">
+            <div className="catalog-results-head">
+              <span>{catalogResultCount === 1 ? '1 live result' : `${catalogResultCount} live results`}</span>
+              <span>{activeCategory === 'All' ? 'All categories' : activeCategory}</span>
+            </div>
+            <section className="artifact-grid catalog-grid" aria-label="Artifacts">
+              {catalogPreviewArtifacts.map((artifact) => (
+                <ArtifactCard artifact={artifact} key={artifact.id} variant="compact" />
+              ))}
+            </section>
+          </div>
+        </div>
+      </section>
+    </main>
+  )
+}
+
 function SignupPage() {
   const navigate = useNavigate()
   const signupObjects = demoArtifacts.slice(0, 4)
@@ -914,7 +1357,7 @@ function LoginPage() {
   )
 }
 
-function ArtifactDetailPage() {
+function LegacyArtifactDetailPage() {
   const { id } = useParams()
   const navigate = useNavigate()
   const { user } = useAuth()
@@ -1379,6 +1822,349 @@ function ArtifactDetailPage() {
   )
 }
 
+function ArtifactDetailPage() {
+  const { id } = useParams()
+  const navigate = useNavigate()
+  const { user } = useAuth()
+  const [artifact, setArtifact] = useState<Artifact | undefined>(() =>
+    demoArtifacts.find((item) => String(item.id) === id),
+  )
+  const [catalogArtifacts, setCatalogArtifacts] = useState<Artifact[]>(demoArtifacts)
+  const [selectedImageIndex, setSelectedImageIndex] = useState(0)
+  const [wishlistItemId, setWishlistItemId] = useState<number | null>(null)
+  const [cartItemId, setCartItemId] = useState<number | null>(null)
+  const [cartQuantity, setCartQuantity] = useState(0)
+  const [inquiryMode, setInquiryMode] = useState<'purchase' | 'seller' | null>(null)
+  const [conciergeMessage, setConciergeMessage] = useState('')
+  const [actionStatus, setActionStatus] = useState<'idle' | 'loading' | 'success' | 'error'>('idle')
+
+  useEffect(() => {
+    if (!id) return
+    getArtifact(id)
+      .then(setArtifact)
+      .catch(() => {
+        setArtifact(demoArtifacts.find((item) => String(item.id) === id))
+      })
+
+    getArtifacts()
+      .then((items) => {
+        if (items.length > 0) {
+          setCatalogArtifacts([
+            ...items,
+            ...demoArtifacts.filter((demo) => !items.some((item) => item.id === demo.id)),
+          ])
+        }
+      })
+      .catch(() => undefined)
+  }, [id])
+
+  useEffect(() => {
+    if (!artifact || user?.role !== 'buyer') {
+      setWishlistItemId(null)
+      setCartItemId(null)
+      setCartQuantity(0)
+      return
+    }
+
+    let cancelled = false
+
+    const loadSelections = async () => {
+      try {
+        const [wishlist, cart] = await Promise.all([getWishlist(), getCart()])
+        if (cancelled) return
+
+        const savedItem = wishlist.find((item) => item.artifact_detail.id === artifact.id)
+        const cartedItem = cart.find((item) => item.artifact_detail.id === artifact.id)
+
+        setWishlistItemId(savedItem?.id ?? null)
+        setCartItemId(cartedItem?.id ?? null)
+        setCartQuantity(cartedItem?.quantity ?? 0)
+      } catch {
+        if (cancelled) return
+      }
+    }
+
+    void loadSelections()
+
+    return () => {
+      cancelled = true
+    }
+  }, [artifact, user?.role])
+
+  function requireBuyer() {
+    if (user?.role === 'buyer' && artifact) {
+      return true
+    }
+
+    if (!artifact) {
+      return false
+    }
+
+    navigate('/login', { state: { redirectTo: `/artifacts/${artifact.id}` } })
+    return false
+  }
+
+  async function handleWishlistToggle() {
+    if (!requireBuyer() || !artifact) return
+
+    setActionStatus('loading')
+
+    try {
+      if (wishlistItemId) {
+        await removeWishlistItem(wishlistItemId)
+        setWishlistItemId(null)
+      } else {
+        const saved = await addWishlistItem(artifact.id)
+        setWishlistItemId(saved.id)
+      }
+      setActionStatus('success')
+    } catch {
+      setActionStatus('error')
+    }
+  }
+
+  async function handleCartAdd() {
+    if (!requireBuyer() || !artifact) return
+
+    setActionStatus('loading')
+
+    try {
+      const cartItem = await addCartItem(artifact.id, 1)
+      setCartItemId(cartItem.id)
+      setCartQuantity(cartItem.quantity)
+      setActionStatus('success')
+    } catch {
+      setActionStatus('error')
+    }
+  }
+
+  function handleConciergeSubmit(event: FormEvent<HTMLFormElement>) {
+    event.preventDefault()
+    setConciergeMessage(
+      inquiryMode === 'seller'
+        ? 'Message prepared. In the full product flow this becomes a protected seller thread.'
+        : 'Purchase request prepared. In the full product flow this moves into checkout and seller review.',
+    )
+  }
+
+  if (!artifact) {
+    return (
+      <main className="app-shell empty-state">
+        <Link to="/">Back to catalog</Link>
+        <h1>Artifact not found</h1>
+      </main>
+    )
+  }
+
+  const relatedArtifacts = catalogArtifacts
+    .filter((item) => item.id !== artifact.id)
+    .filter((item) => item.category_name === artifact.category_name)
+    .concat(catalogArtifacts.filter((item) => item.id !== artifact.id))
+    .filter((item, index, items) => items.findIndex((candidate) => candidate.id === item.id) === index)
+    .slice(0, 3)
+
+  const galleryImages = [
+    resolveMarketplaceImage(artifact),
+    ...relatedArtifacts.slice(0, 3).map((item) => resolveMarketplaceImage(item)),
+  ]
+  const selectedImage = galleryImages[selectedImageIndex] ?? galleryImages[0]
+  const sellerName = artifact.seller_email || 'Verified seller'
+  const provenance = artifact.provenance || 'Private collection, Rabat.'
+  const materials = artifact.materials || 'Material details available on request'
+  const dimensions = artifact.dimensions || 'Dimensions available in the seller notes'
+
+  return (
+    <main className="product-page">
+      <nav className="product-topbar" aria-label="Product navigation">
+        <Link className="back-link" to="/">
+          Marketplace
+        </Link>
+        <span>{artifact.category_name ?? 'Uncategorized'}</span>
+        <span>Lot AE-{String(artifact.id).padStart(4, '0')}</span>
+      </nav>
+
+      <section className="product-hero-detail">
+        <aside className="product-summary">
+          <p className="eyebrow">Marketplace listing</p>
+          <h1>{artifact.title}</h1>
+          <p className="product-kicker">{artifact.category_name ?? 'Uncategorized'}</p>
+          <p className="product-price">{formatPrice(artifact.price)}</p>
+          <p className="product-description">
+            Review the object details, seller information, and delivery notes before adding it to
+            your cart or wishlist.
+          </p>
+
+          <section className="seller-card">
+            <span>Seller</span>
+            <strong>{sellerName}</strong>
+            <p>Verified listing from the marketplace catalog.</p>
+          </section>
+
+          <div className="purchase-panel">
+            <button
+              onClick={() => {
+                void handleCartAdd()
+              }}
+              disabled={actionStatus === 'loading'}
+              type="button"
+            >
+              {cartQuantity > 0 ? 'Add another copy' : 'Add to cart'}
+            </button>
+            <button
+              className={wishlistItemId ? 'saved' : ''}
+              onClick={() => {
+                void handleWishlistToggle()
+              }}
+              disabled={actionStatus === 'loading'}
+              type="button"
+            >
+              {wishlistItemId ? 'Remove from wishlist' : 'Save to wishlist'}
+            </button>
+            <Link className="ghost-button" to="/cart">
+              Go to cart
+            </Link>
+            <button
+              onClick={() => {
+                setInquiryMode('seller')
+                setConciergeMessage('')
+              }}
+              type="button"
+            >
+              Ask seller
+            </button>
+          </div>
+
+          {(wishlistItemId || cartItemId) && (
+            <p className="collector-action-message">
+              {wishlistItemId && cartItemId
+                ? 'Saved in your wishlist and added to your cart.'
+                : wishlistItemId
+                  ? 'Saved in your wishlist.'
+                  : 'Added to your cart.'}
+            </p>
+          )}
+
+          <dl className="product-facts">
+            <div>
+              <dt>Condition</dt>
+              <dd>{artifact.condition}</dd>
+            </div>
+            <div>
+              <dt>Status</dt>
+              <dd>{artifact.status}</dd>
+            </div>
+            <div>
+              <dt>Materials</dt>
+              <dd>{materials}</dd>
+            </div>
+            <div>
+              <dt>Dimensions</dt>
+              <dd>{dimensions}</dd>
+            </div>
+            <div>
+              <dt>Seller</dt>
+              <dd>{sellerName}</dd>
+            </div>
+            <div>
+              <dt>Catalogue ID</dt>
+              <dd>AE-{String(artifact.id).padStart(4, '0')}</dd>
+            </div>
+          </dl>
+
+          {inquiryMode && (
+            <form className="concierge-panel" onSubmit={handleConciergeSubmit}>
+              <div>
+                <span>Buyer inquiry</span>
+                <strong>
+                  {inquiryMode === 'seller' ? 'Send a message to the seller' : 'Prepare a purchase request'}
+                </strong>
+              </div>
+              <label>
+                Email or phone
+                <input required placeholder="collector@example.com" />
+              </label>
+              <label>
+                Message
+                <textarea
+                  required
+                  rows={4}
+                  placeholder={
+                    inquiryMode === 'seller'
+                      ? 'Ask about provenance, materials, dimensions, or condition.'
+                      : 'Share delivery city, viewing needs, or offer details.'
+                  }
+                />
+              </label>
+              <button type="submit">
+                {inquiryMode === 'seller' ? 'Send message' : 'Submit request'}
+              </button>
+              {conciergeMessage && <p>{conciergeMessage}</p>}
+            </form>
+          )}
+        </aside>
+
+        <div className="product-gallery">
+          <figure className="product-primary-image">
+            <MarketplaceImage alt={artifact.title} src={selectedImage} />
+            <figcaption>
+              <span>Object preview</span>
+              <strong>{artifact.condition}</strong>
+            </figcaption>
+          </figure>
+          <div className="product-thumbs" aria-label="Object image set">
+            {galleryImages.map((image, index) => (
+              <button
+                aria-label={`View product image ${index + 1}`}
+                className={index === selectedImageIndex ? 'active' : ''}
+                key={`${image}-${index}`}
+                onClick={() => setSelectedImageIndex(index)}
+                type="button"
+              >
+                <MarketplaceImage alt="" src={image} />
+              </button>
+            ))}
+          </div>
+        </div>
+      </section>
+
+      <section className="product-detail-notes">
+        <article>
+          <p className="eyebrow">Description</p>
+          <h2>Object details</h2>
+          <p>{artifact.description}</p>
+        </article>
+        <article>
+          <p className="eyebrow">Provenance</p>
+          <h2>Recorded history</h2>
+          <p>{provenance}</p>
+        </article>
+        <article>
+          <p className="eyebrow">Shipping</p>
+          <h2>Delivery on request</h2>
+          <p>White-glove packing, insured shipping, and delivery scheduling can be arranged by the seller.</p>
+        </article>
+        <article>
+          <p className="eyebrow">Condition</p>
+          <h2>Current state</h2>
+          <p>{artifact.history || 'Condition notes come directly from the seller listing.'}</p>
+        </article>
+      </section>
+
+      <section className="related-section">
+        <div className="section-heading">
+          <h2>Related objects</h2>
+          <Link to="/">Return to catalogue</Link>
+        </div>
+        <div className="product-rail">
+          {relatedArtifacts.map((item) => (
+            <ArtifactCard artifact={item} key={`related-${item.id}`} variant="compact" />
+          ))}
+        </div>
+      </section>
+    </main>
+  )
+}
+
 function App() {
   return (
     <AuthProvider>
@@ -1387,6 +2173,9 @@ function App() {
           <Route path="/" element={<CatalogPage />} />
           <Route path="/login" element={<LoginPage />} />
           <Route path="/signup" element={<SignupPage />} />
+          <Route path="/account" element={<AccountPage />} />
+          <Route path="/collector" element={<CollectorDashboardPage />} />
+          <Route path="/collector/collections" element={<WishlistPage />} />
           <Route path="/wishlist" element={<WishlistPage />} />
           <Route path="/cart" element={<CartPage />} />
           <Route path="/orders" element={<OrdersPage />} />
@@ -1394,7 +2183,17 @@ function App() {
           <Route path="/seller" element={<SellerDashboardPage />} />
           <Route path="/seller/products" element={<SellerProductsPage />} />
           <Route path="/seller/galleries" element={<SellerGalleriesPage />} />
+          <Route path="/seller/orders" element={<SellerOrdersPage />} />
+          <Route path="/seller/orders/:id" element={<SellerOrderDetailPage />} />
+          <Route path="/admin" element={<AdminDashboardPage />} />
+          <Route path="/admin/users" element={<AdminUsersPage />} />
+          <Route path="/admin/users/:id" element={<AdminUserDetailPage />} />
+          <Route path="/admin/artifacts" element={<AdminArtifactsPage />} />
+          <Route path="/admin/galleries" element={<AdminGalleriesPage />} />
+          <Route path="/admin/audit" element={<AdminAuditPage />} />
           <Route path="/artifacts/:id" element={<ArtifactDetailPage />} />
+          <Route path="/__legacy/catalog" element={<LegacyCatalogPage />} />
+          <Route path="/__legacy/artifacts/:id" element={<LegacyArtifactDetailPage />} />
         </Routes>
       </BrowserRouter>
     </AuthProvider>
