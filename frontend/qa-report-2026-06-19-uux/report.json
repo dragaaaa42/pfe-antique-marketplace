@@ -1,0 +1,50 @@
+[
+  {
+    "name": "home-desktop",
+    "url": "/",
+    "width": 1440,
+    "height": 1100,
+    "title": "frontend",
+    "scrollWidth": 1440,
+    "clientWidth": 1440,
+    "h1": "Collect rare pieces with provenance, confidence, and taste.",
+    "activeElementCount": 40,
+    "overflowX": false
+  },
+  {
+    "name": "home-mobile",
+    "url": "/",
+    "width": 390,
+    "height": 1100,
+    "title": "frontend",
+    "scrollWidth": 390,
+    "clientWidth": 390,
+    "h1": "Collect rare pieces with provenance, confidence, and taste.",
+    "activeElementCount": 40,
+    "overflowX": false
+  },
+  {
+    "name": "product-desktop",
+    "url": "/artifacts/101",
+    "width": 1440,
+    "height": 1100,
+    "title": "frontend",
+    "scrollWidth": 1440,
+    "clientWidth": 1440,
+    "h1": "Ivory Suede Evening Bag",
+    "activeElementCount": 10,
+    "overflowX": false
+  },
+  {
+    "name": "signup-mobile",
+    "url": "/signup",
+    "width": 390,
+    "height": 1100,
+    "title": "frontend",
+    "scrollWidth": 390,
+    "clientWidth": 390,
+    "h1": "Join a marketplace built for objects with a past.",
+    "activeElementCount": 8,
+    "overflowX": false
+  }
+]

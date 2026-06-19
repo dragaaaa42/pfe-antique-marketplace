@@ -204,3 +204,33 @@ class CartItem(models.Model):
 
     def __str__(self):
         return f'{self.quantity} x {self.artifact} in cart for {self.user}'
+
+
+class ModerationAction(models.Model):
+    class ActionType(models.TextChoices):
+        ARTIFACT_APPROVED = 'artifact_approved', 'Artifact approved'
+        ARTIFACT_REJECTED = 'artifact_rejected', 'Artifact rejected'
+        ARTIFACT_DELETED = 'artifact_deleted', 'Artifact deleted'
+        GALLERY_DELETED = 'gallery_deleted', 'Gallery deleted'
+        USER_ROLE_CHANGED = 'user_role_changed', 'User role changed'
+        USER_DISABLED = 'user_disabled', 'User disabled'
+        USER_ENABLED = 'user_enabled', 'User enabled'
+
+    admin = models.ForeignKey(
+        settings.AUTH_USER_MODEL,
+        on_delete=models.CASCADE,
+        related_name='moderation_actions',
+    )
+    action_type = models.CharField(max_length=40, choices=ActionType.choices)
+    target_model = models.CharField(max_length=40)
+    target_id = models.PositiveIntegerField()
+    target_label = models.CharField(max_length=180, blank=True)
+    notes = models.TextField(blank=True)
+    metadata_json = models.JSONField(default=dict, blank=True)
+    created_at = models.DateTimeField(auto_now_add=True)
+
+    class Meta:
+        ordering = ('-created_at',)
+
+    def __str__(self):
+        return f'{self.action_type} by {self.admin} on {self.target_model} #{self.target_id}'

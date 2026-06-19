@@ -1,9 +1,9 @@
 import { type ReactNode, useEffect, useState } from 'react'
-import { Link, Navigate, useLocation, useNavigate, useParams } from 'react-router-dom'
+import { Link, Navigate, NavLink, useLocation, useNavigate, useParams } from 'react-router-dom'
 import {
   addCartItem,
   checkoutCart,
-  fallbackArtifactImage,
+  getCollectorDashboardSummary,
   getCart,
   getOrder,
   getOrders,
@@ -17,6 +17,9 @@ import {
   type WishlistItem,
 } from './api'
 import { useAuth } from './auth'
+import { MarketplaceImage } from './components/MarketplaceImage'
+import { resolveMarketplaceImage } from './marketplaceImages'
+import type { CollectorDashboardSummary } from './types'
 
 function formatPrice(value: string) {
   return new Intl.NumberFormat('en-US', {
@@ -86,10 +89,15 @@ function BuyerLayout({
           <p>{description}</p>
         </div>
         <nav className="dashboard-nav" aria-label="Buyer navigation">
-          <Link to="/wishlist">Wishlist</Link>
-          <Link to="/cart">Cart</Link>
-          <Link to="/orders">Orders</Link>
-          <Link to="/">Catalogue</Link>
+          <NavLink end to="/collector">
+            Dashboard
+          </NavLink>
+          <NavLink to="/wishlist">Wishlist</NavLink>
+          <NavLink to="/collector/collections">Collections</NavLink>
+          <NavLink to="/cart">Cart</NavLink>
+          <NavLink to="/orders">Orders</NavLink>
+          <NavLink to="/account">Profile</NavLink>
+          <NavLink to="/">Catalogue</NavLink>
         </nav>
         <button className="ghost-button" onClick={logout} type="button">
           Log out
@@ -109,6 +117,32 @@ function BuyerLayout({
       </section>
     </main>
   )
+}
+
+function useCollectorDashboardData() {
+  const [data, setData] = useState<CollectorDashboardSummary | null>(null)
+  const [loading, setLoading] = useState(true)
+  const [error, setError] = useState('')
+
+  async function refresh() {
+    setLoading(true)
+    setError('')
+
+    try {
+      const result = await getCollectorDashboardSummary()
+      setData(result)
+    } catch {
+      setError('Unable to load collector dashboard right now.')
+    } finally {
+      setLoading(false)
+    }
+  }
+
+  useEffect(() => {
+    void refresh()
+  }, [])
+
+  return { data, loading, error, refresh }
 }
 
 function useBuyerCollection<T>(load: () => Promise<T>) {
@@ -137,6 +171,196 @@ function useBuyerCollection<T>(load: () => Promise<T>) {
   return { items, setItems, loading, error, refresh, setError }
 }
 
+export function CollectorDashboardPage() {
+  return (
+    <BuyerGate>
+      <CollectorDashboardPageBody />
+    </BuyerGate>
+  )
+}
+
+function CollectorDashboardPageBody() {
+  const { user } = useAuth()
+  const { data, loading, error, refresh } = useCollectorDashboardData()
+
+  return (
+    <BuyerLayout
+      description="Track your saved objects, orders, and profile from one collector workspace."
+      title="Dashboard"
+    >
+      <div className="panel-card">
+        <div className="panel-head">
+          <div>
+            <p className="eyebrow">Collector summary</p>
+            <h2>Workspace home</h2>
+          </div>
+          <button className="ghost-button" onClick={() => void refresh()} type="button">
+            Refresh
+          </button>
+        </div>
+
+        {loading && <p>Loading collector dashboard...</p>}
+        {error && <p className="error-message">{error}</p>}
+
+        {data && (
+          <>
+            <div className="metric-row">
+              <article>
+                <strong>{data.stats.wishlist_count}</strong>
+                <span>Wishlist items</span>
+              </article>
+              <article>
+                <strong>{data.stats.order_count}</strong>
+                <span>Orders</span>
+              </article>
+              <article>
+                <strong>{data.stats.paid_orders}</strong>
+                <span>Paid orders</span>
+              </article>
+              <article>
+                <strong>{data.stats.cart_count}</strong>
+                <span>Cart items</span>
+              </article>
+            </div>
+
+            <div className="dashboard-grid">
+              <section className="panel-card">
+                <div className="panel-head">
+                  <div>
+                    <p className="eyebrow">Profile summary</p>
+                    <h3>{data.profile.email}</h3>
+                  </div>
+                  <Link className="text-link" to="/account">
+                    Edit profile
+                  </Link>
+                </div>
+                <div className="validation-list">
+                  <article className="validation-card">
+                    <div>
+                      <strong>
+                        {data.profile.first_name || data.profile.last_name
+                          ? `${data.profile.first_name} ${data.profile.last_name}`.trim()
+                          : data.profile.email}
+                      </strong>
+                      <span>{data.profile.role}</span>
+                    </div>
+                    <span>{data.profile.avatar_3d_path || 'No avatar path'}</span>
+                  </article>
+                </div>
+              </section>
+
+              <section className="panel-card">
+                <div className="panel-head">
+                  <div>
+                    <p className="eyebrow">Recent activity</p>
+                    <h3>Saved and purchased</h3>
+                  </div>
+                  <Link className="text-link" to="/orders">
+                    View orders
+                  </Link>
+                </div>
+                <div className="order-list">
+                  {data.recent_activity.map((item, index) => (
+                    <article className="order-card" key={`${item.kind}-${item.label}-${index}`}>
+                      <div>
+                        <strong>{item.label}</strong>
+                        <p>{item.detail}</p>
+                      </div>
+                      <span>{item.kind}</span>
+                    </article>
+                  ))}
+                </div>
+              </section>
+            </div>
+
+            <div className="dashboard-grid">
+              <section className="panel-card">
+                <div className="panel-head">
+                  <div>
+                    <p className="eyebrow">Wishlist summary</p>
+                    <h3>Recent saved pieces</h3>
+                  </div>
+                  <Link className="text-link" to="/wishlist">
+                    Open wishlist
+                  </Link>
+                </div>
+                <div className="manage-list">
+                  {data.wishlist_items.map((item) => (
+                    <article className="manage-card" key={item.id}>
+                      <MarketplaceImage
+                        alt={item.artifact_detail.title}
+                        src={resolveMarketplaceImage(item.artifact_detail)}
+                      />
+                      <div>
+                        <strong>{item.artifact_detail.title}</strong>
+                        <span>{item.artifact_detail.category_name ?? 'Uncategorized'}</span>
+                        <p>{formatPrice(item.artifact_detail.price)}</p>
+                      </div>
+                    </article>
+                  ))}
+                </div>
+              </section>
+
+              <section className="panel-card">
+                <div className="panel-head">
+                  <div>
+                    <p className="eyebrow">Orders summary</p>
+                    <h3>Recent purchases</h3>
+                  </div>
+                  <Link className="text-link" to="/orders">
+                    Open order history
+                  </Link>
+                </div>
+                <div className="order-list">
+                  {data.recent_orders.map((order) => (
+                    <article className="order-card" key={order.id}>
+                      <div>
+                        <strong>Order #{order.id}</strong>
+                        <p>{order.status}</p>
+                      </div>
+                      <div>
+                        <strong>{formatPrice(order.total_amount)}</strong>
+                        <span>{new Date(order.created_at).toLocaleDateString()}</span>
+                      </div>
+                    </article>
+                  ))}
+                </div>
+              </section>
+            </div>
+
+            <div className="panel-card">
+              <div className="panel-head">
+                <div>
+                  <p className="eyebrow">Quick links</p>
+                  <h3>Continue exploring</h3>
+                </div>
+                <span>{user?.role}</span>
+              </div>
+              <div className="editor-actions">
+                <Link className="ghost-button" to="/wishlist">
+                  Wishlist
+                </Link>
+                <Link className="ghost-button" to="/collector/collections">
+                  Collections
+                </Link>
+                <Link className="ghost-button" to="/cart">
+                  Cart
+                </Link>
+                <Link className="ghost-button" to="/orders">
+                  Orders
+                </Link>
+                <Link className="solid-button" to="/account">
+                  Profile
+                </Link>
+              </div>
+            </div>
+          </>
+        )}
+      </div>
+    </BuyerLayout>
+  )
+}
+
 function WishlistCard({
   item,
   onRemove,
@@ -150,7 +374,7 @@ function WishlistCard({
 
   return (
     <article className="manage-card">
-      <img alt={artifact.title} src={artifact.image || fallbackArtifactImage} />
+      <MarketplaceImage alt={artifact.title} src={resolveMarketplaceImage(artifact)} />
       <div>
         <strong>{artifact.title}</strong>
         <span>{artifact.category_name ?? 'Uncategorized'}</span>
@@ -195,15 +419,15 @@ function WishlistPageBody() {
 
   return (
     <BuyerLayout
-      description="Save rare objects and move them into the checkout flow when you are ready."
-      title="Wishlist"
+      description="Save rare objects, group them into collections, and move them into checkout when you are ready."
+      title="Wishlist & collections"
     >
       <div className="panel-card">
-        <div className="panel-head">
-          <div>
-            <p className="eyebrow">Saved objects</p>
-            <h2>Your curated wishlist</h2>
-          </div>
+          <div className="panel-head">
+            <div>
+              <p className="eyebrow">Saved objects</p>
+            <h2>Your saved collections</h2>
+            </div>
           <button
             className="ghost-button"
             onClick={() => {
@@ -254,7 +478,7 @@ function CartItemCard({
 
   return (
     <article className="manage-card">
-      <img alt={artifact.title} src={artifact.image || fallbackArtifactImage} />
+      <MarketplaceImage alt={artifact.title} src={resolveMarketplaceImage(artifact)} />
       <div>
         <strong>{artifact.title}</strong>
         <span>{artifact.category_name ?? 'Uncategorized'}</span>

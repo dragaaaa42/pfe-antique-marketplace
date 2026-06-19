@@ -1,6 +1,14 @@
 import { type FormEvent, useEffect, useMemo, useState } from 'react'
 import { BrowserRouter, Link, Route, Routes, useLocation, useNavigate, useParams } from 'react-router-dom'
-import { ArrowUpRight, ChevronRight, Sparkles } from 'lucide-react'
+import {
+  ArrowUpRight,
+  BookOpen,
+  ChevronRight,
+  Menu,
+  Plus,
+  Sparkles,
+  Wand2,
+} from 'lucide-react'
 import { motion } from 'motion/react'
 import './App.css'
 import {
@@ -29,6 +37,7 @@ import {
 } from './admin'
 import { Artifact3DViewer } from './components/Artifact3DViewer'
 import { MarketplaceImage } from './components/MarketplaceImage'
+import atlasPoster from './assets/marketplace/silver-tea-service.jpg'
 import {
   SellerDashboardPage,
   SellerGalleriesPage,
@@ -762,6 +771,20 @@ function CatalogPage() {
     ['Featured pieces', String(featuredPieces.length).padStart(2, '0')],
     ['New arrivals', String(newArrivals.length).padStart(2, '0')],
   ]
+  const atlasShowcaseArtifact = newArrivals[0] ?? featuredPieces[0] ?? catalogSource[1] ?? heroArtifact
+  const singularArtifact = featuredPieces[1] ?? newArrivals[1] ?? atlasShowcaseArtifact
+  const atlasModules = [
+    {
+      icon: Wand2,
+      title: 'Processing',
+      text: 'Seller review, condition notes, and live inventory stay connected.',
+    },
+    {
+      icon: BookOpen,
+      title: 'Growth Archive',
+      text: 'Wishlists, provenance, and collection history grow with every discovery.',
+    },
+  ]
   const heroMenuItems = [
     { label: 'Catalogue', target: 'All', hasDropdown: false },
     { label: 'Furniture', target: 'Furniture', hasDropdown: true },
@@ -1101,6 +1124,216 @@ function CatalogPage() {
           </div>
         </div>
       </section>
+
+      <section className="curated-atlas-section" aria-labelledby="curated-atlas-title">
+        <img className="curated-atlas-poster" src={atlasPoster} alt="" aria-hidden="true" />
+        <video
+          aria-hidden="true"
+          autoPlay
+          className="curated-atlas-video"
+          loop
+          muted
+          playsInline
+          src="https://d8j0ntlcm91z4.cloudfront.net/user_38xzZboKViGWJOttwIXH07lWA1P/hf_20260315_073750_51473149-4350-4920-ae24-c8214286f323.mp4"
+        />
+        <div className="curated-atlas-scrim" />
+
+        <div className="curated-atlas-layout">
+          <div className="curated-atlas-left">
+            <div className="liquid-glass-strong curated-atlas-left-glass" />
+            <div className="curated-atlas-left-content">
+              <nav className="curated-atlas-nav" aria-label="Collection atlas navigation">
+                <Link className="curated-atlas-brand" to="/">
+                  <img src="/favicon.svg" alt="" width="32" height="32" />
+                  <span>artisan&apos;s echo</span>
+                </Link>
+                <a className="liquid-glass curated-atlas-menu-pill" href="#catalog">
+                  <Menu aria-hidden="true" size={17} />
+                  <span>Menu</span>
+                </a>
+              </nav>
+
+              <div className="curated-atlas-hero-center">
+                <img
+                  className="curated-atlas-hero-logo"
+                  src="/favicon.svg"
+                  alt="Artisan's Echo"
+                  width="80"
+                  height="80"
+                />
+                <h2 id="curated-atlas-title">
+                  Discovering the
+                  <br />
+                  <em>spirit of rare objects</em>
+                </h2>
+                <Link className="liquid-glass-strong curated-atlas-explore" to={`/artifacts/${heroArtifact.id}`}>
+                  <span>View Collection</span>
+                  <span className="curated-atlas-action-icon" aria-hidden="true">
+                    <ArrowUpRight size={15} />
+                  </span>
+                </Link>
+                <div className="curated-atlas-pills" aria-label="Collection capabilities">
+                  {['Curated Gallery', 'Rare Objects', '3D Structures'].map((label) => (
+                    <span className="liquid-glass curated-atlas-pill" key={label}>
+                      {label}
+                    </span>
+                  ))}
+                </div>
+              </div>
+
+              <div className="curated-atlas-quote">
+                <span>Visionary collecting</span>
+                <p>
+                  We imagined a <em>collection</em> with no ending.
+                </p>
+                <div className="curated-atlas-author">
+                  <span />
+                  <strong>Artisan&apos;s Echo</strong>
+                  <span />
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <aside className="curated-atlas-right" aria-label="Marketplace ecosystem">
+            <div className="curated-atlas-right-top">
+              <a className="liquid-glass-strong curated-atlas-explore-top" href="#catalog">
+                <span>Open Archive</span>
+                <span className="curated-atlas-action-icon" aria-hidden="true">
+                  <ArrowUpRight size={15} />
+                </span>
+              </a>
+              <div className="curated-atlas-account-cluster">
+                <Link className="liquid-glass curated-atlas-account" to={dashboardPath}>
+                  Account
+                </Link>
+                <Link className="liquid-glass curated-atlas-icon-button" to={dashboardPath} aria-label={dashboardLabel}>
+                  <Sparkles aria-hidden="true" size={17} />
+                </Link>
+              </div>
+            </div>
+
+            <article className="liquid-glass curated-atlas-community">
+              <h3>Enter our ecosystem</h3>
+              <p>Collect, sell, and curate verified objects through one living marketplace.</p>
+            </article>
+
+            <div className="liquid-glass curated-atlas-feature-shell">
+              <div className="curated-atlas-feature-grid">
+                {atlasModules.map(({ icon: Icon, title, text }) => (
+                  <article className="liquid-glass curated-atlas-module" key={title}>
+                    <span className="curated-atlas-module-icon" aria-hidden="true">
+                      <Icon size={18} />
+                    </span>
+                    <h3>{title}</h3>
+                    <p>{text}</p>
+                  </article>
+                ))}
+              </div>
+
+              <article className="liquid-glass curated-atlas-showcase">
+                <div className="curated-atlas-showcase-media">
+                  <MarketplaceImage
+                    alt={atlasShowcaseArtifact.title}
+                    src={resolveMarketplaceImage(atlasShowcaseArtifact, 1)}
+                  />
+                </div>
+                <div className="curated-atlas-showcase-copy">
+                  <h3>Advanced Object Staging</h3>
+                  <p>Inspect rare pieces in detailed listings and immersive 3D rooms.</p>
+                </div>
+                <Link className="liquid-glass curated-atlas-plus" to={dashboardPath} aria-label={`Open ${dashboardLabel}`}>
+                  <Plus aria-hidden="true" size={18} />
+                </Link>
+              </article>
+            </div>
+          </aside>
+        </div>
+      </section>
+
+      <section className="singular-object-section" aria-labelledby="singular-object-title">
+        <div className="singular-object-inner">
+          <header className="singular-object-heading">
+            <div>
+              <p>The singular edit</p>
+              <h2 id="singular-object-title">
+                One object.<br />
+                <em>One remarkable history.</em>
+              </h2>
+            </div>
+            <span aria-label="Edition one of one">01 / 01</span>
+          </header>
+
+          <article className="singular-object-feature">
+            <Link className="singular-object-media" to={`/artifacts/${singularArtifact.id}`}>
+              <MarketplaceImage
+                alt={singularArtifact.title}
+                src={resolveMarketplaceImage(singularArtifact)}
+              />
+              <span className="singular-object-badge">
+                <Sparkles aria-hidden="true" size={15} />
+                Curator&apos;s choice
+              </span>
+            </Link>
+
+            <div className="singular-object-copy">
+              <p className="singular-object-category">
+                {singularArtifact.category_name ?? 'Private collection'}
+              </p>
+              <h3>{singularArtifact.title}</h3>
+              <p className="singular-object-description">{singularArtifact.description}</p>
+
+              <dl className="singular-object-facts">
+                <div>
+                  <dt>Provenance</dt>
+                  <dd>{singularArtifact.provenance || 'Verified private collection'}</dd>
+                </div>
+                <div>
+                  <dt>Condition</dt>
+                  <dd>{singularArtifact.condition}</dd>
+                </div>
+                <div>
+                  <dt>Material</dt>
+                  <dd>{singularArtifact.materials || 'Documented in the object dossier'}</dd>
+                </div>
+              </dl>
+
+              <div className="singular-object-action-row">
+                <div>
+                  <span>Collector price</span>
+                  <strong>{formatPrice(singularArtifact.price)}</strong>
+                </div>
+                <Link className="singular-object-action" to={`/artifacts/${singularArtifact.id}`}>
+                  <span>View object</span>
+                  <ArrowUpRight aria-hidden="true" size={18} />
+                </Link>
+              </div>
+            </div>
+          </article>
+        </div>
+      </section>
+
+      <footer className="atlas-site-footer" aria-label="Artisan's Echo footer">
+        <div className="atlas-site-footer-inner">
+          <div className="atlas-site-footer-top">
+            <Link className="atlas-site-footer-brand" to="/" aria-label="Artisan's Echo home">
+              <img src="/favicon.svg" alt="" width="36" height="36" />
+              <span>artisan&apos;s echo</span>
+            </Link>
+          <nav className="atlas-site-footer-nav" aria-label="Footer navigation">
+              <a href="#catalog">Catalogue</a>
+              <a href="#featured-pieces">Featured</a>
+              <Link to={dashboardPath}>{dashboardLabel}</Link>
+              <Link to="/login">Sign in</Link>
+          </nav>
+          </div>
+
+          <div className="atlas-site-footer-bottom">
+            <p>Curated for the objects worth remembering.</p>
+            <p>&copy; 2026 Artisan&apos;s Echo</p>
+          </div>
+        </div>
+      </footer>
     </main>
   )
 }

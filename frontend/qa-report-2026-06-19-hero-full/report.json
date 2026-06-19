@@ -1,0 +1,22 @@
+[
+  {
+    "name": "hero-full-desktop",
+    "width": 1440,
+    "height": 1000,
+    "headerExists": false,
+    "heroTop": 12,
+    "heroHeight": 976,
+    "viewportHeight": 1000,
+    "overflowX": false
+  },
+  {
+    "name": "hero-full-mobile",
+    "width": 390,
+    "height": 900,
+    "headerExists": false,
+    "heroTop": 7,
+    "heroHeight": 886,
+    "viewportHeight": 900,
+    "overflowX": false
+  }
+]

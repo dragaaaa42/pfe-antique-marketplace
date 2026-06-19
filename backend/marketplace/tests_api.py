@@ -6,7 +6,7 @@ from rest_framework.test import APITestCase
 
 from users.models import UserProfile
 
-from .models import Artifact, CartItem, Category, Gallery, Order, WishlistItem
+from .models import Artifact, CartItem, Category, Gallery, ModerationAction, Order, WishlistItem
 
 User = get_user_model()
 
@@ -350,3 +350,148 @@ class MarketplaceApiTests(APITestCase):
             format='json',
         )
         self.assertEqual(patch_response.status_code, status.HTTP_404_NOT_FOUND)
+
+    def test_collector_dashboard_and_seller_orders_summary(self):
+        artifact = Artifact.objects.create(
+            seller=self.seller,
+            category=self.category,
+            title='Collector Desk',
+            description='Desk for collector dashboard checks.',
+            price=Decimal('400.00'),
+            status=Artifact.Status.APPROVED,
+        )
+        CartItem.objects.create(user=self.buyer, artifact=artifact, quantity=2)
+
+        self.client.force_authenticate(self.buyer)
+        checkout_response = self.client.post('/api/orders/checkout/', {}, format='json')
+        order_id = checkout_response.data['id']
+        payment_response = self.client.post(
+            f'/api/orders/{order_id}/simulate_payment/',
+            {'success': True},
+            format='json',
+        )
+        self.assertEqual(payment_response.status_code, status.HTTP_200_OK)
+
+        self.client.force_authenticate(self.buyer)
+        collector_response = self.client.get('/api/collector/dashboard/')
+        self.assertEqual(collector_response.status_code, status.HTTP_200_OK)
+        self.assertEqual(collector_response.data['profile']['email'], self.buyer.email)
+        self.assertEqual(collector_response.data['stats']['order_count'], 1)
+        self.assertEqual(collector_response.data['stats']['paid_orders'], 1)
+        self.assertEqual(collector_response.data['stats']['wishlist_count'], 0)
+
+        self.client.force_authenticate(self.seller)
+        seller_orders_response = self.client.get('/api/seller/orders/')
+        self.assertEqual(seller_orders_response.status_code, status.HTTP_200_OK)
+        self.assertEqual(len(seller_orders_response.data), 1)
+        self.assertEqual(seller_orders_response.data[0]['buyer_email'], self.buyer.email)
+        self.assertEqual(seller_orders_response.data[0]['seller_revenue'], '800.00')
+
+        seller_detail_response = self.client.get(f'/api/seller/orders/{order_id}/')
+        self.assertEqual(seller_detail_response.status_code, status.HTTP_200_OK)
+        self.assertEqual(len(seller_detail_response.data['items']), 1)
+        self.assertEqual(seller_detail_response.data['items'][0]['quantity'], 2)
+
+        seller_dashboard_response = self.client.get('/api/seller/dashboard/')
+        self.assertEqual(seller_dashboard_response.status_code, status.HTTP_200_OK)
+        self.assertEqual(seller_dashboard_response.data['stats']['total_sales'], 2)
+        self.assertEqual(seller_dashboard_response.data['stats']['sold_artifacts'], 1)
+        self.assertEqual(seller_dashboard_response.data['stats']['revenue'], '800.00')
+
+    def test_admin_dashboard_and_moderation_workflows(self):
+        pending_artifact = Artifact.objects.create(
+            seller=self.seller,
+            category=self.category,
+            title='Admin Pending Lamp',
+            description='Pending lamp for moderation.',
+            price=Decimal('340.00'),
+            status=Artifact.Status.PENDING,
+        )
+        reject_artifact = Artifact.objects.create(
+            seller=self.other_seller,
+            category=self.category,
+            title='Admin Reject Chair',
+            description='Chair that will be rejected.',
+            price=Decimal('550.00'),
+            status=Artifact.Status.PENDING,
+        )
+        gallery = Gallery.objects.create(
+            owner=self.seller,
+            name='Admin Gallery',
+            theme='Decor',
+            description='Gallery for moderation.',
+        )
+
+        self.client.force_authenticate(self.admin)
+
+        dashboard_response = self.client.get('/api/admin/dashboard/')
+        self.assertEqual(dashboard_response.status_code, status.HTTP_200_OK)
+        self.assertEqual(dashboard_response.data['stats']['total_users'], 4)
+        self.assertEqual(dashboard_response.data['stats']['total_sellers'], 2)
+        self.assertEqual(dashboard_response.data['stats']['pending_artifacts'], 2)
+        self.assertEqual(dashboard_response.data['stats']['published_artifacts'], 0)
+
+        sellers_response = self.client.get('/api/admin/users/?role=seller')
+        self.assertEqual(sellers_response.status_code, status.HTTP_200_OK)
+        self.assertEqual(len(sellers_response.data), 2)
+
+        search_response = self.client.get('/api/admin/users/?search=buyer-api')
+        self.assertEqual(search_response.status_code, status.HTTP_200_OK)
+        self.assertEqual(len(search_response.data), 1)
+        self.assertEqual(search_response.data[0]['email'], 'buyer-api@example.com')
+
+        update_response = self.client.patch(
+            f'/api/admin/users/{self.buyer.id}/',
+            {
+                'role': UserProfile.Role.SELLER,
+                'is_active': False,
+            },
+            format='json',
+        )
+        self.assertEqual(update_response.status_code, status.HTTP_200_OK)
+        self.buyer.refresh_from_db()
+        self.assertEqual(self.buyer.profile.role, UserProfile.Role.SELLER)
+        self.assertFalse(self.buyer.is_active)
+
+        approve_response = self.client.post(f'/api/admin/artifacts/{pending_artifact.id}/approve/', format='json')
+        self.assertEqual(approve_response.status_code, status.HTTP_200_OK)
+        pending_artifact.refresh_from_db()
+        self.assertEqual(pending_artifact.status, Artifact.Status.APPROVED)
+
+        reject_response = self.client.post(
+            f'/api/admin/artifacts/{reject_artifact.id}/reject/',
+            {'notes': 'Insufficient provenance detail.'},
+            format='json',
+        )
+        self.assertEqual(reject_response.status_code, status.HTTP_200_OK)
+        reject_artifact.refresh_from_db()
+        self.assertEqual(reject_artifact.status, Artifact.Status.REJECTED)
+
+        gallery_list = self.client.get('/api/admin/galleries/')
+        self.assertEqual(gallery_list.status_code, status.HTTP_200_OK)
+        self.assertEqual(len(gallery_list.data), 1)
+
+        gallery_delete = self.client.delete(f'/api/admin/galleries/{gallery.id}/')
+        self.assertEqual(gallery_delete.status_code, status.HTTP_204_NO_CONTENT)
+        self.assertFalse(Gallery.objects.filter(pk=gallery.pk).exists())
+
+        audit_response = self.client.get('/api/admin/audit-trail/')
+        self.assertEqual(audit_response.status_code, status.HTTP_200_OK)
+        action_types = {entry['action_type'] for entry in audit_response.data}
+        self.assertIn(ModerationAction.ActionType.USER_ROLE_CHANGED, action_types)
+        self.assertIn(ModerationAction.ActionType.USER_DISABLED, action_types)
+        self.assertIn(ModerationAction.ActionType.ARTIFACT_APPROVED, action_types)
+        self.assertIn(ModerationAction.ActionType.ARTIFACT_REJECTED, action_types)
+        self.assertIn(ModerationAction.ActionType.GALLERY_DELETED, action_types)
+
+    def test_admin_endpoints_block_non_admins(self):
+        self.client.force_authenticate(self.seller)
+
+        response = self.client.get('/api/admin/dashboard/')
+        self.assertEqual(response.status_code, status.HTTP_403_FORBIDDEN)
+
+        response = self.client.get('/api/admin/users/')
+        self.assertEqual(response.status_code, status.HTTP_403_FORBIDDEN)
+
+        response = self.client.get('/api/admin/artifacts/')
+        self.assertEqual(response.status_code, status.HTTP_403_FORBIDDEN)

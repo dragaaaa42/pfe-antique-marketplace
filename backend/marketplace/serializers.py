@@ -1,8 +1,23 @@
 from decimal import Decimal
 
+from django.contrib.auth import get_user_model
 from rest_framework import serializers
 
-from .models import Artifact, CartItem, Category, Exhibit, Gallery, Order, OrderItem, WishlistItem
+from users.models import UserProfile
+
+from .models import (
+    Artifact,
+    CartItem,
+    Category,
+    Exhibit,
+    Gallery,
+    ModerationAction,
+    Order,
+    OrderItem,
+    WishlistItem,
+)
+
+User = get_user_model()
 
 
 class CategorySerializer(serializers.ModelSerializer):
@@ -42,6 +57,48 @@ class ArtifactSerializer(serializers.ModelSerializer):
 class AdminArtifactSerializer(ArtifactSerializer):
     class Meta(ArtifactSerializer.Meta):
         read_only_fields = ('id', 'seller', 'seller_email', 'category_name', 'created_at')
+
+
+class AdminUserSerializer(serializers.ModelSerializer):
+    role = serializers.ChoiceField(source='profile.role', choices=UserProfile.Role.choices)
+    profile_created_at = serializers.DateTimeField(source='profile.created_at', read_only=True)
+
+    class Meta:
+        model = User
+        fields = (
+            'id',
+            'username',
+            'email',
+            'first_name',
+            'last_name',
+            'is_active',
+            'date_joined',
+            'role',
+            'profile_created_at',
+        )
+        read_only_fields = ('id', 'username', 'date_joined', 'profile_created_at')
+
+    def validate_email(self, value):
+        email = value.strip().lower()
+        if self.instance and User.objects.exclude(pk=self.instance.pk).filter(email__iexact=email).exists():
+            raise serializers.ValidationError('A user with this email already exists.')
+        return email
+
+    def update(self, instance, validated_data):
+        profile_data = validated_data.pop('profile', {})
+        role = profile_data.get('role')
+        email = validated_data.get('email')
+
+        if email:
+            validated_data['username'] = email
+
+        user = super().update(instance, validated_data)
+
+        if role and getattr(user.profile, 'role', None) != role:
+            user.profile.role = role
+            user.profile.save(update_fields=['role'])
+
+        return user
 
 
 class ExhibitSerializer(serializers.ModelSerializer):
@@ -85,6 +142,36 @@ class GallerySerializer(serializers.ModelSerializer):
         read_only_fields = ('id', 'owner', 'owner_email', 'created_at', 'exhibits')
 
 
+class ModerationActionSerializer(serializers.ModelSerializer):
+    admin_email = serializers.EmailField(source='admin.email', read_only=True)
+
+    class Meta:
+        model = ModerationAction
+        fields = (
+            'id',
+            'admin',
+            'admin_email',
+            'action_type',
+            'target_model',
+            'target_id',
+            'target_label',
+            'notes',
+            'metadata_json',
+            'created_at',
+        )
+        read_only_fields = (
+            'id',
+            'admin',
+            'admin_email',
+            'target_model',
+            'target_id',
+            'target_label',
+            'notes',
+            'metadata_json',
+            'created_at',
+        )
+
+
 class OrderItemSerializer(serializers.ModelSerializer):
     artifact_title = serializers.CharField(source='artifact.title', read_only=True)
     artifact_detail = ArtifactSerializer(source='artifact', read_only=True)
@@ -116,6 +203,48 @@ class OrderSerializer(serializers.ModelSerializer):
         model = Order
         fields = ('id', 'buyer', 'buyer_email', 'total_amount', 'status', 'created_at', 'items')
         read_only_fields = ('id', 'buyer', 'buyer_email', 'total_amount', 'status', 'created_at', 'items')
+
+
+class SellerOrderSerializer(serializers.ModelSerializer):
+    buyer_email = serializers.EmailField(source='buyer.email', read_only=True)
+    buyer_first_name = serializers.CharField(source='buyer.first_name', read_only=True)
+    buyer_last_name = serializers.CharField(source='buyer.last_name', read_only=True)
+    items = serializers.SerializerMethodField()
+    seller_revenue = serializers.SerializerMethodField()
+
+    class Meta:
+        model = Order
+        fields = (
+            'id',
+            'buyer',
+            'buyer_email',
+            'buyer_first_name',
+            'buyer_last_name',
+            'total_amount',
+            'status',
+            'created_at',
+            'items',
+            'seller_revenue',
+        )
+        read_only_fields = fields
+
+    def _seller_user(self):
+        return self.context.get('seller_user')
+
+    def get_items(self, obj):
+        seller = self._seller_user()
+        items = obj.items.select_related('artifact', 'artifact__category', 'artifact__seller').all()
+        if seller and getattr(seller, 'profile', None) and seller.profile.role != UserProfile.Role.ADMIN:
+            items = items.filter(artifact__seller=seller)
+        return OrderItemSerializer(items, many=True, context=self.context).data
+
+    def get_seller_revenue(self, obj):
+        seller = self._seller_user()
+        items = obj.items.select_related('artifact').all()
+        if seller and getattr(seller, 'profile', None) and seller.profile.role != UserProfile.Role.ADMIN:
+            items = items.filter(artifact__seller=seller)
+        total = sum((Decimal(item.price) * item.quantity for item in items), Decimal('0.00'))
+        return str(total)
 
 
 class WishlistItemSerializer(serializers.ModelSerializer):

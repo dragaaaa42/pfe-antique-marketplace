@@ -1,0 +1,1197 @@
+{
+  "generatedAt": "2026-06-17T23:29:48.164Z",
+  "records": [
+    {
+      "viewport": "desktop",
+      "consoleErrors": [
+        "Failed to load resource: the server responded with a status of 404 (Not Found)",
+        "Encountered two children with the same key, `%s`. Keys should be unique so that components maintain their identity across updates. Non-unique keys may cause children to be duplicated and/or omitted — the behavior is unsupported and could change in a future version. related-4",
+        "Failed to load resource: the server responded with a status of 404 (Not Found)",
+        "Encountered two children with the same key, `%s`. Keys should be unique so that components maintain their identity across updates. Non-unique keys may cause children to be duplicated and/or omitted — the behavior is unsupported and could change in a future version. related-4",
+        "Failed to load resource: the server responded with a status of 404 (Not Found)",
+        "Encountered two children with the same key, `%s`. Keys should be unique so that components maintain their identity across updates. Non-unique keys may cause children to be duplicated and/or omitted — the behavior is unsupported and could change in a future version. related-4",
+        "Failed to load resource: the server responded with a status of 404 (Not Found)",
+        "Encountered two children with the same key, `%s`. Keys should be unique so that components maintain their identity across updates. Non-unique keys may cause children to be duplicated and/or omitted — the behavior is unsupported and could change in a future version. related-4",
+        "Encountered two children with the same key, `%s`. Keys should be unique so that components maintain their identity across updates. Non-unique keys may cause children to be duplicated and/or omitted — the behavior is unsupported and could change in a future version. related-4",
+        "Encountered two children with the same key, `%s`. Keys should be unique so that components maintain their identity across updates. Non-unique keys may cause children to be duplicated and/or omitted — the behavior is unsupported and could change in a future version. related-4",
+        "Failed to load resource: the server responded with a status of 400 (Bad Request)",
+        "Encountered two children with the same key, `%s`. Keys should be unique so that components maintain their identity across updates. Non-unique keys may cause children to be duplicated and/or omitted — the behavior is unsupported and could change in a future version. related-4",
+        "Encountered two children with the same key, `%s`. Keys should be unique so that components maintain their identity across updates. Non-unique keys may cause children to be duplicated and/or omitted — the behavior is unsupported and could change in a future version. related-4",
+        "Failed to load resource: the server responded with a status of 400 (Bad Request)",
+        "Encountered two children with the same key, `%s`. Keys should be unique so that components maintain their identity across updates. Non-unique keys may cause children to be duplicated and/or omitted — the behavior is unsupported and could change in a future version. related-4",
+        "Failed to load resource: the server responded with a status of 400 (Bad Request)"
+      ],
+      "pageErrors": [],
+      "requestFailures": [
+        "GET https://commons.wikimedia.org/w/index.php?title=Special:Redirect/file/Robe_%C3%83_la_Fran%C3%83%C2%A7aise_MET_DP156536.jpg&width=1200 :: net::ERR_BLOCKED_BY_ORB",
+        "GET https://commons.wikimedia.org/w/index.php?title=Special:Redirect/file/Grande_Bible_historiale_compl%C3%83%C2%A9t%C3%83%C2%A9e_-_BNF_Fr159_f3r_(Trinit%C3%83%C2%A9).jpg&width=1200 :: net::ERR_BLOCKED_BY_ORB",
+        "GET https://commons.wikimedia.org/w/index.php?title=Special:Redirect/file/Grande_Bible_historiale_compl%C3%83%C2%A9t%C3%83%C2%A9e_-_BNF_Fr159_f3r_(Trinit%C3%83%C2%A9).jpg&width=1200 :: net::ERR_BLOCKED_BY_ORB",
+        "GET https://commons.wikimedia.org/w/index.php?title=Special:Redirect/file/Robe_%C3%83_la_Fran%C3%83%C2%A7aise_MET_DP156536.jpg&width=1200 :: net::ERR_BLOCKED_BY_ORB",
+        "GET https://commons.wikimedia.org/w/index.php?title=Special:Redirect/file/Grande_Bible_historiale_compl%C3%83%C2%A9t%C3%83%C2%A9e_-_BNF_Fr159_f3r_(Trinit%C3%83%C2%A9).jpg&width=1200 :: net::ERR_BLOCKED_BY_ORB",
+        "GET https://commons.wikimedia.org/w/index.php?title=Special:Redirect/file/Robe_%C3%83_la_Fran%C3%83%C2%A7aise_MET_DP156536.jpg&width=1200 :: net::ERR_BLOCKED_BY_ORB",
+        "GET https://upload.wikimedia.org/wikipedia/commons/thumb/6/6e/Cabinet_MET_210485.jpg/1280px-Cabinet_MET_210485.jpg :: net::ERR_ABORTED",
+        "GET https://upload.wikimedia.org/wikipedia/commons/7/71/Ardabil_Carpet.jpg :: net::ERR_ABORTED",
+        "GET https://upload.wikimedia.org/wikipedia/commons/thumb/0/04/Argand_Lamp_MET_ADA3409.jpg/1280px-Argand_Lamp_MET_ADA3409.jpg :: net::ERR_ABORTED",
+        "GET https://upload.wikimedia.org/wikipedia/commons/7/7f/Cabinet_des_Medailles.jpg :: net::ERR_ABORTED",
+        "GET https://upload.wikimedia.org/wikipedia/commons/thumb/8/8e/%22The_Gould%22_Violin_MET_DT669.jpg/1280px-%22The_Gould%22_Violin_MET_DT669.jpg :: net::ERR_ABORTED",
+        "GET https://upload.wikimedia.org/wikipedia/commons/thumb/4/47/Antique_clock_in_Katowice_shop.JPG/1280px-Antique_clock_in_Katowice_shop.JPG :: net::ERR_ABORTED",
+        "GET https://upload.wikimedia.org/wikipedia/commons/thumb/2/27/Vienna_-_Vintage_Table_or_Mantel_Clock_-_0554.jpg/1280px-Vienna_-_Vintage_Table_or_Mantel_Clock_-_0554.jpg :: net::ERR_ABORTED",
+        "GET https://upload.wikimedia.org/wikipedia/commons/1/14/Japansk_silvertekanna_med_dito_sil.jpg :: net::ERR_ABORTED",
+        "GET https://upload.wikimedia.org/wikipedia/commons/a/a4/20241025_Gourd-Shaped_Blue_and_White_Porcelain_Vase_of_Wanli_Reign%2C_Ming_Dynasty.jpg :: net::ERR_ABORTED",
+        "GET https://upload.wikimedia.org/wikipedia/commons/thumb/7/78/Brooch_%28England%29%2C_18th_century_%28CH_18800413%29.jpg/1280px-Brooch_%28England%29%2C_18th_century_%28CH_18800413%29.jpg :: net::ERR_ABORTED",
+        "GET https://commons.wikimedia.org/w/index.php?title=Special:Redirect/file/Grande_Bible_historiale_compl%C3%83%C2%A9t%C3%83%C2%A9e_-_BNF_Fr159_f3r_(Trinit%C3%83%C2%A9).jpg&width=1200 :: net::ERR_BLOCKED_BY_ORB",
+        "GET https://commons.wikimedia.org/w/index.php?title=Special:Redirect/file/Robe_%C3%83_la_Fran%C3%83%C2%A7aise_MET_DP156536.jpg&width=1200 :: net::ERR_BLOCKED_BY_ORB",
+        "GET https://upload.wikimedia.org/wikipedia/commons/thumb/8/8e/%22The_Gould%22_Violin_MET_DT669.jpg/1280px-%22The_Gould%22_Violin_MET_DT669.jpg :: net::ERR_ABORTED",
+        "GET https://upload.wikimedia.org/wikipedia/commons/1/14/Japansk_silvertekanna_med_dito_sil.jpg :: net::ERR_ABORTED",
+        "GET https://upload.wikimedia.org/wikipedia/commons/thumb/4/47/Antique_clock_in_Katowice_shop.JPG/1280px-Antique_clock_in_Katowice_shop.JPG :: net::ERR_ABORTED",
+        "GET https://upload.wikimedia.org/wikipedia/commons/7/71/Ardabil_Carpet.jpg :: net::ERR_ABORTED",
+        "GET https://upload.wikimedia.org/wikipedia/commons/7/7f/Cabinet_des_Medailles.jpg :: net::ERR_ABORTED",
+        "GET https://upload.wikimedia.org/wikipedia/commons/a/a4/20241025_Gourd-Shaped_Blue_and_White_Porcelain_Vase_of_Wanli_Reign%2C_Ming_Dynasty.jpg :: net::ERR_ABORTED",
+        "GET https://upload.wikimedia.org/wikipedia/commons/thumb/0/04/Argand_Lamp_MET_ADA3409.jpg/1280px-Argand_Lamp_MET_ADA3409.jpg :: net::ERR_ABORTED",
+        "GET https://upload.wikimedia.org/wikipedia/commons/thumb/2/27/Vienna_-_Vintage_Table_or_Mantel_Clock_-_0554.jpg/1280px-Vienna_-_Vintage_Table_or_Mantel_Clock_-_0554.jpg :: net::ERR_ABORTED",
+        "GET https://upload.wikimedia.org/wikipedia/commons/thumb/6/6e/Cabinet_MET_210485.jpg/1280px-Cabinet_MET_210485.jpg :: net::ERR_ABORTED",
+        "GET https://upload.wikimedia.org/wikipedia/commons/thumb/7/78/Brooch_%28England%29%2C_18th_century_%28CH_18800413%29.jpg/1280px-Brooch_%28England%29%2C_18th_century_%28CH_18800413%29.jpg :: net::ERR_ABORTED",
+        "GET https://upload.wikimedia.org/wikipedia/commons/7/71/Ardabil_Carpet.jpg :: net::ERR_ABORTED",
+        "GET https://upload.wikimedia.org/wikipedia/commons/a/a4/20241025_Gourd-Shaped_Blue_and_White_Porcelain_Vase_of_Wanli_Reign%2C_Ming_Dynasty.jpg :: net::ERR_ABORTED",
+        "GET https://upload.wikimedia.org/wikipedia/commons/thumb/7/78/Brooch_%28England%29%2C_18th_century_%28CH_18800413%29.jpg/1280px-Brooch_%28England%29%2C_18th_century_%28CH_18800413%29.jpg :: net::ERR_ABORTED",
+        "GET https://upload.wikimedia.org/wikipedia/commons/thumb/8/8e/%22The_Gould%22_Violin_MET_DT669.jpg/1280px-%22The_Gould%22_Violin_MET_DT669.jpg :: net::ERR_ABORTED",
+        "GET https://upload.wikimedia.org/wikipedia/commons/thumb/0/04/Argand_Lamp_MET_ADA3409.jpg/1280px-Argand_Lamp_MET_ADA3409.jpg :: net::ERR_ABORTED",
+        "GET https://upload.wikimedia.org/wikipedia/commons/7/7f/Cabinet_des_Medailles.jpg :: net::ERR_ABORTED",
+        "GET https://commons.wikimedia.org/w/index.php?title=Special:Redirect/file/Grande_Bible_historiale_compl%C3%83%C2%A9t%C3%83%C2%A9e_-_BNF_Fr159_f3r_(Trinit%C3%83%C2%A9).jpg&width=1200 :: net::ERR_ABORTED",
+        "GET https://images.unsplash.com/photo-1460661419201-fd4cecdf8a8d?auto=format&fit=crop&w=1200&q=85 :: net::ERR_ABORTED",
+        "GET https://commons.wikimedia.org/wiki/Special:FilePath/Cabinet%20MET%20210485.jpg?width=1200 :: net::ERR_ABORTED",
+        "GET https://upload.wikimedia.org/wikipedia/commons/thumb/2/27/Vienna_-_Vintage_Table_or_Mantel_Clock_-_0554.jpg/1280px-Vienna_-_Vintage_Table_or_Mantel_Clock_-_0554.jpg :: net::ERR_ABORTED",
+        "GET https://upload.wikimedia.org/wikipedia/commons/thumb/4/47/Antique_clock_in_Katowice_shop.JPG/1280px-Antique_clock_in_Katowice_shop.JPG :: net::ERR_ABORTED",
+        "GET https://commons.wikimedia.org/wiki/Special:FilePath/Robe%20%C3%83%C2%A0%20la%20Fran%C3%83%C2%A7aise%20MET%20DP156536.jpg?width=1200 :: net::ERR_ABORTED",
+        "GET https://commons.wikimedia.org/wiki/Special:FilePath/Japansk%20silvertekanna%20med%20dito%20sil.jpg?width=1200 :: net::ERR_ABORTED",
+        "GET https://upload.wikimedia.org/wikipedia/commons/thumb/c/c7/Antique_Closet_%283139773451%29.jpg/1280px-Antique_Closet_%283139773451%29.jpg :: net::ERR_ABORTED"
+      ],
+      "httpErrors": [
+        "404 GET http://127.0.0.1:8000/api/artifacts/101/",
+        "404 GET http://127.0.0.1:8000/api/artifacts/101/",
+        "404 GET http://127.0.0.1:8000/api/artifacts/101/",
+        "404 GET http://127.0.0.1:8000/api/artifacts/101/",
+        "400 POST http://127.0.0.1:8000/api/cart/",
+        "400 POST http://127.0.0.1:8000/api/wishlist/",
+        "400 POST http://127.0.0.1:8000/api/orders/checkout/"
+      ],
+      "pages": [
+        {
+          "name": "desktop-homepage",
+          "url": "/",
+          "screenshot": "C:\\Users\\aitou\\pfe-antique-marketplace\\frontend\\qa-report-2026-06-18\\desktop-homepage.png",
+          "metrics": {
+            "title": "frontend",
+            "url": "http://127.0.0.1:5173/",
+            "overflowX": false,
+            "overflowY": true,
+            "brokenImages": [],
+            "text": "Artisan's Echo\nCatalogue\nFeatured\nFurniture\nArt\nJewelry\nDecor\nBrowse now\nLog in\nSign up\nLanguage\nEN\nFR\n\nLUXURY MARKETPLACE\n\nAntiques, furniture, art, jewelry, and decor from verified sellers.\n\nBrowse antiques, furniture, art, jewelry, and decor from verified sellers in a clean marketplace layout.\n\nBrowse now\nView all objects\nFeatured\n04\nNew arrivals\n04\nFurniture\n02\nArt\n02\nJewelry\n01\nDecor\n03\n\nFEAT"
+          }
+        },
+        {
+          "name": "desktop-catalog",
+          "url": "/",
+          "screenshot": "C:\\Users\\aitou\\pfe-antique-marketplace\\frontend\\qa-report-2026-06-18\\desktop-catalog.png",
+          "metrics": {
+            "title": "frontend",
+            "url": "http://127.0.0.1:5173/",
+            "overflowX": false,
+            "overflowY": true,
+            "brokenImages": [],
+            "text": "Artisan's Echo\nCatalogue\nFeatured\nFurniture\nArt\nJewelry\nDecor\nBrowse now\nLog in\nSign up\nLanguage\nEN\nFR\n\nLUXURY MARKETPLACE\n\nAntiques, furniture, art, jewelry, and decor from verified sellers.\n\nBrowse antiques, furniture, art, jewelry, and decor from verified sellers in a clean marketplace layout.\n\nBrowse now\nView all objects\nFeatured\n04\nNew arrivals\n04\nFurniture\n02\nArt\n02\nJewelry\n01\nDecor\n03\n\nFEAT"
+          }
+        },
+        {
+          "name": "desktop-product-detail",
+          "url": "/artifacts/101",
+          "screenshot": "C:\\Users\\aitou\\pfe-antique-marketplace\\frontend\\qa-report-2026-06-18\\desktop-product-detail.png",
+          "metrics": {
+            "title": "frontend",
+            "url": "http://127.0.0.1:5173/artifacts/101",
+            "overflowX": false,
+            "overflowY": true,
+            "brokenImages": [],
+            "text": "Marketplace\nArt\nLot AE-0101\nObject preview\ngood\n\nMARKETPLACE LISTING\n\nJapanese Pine Trees Folding Screen\n\nArt\n\n$14,800\n\nReview the object details, seller information, and delivery notes before adding it to your cart or wishlist.\n\nSellerVerified seller\n\nVerified listing from the marketplace catalog.\n\nAdd to cart\nSave to wishlist\nGo to cart\nAsk seller\nCondition\ngood\nStatus\napproved\nMaterials\nOrigina"
+          }
+        },
+        {
+          "name": "desktop-login",
+          "url": "/login",
+          "screenshot": "C:\\Users\\aitou\\pfe-antique-marketplace\\frontend\\qa-report-2026-06-18\\desktop-login.png",
+          "metrics": {
+            "title": "frontend",
+            "url": "http://127.0.0.1:5173/login",
+            "overflowX": false,
+            "overflowY": false,
+            "brokenImages": [],
+            "text": "WELCOME BACK\n\nSign in to continue your collection.\n\nUse the same email you registered with to access your account, keep your place in the marketplace, and continue into the protected flow later.\n\nEmail login\n\nThe backend authenticates with JWT tokens.\n\nSession restore\n\nStored credentials reload on page refresh.\n\nBuyer ready\n\nCollectors can continue browsing after sign in.\n\nSeller ready\n\nSellers ca"
+          }
+        },
+        {
+          "name": "desktop-signup",
+          "url": "/signup",
+          "screenshot": "C:\\Users\\aitou\\pfe-antique-marketplace\\frontend\\qa-report-2026-06-18\\desktop-signup.png",
+          "metrics": {
+            "title": "frontend",
+            "url": "http://127.0.0.1:5173/signup",
+            "overflowX": false,
+            "overflowY": false,
+            "brokenImages": [],
+            "text": "PRIVATE ACCESS\n\nJoin a marketplace built for objects with a past.\n\nCreate a collector or seller account to follow rare pieces, manage listings, and access the marketplace with the right role.\n\nCollector\n\nBrowse, save, and order objects.\n\nSeller\n\nPrepare inventory and manage listings.\n\nVerified flow\n\nLogin uses the same email you registered with.\n\nSecure access\n\nPasswords and tokens are handled by "
+          }
+        },
+        {
+          "name": "desktop-cart-redirect",
+          "url": "/cart",
+          "screenshot": "C:\\Users\\aitou\\pfe-antique-marketplace\\frontend\\qa-report-2026-06-18\\desktop-cart-redirect.png",
+          "metrics": {
+            "title": "frontend",
+            "url": "http://127.0.0.1:5173/login",
+            "overflowX": false,
+            "overflowY": false,
+            "brokenImages": [],
+            "text": "WELCOME BACK\n\nSign in to continue your collection.\n\nUse the same email you registered with to access your account, keep your place in the marketplace, and continue into the protected flow later.\n\nEmail login\n\nThe backend authenticates with JWT tokens.\n\nSession restore\n\nStored credentials reload on page refresh.\n\nBuyer ready\n\nCollectors can continue browsing after sign in.\n\nSeller ready\n\nSellers ca"
+          }
+        },
+        {
+          "name": "desktop-collector-dashboard",
+          "url": "/collector",
+          "screenshot": "C:\\Users\\aitou\\pfe-antique-marketplace\\frontend\\qa-report-2026-06-18\\desktop-collector-dashboard.png",
+          "metrics": {
+            "title": "frontend",
+            "url": "http://127.0.0.1:5173/collector",
+            "overflowX": false,
+            "overflowY": false,
+            "brokenImages": [],
+            "text": "Artisan's Echo\nQa\nbuyer\n\nTrack your saved objects, orders, and profile from one collector workspace.\n\nDashboard\nWishlist\nCollections\nCart\nOrders\nProfile\nCatalogue\nLog out\n\nBUYER WORKSPACE\n\nDashboard\nBack to catalogue\n\nCOLLECTOR SUMMARY\n\nWorkspace home\nRefresh\n0\nWishlist items\n0\nOrders\n0\nPaid orders\n0\nCart items\n\nPROFILE SUMMARY\n\nqa-collector@example.com\nEdit profile\nQa QA\nbuyer\nNo avatar path\n\nREC"
+          }
+        },
+        {
+          "name": "desktop-wishlist",
+          "url": "/wishlist",
+          "screenshot": "C:\\Users\\aitou\\pfe-antique-marketplace\\frontend\\qa-report-2026-06-18\\desktop-wishlist.png",
+          "metrics": {
+            "title": "frontend",
+            "url": "http://127.0.0.1:5173/wishlist",
+            "overflowX": false,
+            "overflowY": false,
+            "brokenImages": [],
+            "text": "Artisan's Echo\nQa\nbuyer\n\nSave rare objects, group them into collections, and move them into checkout when you are ready.\n\nDashboard\nWishlist\nCollections\nCart\nOrders\nProfile\nCatalogue\nLog out\n\nBUYER WORKSPACE\n\nWishlist & collections\nBack to catalogue\n\nSAVED OBJECTS\n\nYour saved collections\nRefresh\nNo saved objects yet\n\nUse the heart on a product page to save pieces here."
+          }
+        },
+        {
+          "name": "desktop-orders",
+          "url": "/orders",
+          "screenshot": "C:\\Users\\aitou\\pfe-antique-marketplace\\frontend\\qa-report-2026-06-18\\desktop-orders.png",
+          "metrics": {
+            "title": "frontend",
+            "url": "http://127.0.0.1:5173/orders",
+            "overflowX": false,
+            "overflowY": false,
+            "brokenImages": [],
+            "text": "Artisan's Echo\nQa\nbuyer\n\nReview your purchase history and open any order for payment simulation details.\n\nDashboard\nWishlist\nCollections\nCart\nOrders\nProfile\nCatalogue\nLog out\n\nBUYER WORKSPACE\n\nOrders\nBack to catalogue\n\nORDER HISTORY\n\nPrevious orders\nRefresh\nNo orders yet\n\nCheckout a cart to create your first order."
+          }
+        },
+        {
+          "name": "desktop-profile",
+          "url": "/account",
+          "screenshot": "C:\\Users\\aitou\\pfe-antique-marketplace\\frontend\\qa-report-2026-06-18\\desktop-profile.png",
+          "metrics": {
+            "title": "frontend",
+            "url": "http://127.0.0.1:5173/account",
+            "overflowX": false,
+            "overflowY": false,
+            "brokenImages": [],
+            "text": "Artisan's Echo\nQa\nbuyer\n\nView and manage your account details.\n\nCollector dashboard\nProfile\nWishlist\nOrders\nLog out\n\nPROFILE MANAGEMENT\n\nAccount settings\nBack to catalogue\n\nPROFILE SUMMARY\n\nqa-collector@example.com\nbuyer\nRole\nDefault\nAvatar path\n17/06/2026\nProfile created\n\nPROFILE EDITING\n\nView and edit profile\nEmail\nFirst name\nLast name\nAvatar path\nSave profile\n\nPASSWORD\n\nChange password\nCurrent "
+          }
+        },
+        {
+          "name": "desktop-collector-product-seed",
+          "url": "/artifacts/101",
+          "screenshot": "C:\\Users\\aitou\\pfe-antique-marketplace\\frontend\\qa-report-2026-06-18\\desktop-collector-product-seed.png",
+          "metrics": {
+            "title": "frontend",
+            "url": "http://127.0.0.1:5173/artifacts/101",
+            "overflowX": false,
+            "overflowY": true,
+            "brokenImages": [],
+            "text": "Marketplace\nArt\nLot AE-0101\nObject preview\ngood\n\nMARKETPLACE LISTING\n\nJapanese Pine Trees Folding Screen\n\nArt\n\n$14,800\n\nReview the object details, seller information, and delivery notes before adding it to your cart or wishlist.\n\nSellerVerified seller\n\nVerified listing from the marketplace catalog.\n\nAdd to cart\nSave to wishlist\nGo to cart\nAsk seller\nCondition\ngood\nStatus\napproved\nMaterials\nOrigina"
+          }
+        },
+        {
+          "name": "desktop-cart",
+          "url": "/cart",
+          "screenshot": "C:\\Users\\aitou\\pfe-antique-marketplace\\frontend\\qa-report-2026-06-18\\desktop-cart.png",
+          "metrics": {
+            "title": "frontend",
+            "url": "http://127.0.0.1:5173/cart",
+            "overflowX": false,
+            "overflowY": false,
+            "brokenImages": [],
+            "text": "Artisan's Echo\nQa\nbuyer\n\nReview quantities, adjust items, and place an order when everything looks right.\n\nDashboard\nWishlist\nCollections\nCart\nOrders\nProfile\nCatalogue\nLog out\n\nBUYER WORKSPACE\n\nCart\nBack to catalogue\n\nCART REVIEW\n\nYour active cart\nCheckout\nYour cart is empty\n\nAdd approved artifacts from their product pages.\n\nTotal: $0"
+          }
+        },
+        {
+          "name": "desktop-checkout",
+          "url": "/cart",
+          "screenshot": "C:\\Users\\aitou\\pfe-antique-marketplace\\frontend\\qa-report-2026-06-18\\desktop-checkout.png",
+          "metrics": {
+            "title": "frontend",
+            "url": "http://127.0.0.1:5173/cart",
+            "overflowX": false,
+            "overflowY": false,
+            "brokenImages": [],
+            "text": "Artisan's Echo\nQa\nbuyer\n\nReview quantities, adjust items, and place an order when everything looks right.\n\nDashboard\nWishlist\nCollections\nCart\nOrders\nProfile\nCatalogue\nLog out\n\nBUYER WORKSPACE\n\nCart\nBack to catalogue\n\nCART REVIEW\n\nYour active cart\nCheckout\nYour cart is empty\n\nAdd approved artifacts from their product pages.\n\nCheckout could not be completed right now.\n\nTotal: $0"
+          }
+        },
+        {
+          "name": "desktop-orders-after-checkout",
+          "url": "/orders",
+          "screenshot": "C:\\Users\\aitou\\pfe-antique-marketplace\\frontend\\qa-report-2026-06-18\\desktop-orders-after-checkout.png",
+          "metrics": {
+            "title": "frontend",
+            "url": "http://127.0.0.1:5173/orders",
+            "overflowX": false,
+            "overflowY": false,
+            "brokenImages": [],
+            "text": "Artisan's Echo\nQa\nbuyer\n\nReview your purchase history and open any order for payment simulation details.\n\nDashboard\nWishlist\nCollections\nCart\nOrders\nProfile\nCatalogue\nLog out\n\nBUYER WORKSPACE\n\nOrders\nBack to catalogue\n\nORDER HISTORY\n\nPrevious orders\nRefresh\nNo orders yet\n\nCheckout a cart to create your first order."
+          }
+        },
+        {
+          "name": "desktop-seller-dashboard",
+          "url": "/seller",
+          "screenshot": "C:\\Users\\aitou\\pfe-antique-marketplace\\frontend\\qa-report-2026-06-18\\desktop-seller-dashboard.png",
+          "metrics": {
+            "title": "frontend",
+            "url": "http://127.0.0.1:5173/seller",
+            "overflowX": false,
+            "overflowY": false,
+            "brokenImages": [],
+            "text": "Artisan's Echo\nQa\nseller\n\nTrack inventory, manage gallery spaces, and keep the seller catalog organized.\n\nAnalytics\nProducts\nOrders received\nGalleries\nProfile\nCatalogue\nLog out\n\nSELLER WORKSPACE\n\nAnalytics\nBack to catalogue\n\nSELLER STATS\n\nWorkspace overview\nRefresh\n0\nTotal listings\n0\nPublished listings\n0\nPending listings\n0\nSold listings\n0\nTotal sales\n$0\nRevenue\n0\nSold artifacts\n0\nGalleries\n\nRECENT"
+          }
+        },
+        {
+          "name": "desktop-seller-products",
+          "url": "/seller/products",
+          "screenshot": "C:\\Users\\aitou\\pfe-antique-marketplace\\frontend\\qa-report-2026-06-18\\desktop-seller-products.png",
+          "metrics": {
+            "title": "frontend",
+            "url": "http://127.0.0.1:5173/seller/products",
+            "overflowX": false,
+            "overflowY": true,
+            "brokenImages": [],
+            "text": "Artisan's Echo\nQa\nseller\n\nCreate, edit, and preview antique listings with a studio workflow built for premium objects.\n\nAnalytics\nProducts\nOrders received\nGalleries\nProfile\nCatalogue\nLog out\n\nSELLER WORKSPACE\n\nProducts\nBack to catalogue\n\nLISTING STUDIO\n\nCreate listing\n\nMulti-image drafting, drag and drop upload, step-by-step sections, and a live preview before publish.\n\nNew listing\nClear media\n\nST"
+          }
+        },
+        {
+          "name": "desktop-seller-product-create",
+          "url": "/seller/products",
+          "screenshot": "C:\\Users\\aitou\\pfe-antique-marketplace\\frontend\\qa-report-2026-06-18\\desktop-seller-product-create.png",
+          "metrics": {
+            "title": "frontend",
+            "url": "http://127.0.0.1:5173/seller/products",
+            "overflowX": false,
+            "overflowY": true,
+            "brokenImages": [],
+            "text": "Artisan's Echo\nQa\nseller\n\nCreate, edit, and preview antique listings with a studio workflow built for premium objects.\n\nAnalytics\nProducts\nOrders received\nGalleries\nProfile\nCatalogue\nLog out\n\nSELLER WORKSPACE\n\nProducts\nBack to catalogue\n\nLISTING STUDIO\n\nCreate listing\n\nMulti-image drafting, drag and drop upload, step-by-step sections, and a live preview before publish.\n\nNew listing\nClear media\n\nST"
+          }
+        },
+        {
+          "name": "desktop-seller-orders",
+          "url": "/seller/orders",
+          "screenshot": "C:\\Users\\aitou\\pfe-antique-marketplace\\frontend\\qa-report-2026-06-18\\desktop-seller-orders.png",
+          "metrics": {
+            "title": "frontend",
+            "url": "http://127.0.0.1:5173/seller/orders",
+            "overflowX": false,
+            "overflowY": false,
+            "brokenImages": [],
+            "text": "Artisan's Echo\nQa\nseller\n\nView orders that include your antiques and track what buyers have purchased.\n\nAnalytics\nProducts\nOrders received\nGalleries\nProfile\nCatalogue\nLog out\n\nSELLER WORKSPACE\n\nOrders received\nBack to catalogue\n\nSELLER ORDERS\n\nReceived orders\nRefresh\nORDER ID\tBUYER\tPRODUCT\tTOTAL\tSTATUS\tDATE\tACTIONS"
+          }
+        },
+        {
+          "name": "desktop-seller-galleries",
+          "url": "/seller/galleries",
+          "screenshot": "C:\\Users\\aitou\\pfe-antique-marketplace\\frontend\\qa-report-2026-06-18\\desktop-seller-galleries.png",
+          "metrics": {
+            "title": "frontend",
+            "url": "http://127.0.0.1:5173/seller/galleries",
+            "overflowX": false,
+            "overflowY": false,
+            "brokenImages": [],
+            "text": "Artisan's Echo\nQa\nseller\n\nCreate and manage gallery spaces for your approved antique collections.\n\nAnalytics\nProducts\nOrders received\nGalleries\nProfile\nCatalogue\nLog out\n\nSELLER WORKSPACE\n\nGalleries\nBack to catalogue\n\nGALLERY MANAGEMENT\n\nCreate gallery\nNew gallery\nName\nTheme\nDescription\n3D layout path\nPublic gallery\nPublic\nPrivate\nCreate gallery\nClear form\nNo galleries yet\n\nCreate your first galle"
+          }
+        },
+        {
+          "name": "desktop-admin-dashboard",
+          "url": "/admin",
+          "screenshot": "C:\\Users\\aitou\\pfe-antique-marketplace\\frontend\\qa-report-2026-06-18\\desktop-admin-dashboard.png",
+          "metrics": {
+            "title": "frontend",
+            "url": "http://127.0.0.1:5173/admin",
+            "overflowX": false,
+            "overflowY": false,
+            "brokenImages": [],
+            "text": "Artisan's Echo\nQa\nadmin\n\nModerate listings, manage users, and keep the marketplace healthy.\n\nDashboard\nUsers\nArtifacts\nGalleries\nAudit trail\nCatalogue\nLog out\n\nADMINISTRATION WORKSPACE\n\nDashboard\nBack to catalogue\n\nPLATFORM OVERVIEW\n\nAdministration summary\nRefresh\n7\nTotal users\n3\nTotal sellers\n4\nTotal artifacts\n2\nTotal galleries\n1\nTotal orders\n1\nPending artifacts\n1\nPublished artifacts\n\nMODERATION "
+          }
+        },
+        {
+          "name": "desktop-admin-users",
+          "url": "/admin/users",
+          "screenshot": "C:\\Users\\aitou\\pfe-antique-marketplace\\frontend\\qa-report-2026-06-18\\desktop-admin-users.png",
+          "metrics": {
+            "title": "frontend",
+            "url": "http://127.0.0.1:5173/admin/users",
+            "overflowX": false,
+            "overflowY": false,
+            "brokenImages": [],
+            "text": "Artisan's Echo\nQa\nadmin\n\nSearch, review, and control marketplace accounts.\n\nDashboard\nUsers\nArtifacts\nGalleries\nAudit trail\nCatalogue\nLog out\n\nADMINISTRATION WORKSPACE\n\nUsers\nBack to catalogue\n\nUSER MANAGEMENT\n\nAll accounts\nRefresh\nSearch\nRole\nAll roles\nBuyer\nSeller\nAdmin\nAccount status\nAll accounts\nEnabled\nDisabled\nUSER\tEMAIL\tROLE\tSTATUS\tJOINED\tACTIONS\nLeila Zahra\tadmin.qa@example.com\tadmin\tActiv"
+          }
+        },
+        {
+          "name": "desktop-admin-user-detail",
+          "url": "/admin/users/3",
+          "screenshot": "C:\\Users\\aitou\\pfe-antique-marketplace\\frontend\\qa-report-2026-06-18\\desktop-admin-user-detail.png",
+          "metrics": {
+            "title": "frontend",
+            "url": "http://127.0.0.1:5173/admin/users/3",
+            "overflowX": false,
+            "overflowY": false,
+            "brokenImages": [],
+            "text": "Artisan's Echo\nQa\nadmin\n\nInspect account details and permissions.\n\nDashboard\nUsers\nArtifacts\nGalleries\nAudit trail\nCatalogue\nLog out\n\nADMINISTRATION WORKSPACE\n\nUser #3\nBack to catalogue\n\nACCOUNT DETAILS\n\nadmin.qa@example.com\nBack to users\nFirst name\nLast name\nEmail\nRole\nBuyer\nSeller\nAdmin\nAccount status\nEnabled\nDisabled\nSave changes\nadmin\nCurrent role\nEnabled\nAccount status\n17/06/2026 23:09:40\nDat"
+          }
+        },
+        {
+          "name": "desktop-admin-artifacts",
+          "url": "/admin/artifacts",
+          "screenshot": "C:\\Users\\aitou\\pfe-antique-marketplace\\frontend\\qa-report-2026-06-18\\desktop-admin-artifacts.png",
+          "metrics": {
+            "title": "frontend",
+            "url": "http://127.0.0.1:5173/admin/artifacts",
+            "overflowX": false,
+            "overflowY": false,
+            "brokenImages": [],
+            "text": "Artisan's Echo\nQa\nadmin\n\nReview and moderate pending product submissions.\n\nDashboard\nUsers\nArtifacts\nGalleries\nAudit trail\nCatalogue\nLog out\n\nADMINISTRATION WORKSPACE\n\nArtifacts\nBack to catalogue\n\nARTIFACT MODERATION\n\nListing review queue\nRefresh\nSearch\nStatus\nAll statuses\nPending\nApproved\nRejected\nDraft\nSold\nIMAGE\tARTIFACT\tSELLER\tCATEGORY\tPRICE\tSTATUS\tACTIONS\n\n\tFrench Gilt Candlesticks\tseller2.qa"
+          }
+        },
+        {
+          "name": "desktop-admin-galleries",
+          "url": "/admin/galleries",
+          "screenshot": "C:\\Users\\aitou\\pfe-antique-marketplace\\frontend\\qa-report-2026-06-18\\desktop-admin-galleries.png",
+          "metrics": {
+            "title": "frontend",
+            "url": "http://127.0.0.1:5173/admin/galleries",
+            "overflowX": false,
+            "overflowY": false,
+            "brokenImages": [],
+            "text": "Artisan's Echo\nQa\nadmin\n\nReview gallery spaces and remove inappropriate content.\n\nDashboard\nUsers\nArtifacts\nGalleries\nAudit trail\nCatalogue\nLog out\n\nADMINISTRATION WORKSPACE\n\nGalleries\nBack to catalogue\n\nGALLERY MODERATION\n\nAll galleries\nRefresh\nSearch\nGALLERY\tOWNER\tTHEME\tVISIBILITY\tACTIONS\nPrivate Study\tkhalid.ben.hamou@gmail.com\tQuiet study\tPrivate\tRemove\nSalon Moderne\tkhalid.ben.hamou@gmail.com"
+          }
+        },
+        {
+          "name": "desktop-admin-audit",
+          "url": "/admin/audit",
+          "screenshot": "C:\\Users\\aitou\\pfe-antique-marketplace\\frontend\\qa-report-2026-06-18\\desktop-admin-audit.png",
+          "metrics": {
+            "title": "frontend",
+            "url": "http://127.0.0.1:5173/admin/audit",
+            "overflowX": false,
+            "overflowY": false,
+            "brokenImages": [],
+            "text": "Artisan's Echo\nQa\nadmin\n\nReview the moderation record and actions taken by admins.\n\nDashboard\nUsers\nArtifacts\nGalleries\nAudit trail\nCatalogue\nLog out\n\nADMINISTRATION WORKSPACE\n\nAudit trail\nBack to catalogue\n\nAUDIT LOG\n\nModeration history\nRefresh\nSearch\nAction type\nAll actions\nArtifact approved\nArtifact rejected\nArtifact deleted\nGallery deleted\nUser role changed\nUser disabled\nUser enabled\nACTION\tTA"
+          }
+        }
+      ]
+    },
+    {
+      "viewport": "tablet",
+      "consoleErrors": [
+        "Failed to load resource: the server responded with a status of 404 (Not Found)",
+        "Encountered two children with the same key, `%s`. Keys should be unique so that components maintain their identity across updates. Non-unique keys may cause children to be duplicated and/or omitted — the behavior is unsupported and could change in a future version. related-4",
+        "Failed to load resource: the server responded with a status of 404 (Not Found)",
+        "Encountered two children with the same key, `%s`. Keys should be unique so that components maintain their identity across updates. Non-unique keys may cause children to be duplicated and/or omitted — the behavior is unsupported and could change in a future version. related-4",
+        "Failed to load resource: the server responded with a status of 404 (Not Found)",
+        "Encountered two children with the same key, `%s`. Keys should be unique so that components maintain their identity across updates. Non-unique keys may cause children to be duplicated and/or omitted — the behavior is unsupported and could change in a future version. related-4",
+        "Encountered two children with the same key, `%s`. Keys should be unique so that components maintain their identity across updates. Non-unique keys may cause children to be duplicated and/or omitted — the behavior is unsupported and could change in a future version. related-4",
+        "Encountered two children with the same key, `%s`. Keys should be unique so that components maintain their identity across updates. Non-unique keys may cause children to be duplicated and/or omitted — the behavior is unsupported and could change in a future version. related-4",
+        "Failed to load resource: the server responded with a status of 404 (Not Found)",
+        "Encountered two children with the same key, `%s`. Keys should be unique so that components maintain their identity across updates. Non-unique keys may cause children to be duplicated and/or omitted — the behavior is unsupported and could change in a future version. related-4",
+        "Failed to load resource: the server responded with a status of 400 (Bad Request)",
+        "Encountered two children with the same key, `%s`. Keys should be unique so that components maintain their identity across updates. Non-unique keys may cause children to be duplicated and/or omitted — the behavior is unsupported and could change in a future version. related-4",
+        "Encountered two children with the same key, `%s`. Keys should be unique so that components maintain their identity across updates. Non-unique keys may cause children to be duplicated and/or omitted — the behavior is unsupported and could change in a future version. related-4",
+        "Failed to load resource: the server responded with a status of 400 (Bad Request)",
+        "Encountered two children with the same key, `%s`. Keys should be unique so that components maintain their identity across updates. Non-unique keys may cause children to be duplicated and/or omitted — the behavior is unsupported and could change in a future version. related-4",
+        "Failed to load resource: the server responded with a status of 400 (Bad Request)"
+      ],
+      "pageErrors": [],
+      "requestFailures": [
+        "GET https://commons.wikimedia.org/w/index.php?title=Special:Redirect/file/Robe_%C3%83_la_Fran%C3%83%C2%A7aise_MET_DP156536.jpg&width=1200 :: net::ERR_BLOCKED_BY_ORB",
+        "GET https://commons.wikimedia.org/w/index.php?title=Special:Redirect/file/Grande_Bible_historiale_compl%C3%83%C2%A9t%C3%83%C2%A9e_-_BNF_Fr159_f3r_(Trinit%C3%83%C2%A9).jpg&width=1200 :: net::ERR_BLOCKED_BY_ORB",
+        "GET https://commons.wikimedia.org/w/index.php?title=Special:Redirect/file/Grande_Bible_historiale_compl%C3%83%C2%A9t%C3%83%C2%A9e_-_BNF_Fr159_f3r_(Trinit%C3%83%C2%A9).jpg&width=1200 :: net::ERR_BLOCKED_BY_ORB",
+        "GET https://commons.wikimedia.org/w/index.php?title=Special:Redirect/file/Robe_%C3%83_la_Fran%C3%83%C2%A7aise_MET_DP156536.jpg&width=1200 :: net::ERR_BLOCKED_BY_ORB",
+        "GET https://upload.wikimedia.org/wikipedia/commons/thumb/8/8e/%22The_Gould%22_Violin_MET_DT669.jpg/1280px-%22The_Gould%22_Violin_MET_DT669.jpg :: net::ERR_ABORTED",
+        "GET https://commons.wikimedia.org/w/index.php?title=Special:Redirect/file/Grande_Bible_historiale_compl%C3%83%C2%A9t%C3%83%C2%A9e_-_BNF_Fr159_f3r_(Trinit%C3%83%C2%A9).jpg&width=1200 :: net::ERR_ABORTED",
+        "GET https://upload.wikimedia.org/wikipedia/commons/thumb/6/6e/Cabinet_MET_210485.jpg/1280px-Cabinet_MET_210485.jpg :: net::ERR_ABORTED",
+        "GET https://commons.wikimedia.org/wiki/Special:FilePath/20241025%20Gourd-Shaped%20Blue%20and%20White%20Porcelain%20Vase%20of%20Wanli%20Reign%2C%20Ming%20Dynasty.jpg?width=1200 :: net::ERR_ABORTED",
+        "GET https://commons.wikimedia.org/wiki/Special:FilePath/Brooch%20(England)%2C%2018th%20century%20(CH%2018800413).jpg?width=1200 :: net::ERR_ABORTED",
+        "GET https://upload.wikimedia.org/wikipedia/commons/thumb/0/04/Argand_Lamp_MET_ADA3409.jpg/1280px-Argand_Lamp_MET_ADA3409.jpg :: net::ERR_ABORTED",
+        "GET https://upload.wikimedia.org/wikipedia/commons/thumb/2/27/Vienna_-_Vintage_Table_or_Mantel_Clock_-_0554.jpg/1280px-Vienna_-_Vintage_Table_or_Mantel_Clock_-_0554.jpg :: net::ERR_ABORTED",
+        "GET https://upload.wikimedia.org/wikipedia/commons/7/7f/Cabinet_des_Medailles.jpg :: net::ERR_ABORTED",
+        "GET https://upload.wikimedia.org/wikipedia/commons/7/71/Ardabil_Carpet.jpg :: net::ERR_ABORTED",
+        "GET https://upload.wikimedia.org/wikipedia/commons/thumb/4/47/Antique_clock_in_Katowice_shop.JPG/1280px-Antique_clock_in_Katowice_shop.JPG :: net::ERR_ABORTED",
+        "GET https://commons.wikimedia.org/w/index.php?title=Special:Redirect/file/Robe_%C3%83_la_Fran%C3%83%C2%A7aise_MET_DP156536.jpg&width=1200 :: net::ERR_ABORTED",
+        "GET https://upload.wikimedia.org/wikipedia/commons/1/14/Japansk_silvertekanna_med_dito_sil.jpg :: net::ERR_ABORTED",
+        "GET https://commons.wikimedia.org/w/index.php?title=Special:Redirect/file/Robe_%C3%83_la_Fran%C3%83%C2%A7aise_MET_DP156536.jpg&width=1200 :: net::ERR_BLOCKED_BY_ORB",
+        "GET https://commons.wikimedia.org/w/index.php?title=Special:Redirect/file/%22The_Gould%22_Violin_MET_DT669.jpg&width=1200 :: net::ERR_ABORTED",
+        "GET https://commons.wikimedia.org/w/index.php?title=Special:Redirect/file/Grande_Bible_historiale_compl%C3%83%C2%A9t%C3%83%C2%A9e_-_BNF_Fr159_f3r_(Trinit%C3%83%C2%A9).jpg&width=1200 :: net::ERR_ABORTED",
+        "GET https://upload.wikimedia.org/wikipedia/commons/thumb/2/27/Vienna_-_Vintage_Table_or_Mantel_Clock_-_0554.jpg/1280px-Vienna_-_Vintage_Table_or_Mantel_Clock_-_0554.jpg :: net::ERR_ABORTED",
+        "GET https://upload.wikimedia.org/wikipedia/commons/thumb/7/78/Brooch_%28England%29%2C_18th_century_%28CH_18800413%29.jpg/1280px-Brooch_%28England%29%2C_18th_century_%28CH_18800413%29.jpg :: net::ERR_ABORTED",
+        "GET https://upload.wikimedia.org/wikipedia/commons/1/14/Japansk_silvertekanna_med_dito_sil.jpg :: net::ERR_ABORTED",
+        "GET https://upload.wikimedia.org/wikipedia/commons/a/a4/20241025_Gourd-Shaped_Blue_and_White_Porcelain_Vase_of_Wanli_Reign%2C_Ming_Dynasty.jpg :: net::ERR_ABORTED",
+        "GET https://upload.wikimedia.org/wikipedia/commons/thumb/4/47/Antique_clock_in_Katowice_shop.JPG/1280px-Antique_clock_in_Katowice_shop.JPG :: net::ERR_ABORTED",
+        "GET https://upload.wikimedia.org/wikipedia/commons/7/71/Ardabil_Carpet.jpg :: net::ERR_ABORTED",
+        "GET https://upload.wikimedia.org/wikipedia/commons/thumb/6/6e/Cabinet_MET_210485.jpg/1280px-Cabinet_MET_210485.jpg :: net::ERR_ABORTED",
+        "GET https://upload.wikimedia.org/wikipedia/commons/thumb/0/04/Argand_Lamp_MET_ADA3409.jpg/1280px-Argand_Lamp_MET_ADA3409.jpg :: net::ERR_ABORTED",
+        "GET https://upload.wikimedia.org/wikipedia/commons/7/7f/Cabinet_des_Medailles.jpg :: net::ERR_ABORTED"
+      ],
+      "httpErrors": [
+        "404 GET http://127.0.0.1:8000/api/artifacts/101/",
+        "404 GET http://127.0.0.1:8000/api/artifacts/101/",
+        "404 GET http://127.0.0.1:8000/api/artifacts/101/",
+        "404 GET http://127.0.0.1:8000/api/artifacts/101/",
+        "400 POST http://127.0.0.1:8000/api/cart/",
+        "400 POST http://127.0.0.1:8000/api/wishlist/",
+        "400 POST http://127.0.0.1:8000/api/orders/checkout/"
+      ],
+      "pages": [
+        {
+          "name": "tablet-homepage",
+          "url": "/",
+          "screenshot": "C:\\Users\\aitou\\pfe-antique-marketplace\\frontend\\qa-report-2026-06-18\\tablet-homepage.png",
+          "metrics": {
+            "title": "frontend",
+            "url": "http://127.0.0.1:5173/",
+            "overflowX": false,
+            "overflowY": true,
+            "brokenImages": [],
+            "text": "Artisan's Echo\nCatalogue\nFeatured\nFurniture\nArt\nJewelry\nDecor\nBrowse now\nLog in\nSign up\nLanguage\nEN\nFR\n\nLUXURY MARKETPLACE\n\nAntiques, furniture, art, jewelry, and decor from verified sellers.\n\nBrowse antiques, furniture, art, jewelry, and decor from verified sellers in a clean marketplace layout.\n\nBrowse now\nView all objects\nFeatured\n04\nNew arrivals\n04\nFurniture\n02\nArt\n02\nJewelry\n01\nDecor\n03\n\nFEAT"
+          }
+        },
+        {
+          "name": "tablet-catalog",
+          "url": "/",
+          "screenshot": "C:\\Users\\aitou\\pfe-antique-marketplace\\frontend\\qa-report-2026-06-18\\tablet-catalog.png",
+          "metrics": {
+            "title": "frontend",
+            "url": "http://127.0.0.1:5173/",
+            "overflowX": false,
+            "overflowY": true,
+            "brokenImages": [],
+            "text": "Artisan's Echo\nCatalogue\nFeatured\nFurniture\nArt\nJewelry\nDecor\nBrowse now\nLog in\nSign up\nLanguage\nEN\nFR\n\nLUXURY MARKETPLACE\n\nAntiques, furniture, art, jewelry, and decor from verified sellers.\n\nBrowse antiques, furniture, art, jewelry, and decor from verified sellers in a clean marketplace layout.\n\nBrowse now\nView all objects\nFeatured\n04\nNew arrivals\n04\nFurniture\n02\nArt\n02\nJewelry\n01\nDecor\n03\n\nFEAT"
+          }
+        },
+        {
+          "name": "tablet-product-detail",
+          "url": "/artifacts/101",
+          "screenshot": "C:\\Users\\aitou\\pfe-antique-marketplace\\frontend\\qa-report-2026-06-18\\tablet-product-detail.png",
+          "metrics": {
+            "title": "frontend",
+            "url": "http://127.0.0.1:5173/artifacts/101",
+            "overflowX": false,
+            "overflowY": true,
+            "brokenImages": [],
+            "text": "Marketplace\nArt\nLot AE-0101\nObject preview\ngood\n\nMARKETPLACE LISTING\n\nJapanese Pine Trees Folding Screen\n\nArt\n\n$14,800\n\nReview the object details, seller information, and delivery notes before adding it to your cart or wishlist.\n\nSellerVerified seller\n\nVerified listing from the marketplace catalog.\n\nAdd to cart\nSave to wishlist\nGo to cart\nAsk seller\nCondition\ngood\nStatus\napproved\nMaterials\nOrigina"
+          }
+        },
+        {
+          "name": "tablet-login",
+          "url": "/login",
+          "screenshot": "C:\\Users\\aitou\\pfe-antique-marketplace\\frontend\\qa-report-2026-06-18\\tablet-login.png",
+          "metrics": {
+            "title": "frontend",
+            "url": "http://127.0.0.1:5173/login",
+            "overflowX": false,
+            "overflowY": false,
+            "brokenImages": [],
+            "text": "WELCOME BACK\n\nSign in to continue your collection.\n\nUse the same email you registered with to access your account, keep your place in the marketplace, and continue into the protected flow later.\n\nEmail login\n\nThe backend authenticates with JWT tokens.\n\nSession restore\n\nStored credentials reload on page refresh.\n\nBuyer ready\n\nCollectors can continue browsing after sign in.\n\nSeller ready\n\nSellers ca"
+          }
+        },
+        {
+          "name": "tablet-signup",
+          "url": "/signup",
+          "screenshot": "C:\\Users\\aitou\\pfe-antique-marketplace\\frontend\\qa-report-2026-06-18\\tablet-signup.png",
+          "metrics": {
+            "title": "frontend",
+            "url": "http://127.0.0.1:5173/signup",
+            "overflowX": false,
+            "overflowY": true,
+            "brokenImages": [],
+            "text": "PRIVATE ACCESS\n\nJoin a marketplace built for objects with a past.\n\nCreate a collector or seller account to follow rare pieces, manage listings, and access the marketplace with the right role.\n\nCollector\n\nBrowse, save, and order objects.\n\nSeller\n\nPrepare inventory and manage listings.\n\nVerified flow\n\nLogin uses the same email you registered with.\n\nSecure access\n\nPasswords and tokens are handled by "
+          }
+        },
+        {
+          "name": "tablet-cart-redirect",
+          "url": "/cart",
+          "screenshot": "C:\\Users\\aitou\\pfe-antique-marketplace\\frontend\\qa-report-2026-06-18\\tablet-cart-redirect.png",
+          "metrics": {
+            "title": "frontend",
+            "url": "http://127.0.0.1:5173/login",
+            "overflowX": false,
+            "overflowY": false,
+            "brokenImages": [],
+            "text": "WELCOME BACK\n\nSign in to continue your collection.\n\nUse the same email you registered with to access your account, keep your place in the marketplace, and continue into the protected flow later.\n\nEmail login\n\nThe backend authenticates with JWT tokens.\n\nSession restore\n\nStored credentials reload on page refresh.\n\nBuyer ready\n\nCollectors can continue browsing after sign in.\n\nSeller ready\n\nSellers ca"
+          }
+        },
+        {
+          "name": "tablet-collector-dashboard",
+          "url": "/collector",
+          "screenshot": "C:\\Users\\aitou\\pfe-antique-marketplace\\frontend\\qa-report-2026-06-18\\tablet-collector-dashboard.png",
+          "metrics": {
+            "title": "frontend",
+            "url": "http://127.0.0.1:5173/collector",
+            "overflowX": false,
+            "overflowY": true,
+            "brokenImages": [],
+            "text": "Artisan's Echo\nQa\nbuyer\n\nTrack your saved objects, orders, and profile from one collector workspace.\n\nDashboard\nWishlist\nCollections\nCart\nOrders\nProfile\nCatalogue\nLog out\n\nBUYER WORKSPACE\n\nDashboard\nBack to catalogue\n\nCOLLECTOR SUMMARY\n\nWorkspace home\nRefresh\n0\nWishlist items\n0\nOrders\n0\nPaid orders\n0\nCart items\n\nPROFILE SUMMARY\n\nqa-collector@example.com\nEdit profile\nQa QA\nbuyer\nNo avatar path\n\nREC"
+          }
+        },
+        {
+          "name": "tablet-wishlist",
+          "url": "/wishlist",
+          "screenshot": "C:\\Users\\aitou\\pfe-antique-marketplace\\frontend\\qa-report-2026-06-18\\tablet-wishlist.png",
+          "metrics": {
+            "title": "frontend",
+            "url": "http://127.0.0.1:5173/wishlist",
+            "overflowX": false,
+            "overflowY": false,
+            "brokenImages": [],
+            "text": "Artisan's Echo\nQa\nbuyer\n\nSave rare objects, group them into collections, and move them into checkout when you are ready.\n\nDashboard\nWishlist\nCollections\nCart\nOrders\nProfile\nCatalogue\nLog out\n\nBUYER WORKSPACE\n\nWishlist & collections\nBack to catalogue\n\nSAVED OBJECTS\n\nYour saved collections\nRefresh\nNo saved objects yet\n\nUse the heart on a product page to save pieces here."
+          }
+        },
+        {
+          "name": "tablet-orders",
+          "url": "/orders",
+          "screenshot": "C:\\Users\\aitou\\pfe-antique-marketplace\\frontend\\qa-report-2026-06-18\\tablet-orders.png",
+          "metrics": {
+            "title": "frontend",
+            "url": "http://127.0.0.1:5173/orders",
+            "overflowX": false,
+            "overflowY": false,
+            "brokenImages": [],
+            "text": "Artisan's Echo\nQa\nbuyer\n\nReview your purchase history and open any order for payment simulation details.\n\nDashboard\nWishlist\nCollections\nCart\nOrders\nProfile\nCatalogue\nLog out\n\nBUYER WORKSPACE\n\nOrders\nBack to catalogue\n\nORDER HISTORY\n\nPrevious orders\nRefresh\nNo orders yet\n\nCheckout a cart to create your first order."
+          }
+        },
+        {
+          "name": "tablet-profile",
+          "url": "/account",
+          "screenshot": "C:\\Users\\aitou\\pfe-antique-marketplace\\frontend\\qa-report-2026-06-18\\tablet-profile.png",
+          "metrics": {
+            "title": "frontend",
+            "url": "http://127.0.0.1:5173/account",
+            "overflowX": false,
+            "overflowY": true,
+            "brokenImages": [],
+            "text": "Artisan's Echo\nQa\nbuyer\n\nView and manage your account details.\n\nCollector dashboard\nProfile\nWishlist\nOrders\nLog out\n\nPROFILE MANAGEMENT\n\nAccount settings\nBack to catalogue\n\nPROFILE SUMMARY\n\nqa-collector@example.com\nbuyer\nRole\nDefault\nAvatar path\n17/06/2026\nProfile created\n\nPROFILE EDITING\n\nView and edit profile\nEmail\nFirst name\nLast name\nAvatar path\nSave profile\n\nPASSWORD\n\nChange password\nCurrent "
+          }
+        },
+        {
+          "name": "tablet-collector-product-seed",
+          "url": "/artifacts/101",
+          "screenshot": "C:\\Users\\aitou\\pfe-antique-marketplace\\frontend\\qa-report-2026-06-18\\tablet-collector-product-seed.png",
+          "metrics": {
+            "title": "frontend",
+            "url": "http://127.0.0.1:5173/artifacts/101",
+            "overflowX": false,
+            "overflowY": true,
+            "brokenImages": [],
+            "text": "Marketplace\nArt\nLot AE-0101\nObject preview\ngood\n\nMARKETPLACE LISTING\n\nJapanese Pine Trees Folding Screen\n\nArt\n\n$14,800\n\nReview the object details, seller information, and delivery notes before adding it to your cart or wishlist.\n\nSellerVerified seller\n\nVerified listing from the marketplace catalog.\n\nAdd to cart\nSave to wishlist\nGo to cart\nAsk seller\nCondition\ngood\nStatus\napproved\nMaterials\nOrigina"
+          }
+        },
+        {
+          "name": "tablet-cart",
+          "url": "/cart",
+          "screenshot": "C:\\Users\\aitou\\pfe-antique-marketplace\\frontend\\qa-report-2026-06-18\\tablet-cart.png",
+          "metrics": {
+            "title": "frontend",
+            "url": "http://127.0.0.1:5173/cart",
+            "overflowX": false,
+            "overflowY": false,
+            "brokenImages": [],
+            "text": "Artisan's Echo\nQa\nbuyer\n\nReview quantities, adjust items, and place an order when everything looks right.\n\nDashboard\nWishlist\nCollections\nCart\nOrders\nProfile\nCatalogue\nLog out\n\nBUYER WORKSPACE\n\nCart\nBack to catalogue\n\nCART REVIEW\n\nYour active cart\nCheckout\nYour cart is empty\n\nAdd approved artifacts from their product pages.\n\nTotal: $0"
+          }
+        },
+        {
+          "name": "tablet-checkout",
+          "url": "/cart",
+          "screenshot": "C:\\Users\\aitou\\pfe-antique-marketplace\\frontend\\qa-report-2026-06-18\\tablet-checkout.png",
+          "metrics": {
+            "title": "frontend",
+            "url": "http://127.0.0.1:5173/cart",
+            "overflowX": false,
+            "overflowY": true,
+            "brokenImages": [],
+            "text": "Artisan's Echo\nQa\nbuyer\n\nReview quantities, adjust items, and place an order when everything looks right.\n\nDashboard\nWishlist\nCollections\nCart\nOrders\nProfile\nCatalogue\nLog out\n\nBUYER WORKSPACE\n\nCart\nBack to catalogue\n\nCART REVIEW\n\nYour active cart\nCheckout\nYour cart is empty\n\nAdd approved artifacts from their product pages.\n\nCheckout could not be completed right now.\n\nTotal: $0"
+          }
+        },
+        {
+          "name": "tablet-orders-after-checkout",
+          "url": "/orders",
+          "screenshot": "C:\\Users\\aitou\\pfe-antique-marketplace\\frontend\\qa-report-2026-06-18\\tablet-orders-after-checkout.png",
+          "metrics": {
+            "title": "frontend",
+            "url": "http://127.0.0.1:5173/orders",
+            "overflowX": false,
+            "overflowY": false,
+            "brokenImages": [],
+            "text": "Artisan's Echo\nQa\nbuyer\n\nReview your purchase history and open any order for payment simulation details.\n\nDashboard\nWishlist\nCollections\nCart\nOrders\nProfile\nCatalogue\nLog out\n\nBUYER WORKSPACE\n\nOrders\nBack to catalogue\n\nORDER HISTORY\n\nPrevious orders\nRefresh\nNo orders yet\n\nCheckout a cart to create your first order."
+          }
+        },
+        {
+          "name": "tablet-seller-dashboard",
+          "url": "/seller",
+          "screenshot": "C:\\Users\\aitou\\pfe-antique-marketplace\\frontend\\qa-report-2026-06-18\\tablet-seller-dashboard.png",
+          "metrics": {
+            "title": "frontend",
+            "url": "http://127.0.0.1:5173/seller",
+            "overflowX": false,
+            "overflowY": true,
+            "brokenImages": [],
+            "text": "Artisan's Echo\nQa\nseller\n\nTrack inventory, manage gallery spaces, and keep the seller catalog organized.\n\nAnalytics\nProducts\nOrders received\nGalleries\nProfile\nCatalogue\nLog out\n\nSELLER WORKSPACE\n\nAnalytics\nBack to catalogue\n\nSELLER STATS\n\nWorkspace overview\nRefresh\n0\nTotal listings\n0\nPublished listings\n0\nPending listings\n0\nSold listings\n0\nTotal sales\n$0\nRevenue\n0\nSold artifacts\n0\nGalleries\n\nRECENT"
+          }
+        },
+        {
+          "name": "tablet-seller-products",
+          "url": "/seller/products",
+          "screenshot": "C:\\Users\\aitou\\pfe-antique-marketplace\\frontend\\qa-report-2026-06-18\\tablet-seller-products.png",
+          "metrics": {
+            "title": "frontend",
+            "url": "http://127.0.0.1:5173/seller/products",
+            "overflowX": false,
+            "overflowY": true,
+            "brokenImages": [],
+            "text": "Artisan's Echo\nQa\nseller\n\nCreate, edit, and preview antique listings with a studio workflow built for premium objects.\n\nAnalytics\nProducts\nOrders received\nGalleries\nProfile\nCatalogue\nLog out\n\nSELLER WORKSPACE\n\nProducts\nBack to catalogue\n\nLISTING STUDIO\n\nCreate listing\n\nMulti-image drafting, drag and drop upload, step-by-step sections, and a live preview before publish.\n\nNew listing\nClear media\n\nST"
+          }
+        },
+        {
+          "name": "tablet-seller-product-create",
+          "url": "/seller/products",
+          "screenshot": "C:\\Users\\aitou\\pfe-antique-marketplace\\frontend\\qa-report-2026-06-18\\tablet-seller-product-create.png",
+          "metrics": {
+            "title": "frontend",
+            "url": "http://127.0.0.1:5173/seller/products",
+            "overflowX": false,
+            "overflowY": true,
+            "brokenImages": [],
+            "text": "Artisan's Echo\nQa\nseller\n\nCreate, edit, and preview antique listings with a studio workflow built for premium objects.\n\nAnalytics\nProducts\nOrders received\nGalleries\nProfile\nCatalogue\nLog out\n\nSELLER WORKSPACE\n\nProducts\nBack to catalogue\n\nLISTING STUDIO\n\nCreate listing\n\nMulti-image drafting, drag and drop upload, step-by-step sections, and a live preview before publish.\n\nNew listing\nClear media\n\nST"
+          }
+        },
+        {
+          "name": "tablet-seller-orders",
+          "url": "/seller/orders",
+          "screenshot": "C:\\Users\\aitou\\pfe-antique-marketplace\\frontend\\qa-report-2026-06-18\\tablet-seller-orders.png",
+          "metrics": {
+            "title": "frontend",
+            "url": "http://127.0.0.1:5173/seller/orders",
+            "overflowX": false,
+            "overflowY": false,
+            "brokenImages": [],
+            "text": "Artisan's Echo\nQa\nseller\n\nView orders that include your antiques and track what buyers have purchased.\n\nAnalytics\nProducts\nOrders received\nGalleries\nProfile\nCatalogue\nLog out\n\nSELLER WORKSPACE\n\nOrders received\nBack to catalogue\n\nSELLER ORDERS\n\nReceived orders\nRefresh\nORDER ID\tBUYER\tPRODUCT\tTOTAL\tSTATUS\tDATE\tACTIONS"
+          }
+        },
+        {
+          "name": "tablet-seller-galleries",
+          "url": "/seller/galleries",
+          "screenshot": "C:\\Users\\aitou\\pfe-antique-marketplace\\frontend\\qa-report-2026-06-18\\tablet-seller-galleries.png",
+          "metrics": {
+            "title": "frontend",
+            "url": "http://127.0.0.1:5173/seller/galleries",
+            "overflowX": false,
+            "overflowY": true,
+            "brokenImages": [],
+            "text": "Artisan's Echo\nQa\nseller\n\nCreate and manage gallery spaces for your approved antique collections.\n\nAnalytics\nProducts\nOrders received\nGalleries\nProfile\nCatalogue\nLog out\n\nSELLER WORKSPACE\n\nGalleries\nBack to catalogue\n\nGALLERY MANAGEMENT\n\nCreate gallery\nNew gallery\nName\nTheme\nDescription\n3D layout path\nPublic gallery\nPublic\nPrivate\nCreate gallery\nClear form\nNo galleries yet\n\nCreate your first galle"
+          }
+        },
+        {
+          "name": "tablet-admin-dashboard",
+          "url": "/admin",
+          "screenshot": "C:\\Users\\aitou\\pfe-antique-marketplace\\frontend\\qa-report-2026-06-18\\tablet-admin-dashboard.png",
+          "metrics": {
+            "title": "frontend",
+            "url": "http://127.0.0.1:5173/admin",
+            "overflowX": false,
+            "overflowY": true,
+            "brokenImages": [],
+            "text": "Artisan's Echo\nQa\nadmin\n\nModerate listings, manage users, and keep the marketplace healthy.\n\nDashboard\nUsers\nArtifacts\nGalleries\nAudit trail\nCatalogue\nLog out\n\nADMINISTRATION WORKSPACE\n\nDashboard\nBack to catalogue\n\nPLATFORM OVERVIEW\n\nAdministration summary\nRefresh\n7\nTotal users\n3\nTotal sellers\n4\nTotal artifacts\n2\nTotal galleries\n1\nTotal orders\n1\nPending artifacts\n1\nPublished artifacts\n\nMODERATION "
+          }
+        },
+        {
+          "name": "tablet-admin-users",
+          "url": "/admin/users",
+          "screenshot": "C:\\Users\\aitou\\pfe-antique-marketplace\\frontend\\qa-report-2026-06-18\\tablet-admin-users.png",
+          "metrics": {
+            "title": "frontend",
+            "url": "http://127.0.0.1:5173/admin/users",
+            "overflowX": false,
+            "overflowY": true,
+            "brokenImages": [],
+            "text": "Artisan's Echo\nQa\nadmin\n\nSearch, review, and control marketplace accounts.\n\nDashboard\nUsers\nArtifacts\nGalleries\nAudit trail\nCatalogue\nLog out\n\nADMINISTRATION WORKSPACE\n\nUsers\nBack to catalogue\n\nUSER MANAGEMENT\n\nAll accounts\nRefresh\nSearch\nRole\nAll roles\nBuyer\nSeller\nAdmin\nAccount status\nAll accounts\nEnabled\nDisabled\nUSER\tEMAIL\tROLE\tSTATUS\tJOINED\tACTIONS\nLeila Zahra\tadmin.qa@example.com\tadmin\tActiv"
+          }
+        },
+        {
+          "name": "tablet-admin-user-detail",
+          "url": "/admin/users/3",
+          "screenshot": "C:\\Users\\aitou\\pfe-antique-marketplace\\frontend\\qa-report-2026-06-18\\tablet-admin-user-detail.png",
+          "metrics": {
+            "title": "frontend",
+            "url": "http://127.0.0.1:5173/admin/users/3",
+            "overflowX": false,
+            "overflowY": true,
+            "brokenImages": [],
+            "text": "Artisan's Echo\nQa\nadmin\n\nInspect account details and permissions.\n\nDashboard\nUsers\nArtifacts\nGalleries\nAudit trail\nCatalogue\nLog out\n\nADMINISTRATION WORKSPACE\n\nUser #3\nBack to catalogue\n\nACCOUNT DETAILS\n\nadmin.qa@example.com\nBack to users\nFirst name\nLast name\nEmail\nRole\nBuyer\nSeller\nAdmin\nAccount status\nEnabled\nDisabled\nSave changes\nadmin\nCurrent role\nEnabled\nAccount status\n17/06/2026 23:09:40\nDat"
+          }
+        },
+        {
+          "name": "tablet-admin-artifacts",
+          "url": "/admin/artifacts",
+          "screenshot": "C:\\Users\\aitou\\pfe-antique-marketplace\\frontend\\qa-report-2026-06-18\\tablet-admin-artifacts.png",
+          "metrics": {
+            "title": "frontend",
+            "url": "http://127.0.0.1:5173/admin/artifacts",
+            "overflowX": false,
+            "overflowY": true,
+            "brokenImages": [],
+            "text": "Artisan's Echo\nQa\nadmin\n\nReview and moderate pending product submissions.\n\nDashboard\nUsers\nArtifacts\nGalleries\nAudit trail\nCatalogue\nLog out\n\nADMINISTRATION WORKSPACE\n\nArtifacts\nBack to catalogue\n\nARTIFACT MODERATION\n\nListing review queue\nRefresh\nSearch\nStatus\nAll statuses\nPending\nApproved\nRejected\nDraft\nSold\nIMAGE\tARTIFACT\tSELLER\tCATEGORY\tPRICE\tSTATUS\tACTIONS\n\n\tFrench Gilt Candlesticks\tseller2.qa"
+          }
+        },
+        {
+          "name": "tablet-admin-galleries",
+          "url": "/admin/galleries",
+          "screenshot": "C:\\Users\\aitou\\pfe-antique-marketplace\\frontend\\qa-report-2026-06-18\\tablet-admin-galleries.png",
+          "metrics": {
+            "title": "frontend",
+            "url": "http://127.0.0.1:5173/admin/galleries",
+            "overflowX": false,
+            "overflowY": true,
+            "brokenImages": [],
+            "text": "Artisan's Echo\nQa\nadmin\n\nReview gallery spaces and remove inappropriate content.\n\nDashboard\nUsers\nArtifacts\nGalleries\nAudit trail\nCatalogue\nLog out\n\nADMINISTRATION WORKSPACE\n\nGalleries\nBack to catalogue\n\nGALLERY MODERATION\n\nAll galleries\nRefresh\nSearch\nGALLERY\tOWNER\tTHEME\tVISIBILITY\tACTIONS\nPrivate Study\tkhalid.ben.hamou@gmail.com\tQuiet study\tPrivate\tRemove\nSalon Moderne\tkhalid.ben.hamou@gmail.com"
+          }
+        },
+        {
+          "name": "tablet-admin-audit",
+          "url": "/admin/audit",
+          "screenshot": "C:\\Users\\aitou\\pfe-antique-marketplace\\frontend\\qa-report-2026-06-18\\tablet-admin-audit.png",
+          "metrics": {
+            "title": "frontend",
+            "url": "http://127.0.0.1:5173/admin/audit",
+            "overflowX": false,
+            "overflowY": true,
+            "brokenImages": [],
+            "text": "Artisan's Echo\nQa\nadmin\n\nReview the moderation record and actions taken by admins.\n\nDashboard\nUsers\nArtifacts\nGalleries\nAudit trail\nCatalogue\nLog out\n\nADMINISTRATION WORKSPACE\n\nAudit trail\nBack to catalogue\n\nAUDIT LOG\n\nModeration history\nRefresh\nSearch\nAction type\nAll actions\nArtifact approved\nArtifact rejected\nArtifact deleted\nGallery deleted\nUser role changed\nUser disabled\nUser enabled\nACTION\tTA"
+          }
+        }
+      ]
+    },
+    {
+      "viewport": "mobile",
+      "consoleErrors": [
+        "Failed to load resource: the server responded with a status of 404 (Not Found)",
+        "Encountered two children with the same key, `%s`. Keys should be unique so that components maintain their identity across updates. Non-unique keys may cause children to be duplicated and/or omitted — the behavior is unsupported and could change in a future version. related-4",
+        "Failed to load resource: the server responded with a status of 404 (Not Found)",
+        "Encountered two children with the same key, `%s`. Keys should be unique so that components maintain their identity across updates. Non-unique keys may cause children to be duplicated and/or omitted — the behavior is unsupported and could change in a future version. related-4",
+        "Failed to load resource: the server responded with a status of 404 (Not Found)",
+        "Encountered two children with the same key, `%s`. Keys should be unique so that components maintain their identity across updates. Non-unique keys may cause children to be duplicated and/or omitted — the behavior is unsupported and could change in a future version. related-4",
+        "Failed to load resource: the server responded with a status of 404 (Not Found)",
+        "Encountered two children with the same key, `%s`. Keys should be unique so that components maintain their identity across updates. Non-unique keys may cause children to be duplicated and/or omitted — the behavior is unsupported and could change in a future version. related-4",
+        "Encountered two children with the same key, `%s`. Keys should be unique so that components maintain their identity across updates. Non-unique keys may cause children to be duplicated and/or omitted — the behavior is unsupported and could change in a future version. related-4",
+        "Failed to load resource: the server responded with a status of 400 (Bad Request)",
+        "Encountered two children with the same key, `%s`. Keys should be unique so that components maintain their identity across updates. Non-unique keys may cause children to be duplicated and/or omitted — the behavior is unsupported and could change in a future version. related-4",
+        "Encountered two children with the same key, `%s`. Keys should be unique so that components maintain their identity across updates. Non-unique keys may cause children to be duplicated and/or omitted — the behavior is unsupported and could change in a future version. related-4",
+        "Failed to load resource: the server responded with a status of 400 (Bad Request)",
+        "Encountered two children with the same key, `%s`. Keys should be unique so that components maintain their identity across updates. Non-unique keys may cause children to be duplicated and/or omitted — the behavior is unsupported and could change in a future version. related-4",
+        "Failed to load resource: the server responded with a status of 400 (Bad Request)"
+      ],
+      "pageErrors": [],
+      "requestFailures": [
+        "GET https://commons.wikimedia.org/w/index.php?title=Special:Redirect/file/Grande_Bible_historiale_compl%C3%83%C2%A9t%C3%83%C2%A9e_-_BNF_Fr159_f3r_(Trinit%C3%83%C2%A9).jpg&width=1200 :: net::ERR_BLOCKED_BY_ORB",
+        "GET https://commons.wikimedia.org/w/index.php?title=Special:Redirect/file/Robe_%C3%83_la_Fran%C3%83%C2%A7aise_MET_DP156536.jpg&width=1200 :: net::ERR_BLOCKED_BY_ORB",
+        "GET https://commons.wikimedia.org/w/index.php?title=Special:Redirect/file/Grande_Bible_historiale_compl%C3%83%C2%A9t%C3%83%C2%A9e_-_BNF_Fr159_f3r_(Trinit%C3%83%C2%A9).jpg&width=1200 :: net::ERR_BLOCKED_BY_ORB",
+        "GET https://commons.wikimedia.org/w/index.php?title=Special:Redirect/file/Robe_%C3%83_la_Fran%C3%83%C2%A7aise_MET_DP156536.jpg&width=1200 :: net::ERR_BLOCKED_BY_ORB",
+        "GET https://commons.wikimedia.org/w/index.php?title=Special:Redirect/file/Argand_Lamp_MET_ADA3409.jpg&width=1200 :: net::ERR_ABORTED",
+        "GET https://commons.wikimedia.org/w/index.php?title=Special:Redirect/file/Robe_%C3%83_la_Fran%C3%83%C2%A7aise_MET_DP156536.jpg&width=1200 :: net::ERR_ABORTED",
+        "GET https://commons.wikimedia.org/w/index.php?title=Special:Redirect/file/Grande_Bible_historiale_compl%C3%83%C2%A9t%C3%83%C2%A9e_-_BNF_Fr159_f3r_(Trinit%C3%83%C2%A9).jpg&width=1200 :: net::ERR_ABORTED",
+        "GET https://upload.wikimedia.org/wikipedia/commons/thumb/8/8e/%22The_Gould%22_Violin_MET_DT669.jpg/1280px-%22The_Gould%22_Violin_MET_DT669.jpg :: net::ERR_ABORTED",
+        "GET https://commons.wikimedia.org/w/index.php?title=Special:Redirect/file/20241025_Gourd-Shaped_Blue_and_White_Porcelain_Vase_of_Wanli_Reign,_Ming_Dynasty.jpg&width=1200 :: net::ERR_ABORTED",
+        "GET https://commons.wikimedia.org/wiki/Special:FilePath/Brooch%20(England)%2C%2018th%20century%20(CH%2018800413).jpg?width=1200 :: net::ERR_ABORTED",
+        "GET https://upload.wikimedia.org/wikipedia/commons/7/7f/Cabinet_des_Medailles.jpg :: net::ERR_ABORTED",
+        "GET https://commons.wikimedia.org/w/index.php?title=Special:Redirect/file/Ardabil_Carpet.jpg&width=1200 :: net::ERR_ABORTED",
+        "GET https://upload.wikimedia.org/wikipedia/commons/thumb/6/6e/Cabinet_MET_210485.jpg/1280px-Cabinet_MET_210485.jpg :: net::ERR_ABORTED",
+        "GET https://commons.wikimedia.org/w/index.php?title=Special:Redirect/file/Antique_clock_in_Katowice_shop.JPG&width=1200 :: net::ERR_ABORTED",
+        "GET https://commons.wikimedia.org/wiki/Special:FilePath/Vienna%20-%20Vintage%20Table%20or%20Mantel%20Clock%20-%200554.jpg?width=1200 :: net::ERR_ABORTED",
+        "GET https://commons.wikimedia.org/w/index.php?title=Special:Redirect/file/Japansk_silvertekanna_med_dito_sil.jpg&width=1200 :: net::ERR_ABORTED",
+        "GET https://commons.wikimedia.org/w/index.php?title=Special:Redirect/file/%22The_Gould%22_Violin_MET_DT669.jpg&width=1200 :: net::ERR_ABORTED",
+        "GET https://commons.wikimedia.org/wiki/Special:FilePath/20241025%20Gourd-Shaped%20Blue%20and%20White%20Porcelain%20Vase%20of%20Wanli%20Reign%2C%20Ming%20Dynasty.jpg?width=1200 :: net::ERR_ABORTED",
+        "GET https://commons.wikimedia.org/w/index.php?title=Special:Redirect/file/Vienna_-_Vintage_Table_or_Mantel_Clock_-_0554.jpg&width=1200 :: net::ERR_ABORTED",
+        "GET https://commons.wikimedia.org/wiki/Special:FilePath/Robe%20%C3%83%C2%A0%20la%20Fran%C3%83%C2%A7aise%20MET%20DP156536.jpg?width=1200 :: net::ERR_ABORTED",
+        "GET https://commons.wikimedia.org/wiki/Special:FilePath/Cabinet%20des%20Medailles.jpg?width=1200 :: net::ERR_ABORTED",
+        "GET https://commons.wikimedia.org/w/index.php?title=Special:Redirect/file/Cabinet_MET_210485.jpg&width=1200 :: net::ERR_ABORTED",
+        "GET https://commons.wikimedia.org/wiki/Special:FilePath/Ardabil%20Carpet.jpg?width=1200 :: net::ERR_ABORTED",
+        "GET https://commons.wikimedia.org/wiki/Special:FilePath/Brooch%20(England)%2C%2018th%20century%20(CH%2018800413).jpg?width=1200 :: net::ERR_ABORTED",
+        "GET https://commons.wikimedia.org/w/index.php?title=Special:Redirect/file/Grande_Bible_historiale_compl%C3%83%C2%A9t%C3%83%C2%A9e_-_BNF_Fr159_f3r_(Trinit%C3%83%C2%A9).jpg&width=1200 :: net::ERR_ABORTED",
+        "GET https://commons.wikimedia.org/w/index.php?title=Special:Redirect/file/Japansk_silvertekanna_med_dito_sil.jpg&width=1200 :: net::ERR_ABORTED",
+        "GET https://images.unsplash.com/photo-1578926375605-eaf7559b1458?auto=format&fit=crop&w=1200&q=85 :: net::ERR_ABORTED",
+        "GET https://commons.wikimedia.org/w/index.php?title=Special:Redirect/file/Argand_Lamp_MET_ADA3409.jpg&width=1200 :: net::ERR_ABORTED",
+        "GET https://commons.wikimedia.org/w/index.php?title=Special:Redirect/file/Antique_clock_in_Katowice_shop.JPG&width=1200 :: net::ERR_ABORTED",
+        "GET https://images.unsplash.com/photo-1460661419201-fd4cecdf8a8d?auto=format&fit=crop&w=1200&q=85 :: net::ERR_BLOCKED_BY_ORB",
+        "GET https://commons.wikimedia.org/w/index.php?title=Special:Redirect/file/Robe_%C3%83_la_Fran%C3%83%C2%A7aise_MET_DP156536.jpg&width=1200 :: net::ERR_BLOCKED_BY_ORB",
+        "GET https://upload.wikimedia.org/wikipedia/commons/thumb/7/78/Brooch_%28England%29%2C_18th_century_%28CH_18800413%29.jpg/1280px-Brooch_%28England%29%2C_18th_century_%28CH_18800413%29.jpg :: net::ERR_ABORTED",
+        "GET https://upload.wikimedia.org/wikipedia/commons/thumb/0/04/Argand_Lamp_MET_ADA3409.jpg/1280px-Argand_Lamp_MET_ADA3409.jpg :: net::ERR_ABORTED",
+        "GET https://commons.wikimedia.org/w/index.php?title=Special:Redirect/file/Grande_Bible_historiale_compl%C3%83%C2%A9t%C3%83%C2%A9e_-_BNF_Fr159_f3r_(Trinit%C3%83%C2%A9).jpg&width=1200 :: net::ERR_ABORTED",
+        "GET https://upload.wikimedia.org/wikipedia/commons/1/14/Japansk_silvertekanna_med_dito_sil.jpg :: net::ERR_ABORTED",
+        "GET https://upload.wikimedia.org/wikipedia/commons/thumb/2/27/Vienna_-_Vintage_Table_or_Mantel_Clock_-_0554.jpg/1280px-Vienna_-_Vintage_Table_or_Mantel_Clock_-_0554.jpg :: net::ERR_ABORTED",
+        "GET https://upload.wikimedia.org/wikipedia/commons/thumb/4/47/Antique_clock_in_Katowice_shop.JPG/1280px-Antique_clock_in_Katowice_shop.JPG :: net::ERR_ABORTED",
+        "GET https://upload.wikimedia.org/wikipedia/commons/a/a4/20241025_Gourd-Shaped_Blue_and_White_Porcelain_Vase_of_Wanli_Reign%2C_Ming_Dynasty.jpg :: net::ERR_ABORTED",
+        "GET https://upload.wikimedia.org/wikipedia/commons/7/71/Ardabil_Carpet.jpg :: net::ERR_ABORTED",
+        "GET https://upload.wikimedia.org/wikipedia/commons/thumb/8/8e/%22The_Gould%22_Violin_MET_DT669.jpg/1280px-%22The_Gould%22_Violin_MET_DT669.jpg :: net::ERR_ABORTED",
+        "GET https://upload.wikimedia.org/wikipedia/commons/thumb/6/6e/Cabinet_MET_210485.jpg/1280px-Cabinet_MET_210485.jpg :: net::ERR_ABORTED",
+        "GET https://upload.wikimedia.org/wikipedia/commons/7/7f/Cabinet_des_Medailles.jpg :: net::ERR_ABORTED",
+        "GET https://upload.wikimedia.org/wikipedia/commons/thumb/c/c7/Antique_Closet_%283139773451%29.jpg/1280px-Antique_Closet_%283139773451%29.jpg :: net::ERR_ABORTED"
+      ],
+      "httpErrors": [
+        "404 GET http://127.0.0.1:8000/api/artifacts/101/",
+        "404 GET http://127.0.0.1:8000/api/artifacts/101/",
+        "404 GET http://127.0.0.1:8000/api/artifacts/101/",
+        "404 GET http://127.0.0.1:8000/api/artifacts/101/",
+        "400 POST http://127.0.0.1:8000/api/cart/",
+        "400 POST http://127.0.0.1:8000/api/wishlist/",
+        "400 POST http://127.0.0.1:8000/api/orders/checkout/"
+      ],
+      "pages": [
+        {
+          "name": "mobile-homepage",
+          "url": "/",
+          "screenshot": "C:\\Users\\aitou\\pfe-antique-marketplace\\frontend\\qa-report-2026-06-18\\mobile-homepage.png",
+          "metrics": {
+            "title": "frontend",
+            "url": "http://127.0.0.1:5173/",
+            "overflowX": false,
+            "overflowY": true,
+            "brokenImages": [],
+            "text": "Artisan's Echo\nCatalogue\nFeatured\nFurniture\nArt\nJewelry\nDecor\nBrowse now\nLog in\nSign up\nLanguage\nEN\nFR\n\nLUXURY MARKETPLACE\n\nAntiques, furniture, art, jewelry, and decor from verified sellers.\n\nBrowse antiques, furniture, art, jewelry, and decor from verified sellers in a clean marketplace layout.\n\nBrowse now\nView all objects\nFeatured\n04\nNew arrivals\n04\nFurniture\n02\nArt\n02\nJewelry\n01\nDecor\n03\n\nFEAT"
+          }
+        },
+        {
+          "name": "mobile-catalog",
+          "url": "/",
+          "screenshot": "C:\\Users\\aitou\\pfe-antique-marketplace\\frontend\\qa-report-2026-06-18\\mobile-catalog.png",
+          "metrics": {
+            "title": "frontend",
+            "url": "http://127.0.0.1:5173/",
+            "overflowX": false,
+            "overflowY": true,
+            "brokenImages": [],
+            "text": "Artisan's Echo\nCatalogue\nFeatured\nFurniture\nArt\nJewelry\nDecor\nBrowse now\nLog in\nSign up\nLanguage\nEN\nFR\n\nLUXURY MARKETPLACE\n\nAntiques, furniture, art, jewelry, and decor from verified sellers.\n\nBrowse antiques, furniture, art, jewelry, and decor from verified sellers in a clean marketplace layout.\n\nBrowse now\nView all objects\nFeatured\n04\nNew arrivals\n04\nFurniture\n02\nArt\n02\nJewelry\n01\nDecor\n03\n\nFEAT"
+          }
+        },
+        {
+          "name": "mobile-product-detail",
+          "url": "/artifacts/101",
+          "screenshot": "C:\\Users\\aitou\\pfe-antique-marketplace\\frontend\\qa-report-2026-06-18\\mobile-product-detail.png",
+          "metrics": {
+            "title": "frontend",
+            "url": "http://127.0.0.1:5173/artifacts/101",
+            "overflowX": false,
+            "overflowY": true,
+            "brokenImages": [],
+            "text": "Marketplace\nArt\nLot AE-0101\nObject preview\ngood\n\nMARKETPLACE LISTING\n\nJapanese Pine Trees Folding Screen\n\nArt\n\n$14,800\n\nReview the object details, seller information, and delivery notes before adding it to your cart or wishlist.\n\nSellerVerified seller\n\nVerified listing from the marketplace catalog.\n\nAdd to cart\nSave to wishlist\nGo to cart\nAsk seller\nCondition\ngood\nStatus\napproved\nMaterials\nOrigina"
+          }
+        },
+        {
+          "name": "mobile-login",
+          "url": "/login",
+          "screenshot": "C:\\Users\\aitou\\pfe-antique-marketplace\\frontend\\qa-report-2026-06-18\\mobile-login.png",
+          "metrics": {
+            "title": "frontend",
+            "url": "http://127.0.0.1:5173/login",
+            "overflowX": false,
+            "overflowY": true,
+            "brokenImages": [],
+            "text": "WELCOME BACK\n\nSign in to continue your collection.\n\nUse the same email you registered with to access your account, keep your place in the marketplace, and continue into the protected flow later.\n\nEmail login\n\nThe backend authenticates with JWT tokens.\n\nSession restore\n\nStored credentials reload on page refresh.\n\nBuyer ready\n\nCollectors can continue browsing after sign in.\n\nSeller ready\n\nSellers ca"
+          }
+        },
+        {
+          "name": "mobile-signup",
+          "url": "/signup",
+          "screenshot": "C:\\Users\\aitou\\pfe-antique-marketplace\\frontend\\qa-report-2026-06-18\\mobile-signup.png",
+          "metrics": {
+            "title": "frontend",
+            "url": "http://127.0.0.1:5173/signup",
+            "overflowX": false,
+            "overflowY": true,
+            "brokenImages": [],
+            "text": "PRIVATE ACCESS\n\nJoin a marketplace built for objects with a past.\n\nCreate a collector or seller account to follow rare pieces, manage listings, and access the marketplace with the right role.\n\nCollector\n\nBrowse, save, and order objects.\n\nSeller\n\nPrepare inventory and manage listings.\n\nVerified flow\n\nLogin uses the same email you registered with.\n\nSecure access\n\nPasswords and tokens are handled by "
+          }
+        },
+        {
+          "name": "mobile-cart-redirect",
+          "url": "/cart",
+          "screenshot": "C:\\Users\\aitou\\pfe-antique-marketplace\\frontend\\qa-report-2026-06-18\\mobile-cart-redirect.png",
+          "metrics": {
+            "title": "frontend",
+            "url": "http://127.0.0.1:5173/login",
+            "overflowX": false,
+            "overflowY": true,
+            "brokenImages": [],
+            "text": "WELCOME BACK\n\nSign in to continue your collection.\n\nUse the same email you registered with to access your account, keep your place in the marketplace, and continue into the protected flow later.\n\nEmail login\n\nThe backend authenticates with JWT tokens.\n\nSession restore\n\nStored credentials reload on page refresh.\n\nBuyer ready\n\nCollectors can continue browsing after sign in.\n\nSeller ready\n\nSellers ca"
+          }
+        },
+        {
+          "name": "mobile-collector-dashboard",
+          "url": "/collector",
+          "screenshot": "C:\\Users\\aitou\\pfe-antique-marketplace\\frontend\\qa-report-2026-06-18\\mobile-collector-dashboard.png",
+          "metrics": {
+            "title": "frontend",
+            "url": "http://127.0.0.1:5173/collector",
+            "overflowX": false,
+            "overflowY": true,
+            "brokenImages": [],
+            "text": "Artisan's Echo\nQa\nbuyer\n\nTrack your saved objects, orders, and profile from one collector workspace.\n\nDashboard\nWishlist\nCollections\nCart\nOrders\nProfile\nCatalogue\nLog out\n\nBUYER WORKSPACE\n\nDashboard\nBack to catalogue\n\nCOLLECTOR SUMMARY\n\nWorkspace home\nRefresh\n0\nWishlist items\n0\nOrders\n0\nPaid orders\n0\nCart items\n\nPROFILE SUMMARY\n\nqa-collector@example.com\nEdit profile\nQa QA\nbuyer\nNo avatar path\n\nREC"
+          }
+        },
+        {
+          "name": "mobile-wishlist",
+          "url": "/wishlist",
+          "screenshot": "C:\\Users\\aitou\\pfe-antique-marketplace\\frontend\\qa-report-2026-06-18\\mobile-wishlist.png",
+          "metrics": {
+            "title": "frontend",
+            "url": "http://127.0.0.1:5173/wishlist",
+            "overflowX": false,
+            "overflowY": true,
+            "brokenImages": [],
+            "text": "Artisan's Echo\nQa\nbuyer\n\nSave rare objects, group them into collections, and move them into checkout when you are ready.\n\nDashboard\nWishlist\nCollections\nCart\nOrders\nProfile\nCatalogue\nLog out\n\nBUYER WORKSPACE\n\nWishlist & collections\nBack to catalogue\n\nSAVED OBJECTS\n\nYour saved collections\nRefresh\nNo saved objects yet\n\nUse the heart on a product page to save pieces here."
+          }
+        },
+        {
+          "name": "mobile-orders",
+          "url": "/orders",
+          "screenshot": "C:\\Users\\aitou\\pfe-antique-marketplace\\frontend\\qa-report-2026-06-18\\mobile-orders.png",
+          "metrics": {
+            "title": "frontend",
+            "url": "http://127.0.0.1:5173/orders",
+            "overflowX": false,
+            "overflowY": true,
+            "brokenImages": [],
+            "text": "Artisan's Echo\nQa\nbuyer\n\nReview your purchase history and open any order for payment simulation details.\n\nDashboard\nWishlist\nCollections\nCart\nOrders\nProfile\nCatalogue\nLog out\n\nBUYER WORKSPACE\n\nOrders\nBack to catalogue\n\nORDER HISTORY\n\nPrevious orders\nRefresh\nNo orders yet\n\nCheckout a cart to create your first order."
+          }
+        },
+        {
+          "name": "mobile-profile",
+          "url": "/account",
+          "screenshot": "C:\\Users\\aitou\\pfe-antique-marketplace\\frontend\\qa-report-2026-06-18\\mobile-profile.png",
+          "metrics": {
+            "title": "frontend",
+            "url": "http://127.0.0.1:5173/account",
+            "overflowX": false,
+            "overflowY": true,
+            "brokenImages": [],
+            "text": "Artisan's Echo\nQa\nbuyer\n\nView and manage your account details.\n\nCollector dashboard\nProfile\nWishlist\nOrders\nLog out\n\nPROFILE MANAGEMENT\n\nAccount settings\nBack to catalogue\n\nPROFILE SUMMARY\n\nqa-collector@example.com\nbuyer\nRole\nDefault\nAvatar path\n17/06/2026\nProfile created\n\nPROFILE EDITING\n\nView and edit profile\nEmail\nFirst name\nLast name\nAvatar path\nSave profile\n\nPASSWORD\n\nChange password\nCurrent "
+          }
+        },
+        {
+          "name": "mobile-collector-product-seed",
+          "url": "/artifacts/101",
+          "screenshot": "C:\\Users\\aitou\\pfe-antique-marketplace\\frontend\\qa-report-2026-06-18\\mobile-collector-product-seed.png",
+          "metrics": {
+            "title": "frontend",
+            "url": "http://127.0.0.1:5173/artifacts/101",
+            "overflowX": false,
+            "overflowY": true,
+            "brokenImages": [],
+            "text": "Marketplace\nArt\nLot AE-0101\nObject preview\ngood\n\nMARKETPLACE LISTING\n\nJapanese Pine Trees Folding Screen\n\nArt\n\n$14,800\n\nReview the object details, seller information, and delivery notes before adding it to your cart or wishlist.\n\nSellerVerified seller\n\nVerified listing from the marketplace catalog.\n\nAdd to cart\nSave to wishlist\nGo to cart\nAsk seller\nCondition\ngood\nStatus\napproved\nMaterials\nOrigina"
+          }
+        },
+        {
+          "name": "mobile-cart",
+          "url": "/cart",
+          "screenshot": "C:\\Users\\aitou\\pfe-antique-marketplace\\frontend\\qa-report-2026-06-18\\mobile-cart.png",
+          "metrics": {
+            "title": "frontend",
+            "url": "http://127.0.0.1:5173/cart",
+            "overflowX": false,
+            "overflowY": true,
+            "brokenImages": [],
+            "text": "Artisan's Echo\nQa\nbuyer\n\nReview quantities, adjust items, and place an order when everything looks right.\n\nDashboard\nWishlist\nCollections\nCart\nOrders\nProfile\nCatalogue\nLog out\n\nBUYER WORKSPACE\n\nCart\nBack to catalogue\n\nCART REVIEW\n\nYour active cart\nCheckout\nYour cart is empty\n\nAdd approved artifacts from their product pages.\n\nTotal: $0"
+          }
+        },
+        {
+          "name": "mobile-checkout",
+          "url": "/cart",
+          "screenshot": "C:\\Users\\aitou\\pfe-antique-marketplace\\frontend\\qa-report-2026-06-18\\mobile-checkout.png",
+          "metrics": {
+            "title": "frontend",
+            "url": "http://127.0.0.1:5173/cart",
+            "overflowX": false,
+            "overflowY": true,
+            "brokenImages": [],
+            "text": "Artisan's Echo\nQa\nbuyer\n\nReview quantities, adjust items, and place an order when everything looks right.\n\nDashboard\nWishlist\nCollections\nCart\nOrders\nProfile\nCatalogue\nLog out\n\nBUYER WORKSPACE\n\nCart\nBack to catalogue\n\nCART REVIEW\n\nYour active cart\nCheckout\nYour cart is empty\n\nAdd approved artifacts from their product pages.\n\nCheckout could not be completed right now.\n\nTotal: $0"
+          }
+        },
+        {
+          "name": "mobile-orders-after-checkout",
+          "url": "/orders",
+          "screenshot": "C:\\Users\\aitou\\pfe-antique-marketplace\\frontend\\qa-report-2026-06-18\\mobile-orders-after-checkout.png",
+          "metrics": {
+            "title": "frontend",
+            "url": "http://127.0.0.1:5173/orders",
+            "overflowX": false,
+            "overflowY": true,
+            "brokenImages": [],
+            "text": "Artisan's Echo\nQa\nbuyer\n\nReview your purchase history and open any order for payment simulation details.\n\nDashboard\nWishlist\nCollections\nCart\nOrders\nProfile\nCatalogue\nLog out\n\nBUYER WORKSPACE\n\nOrders\nBack to catalogue\n\nORDER HISTORY\n\nPrevious orders\nRefresh\nNo orders yet\n\nCheckout a cart to create your first order."
+          }
+        },
+        {
+          "name": "mobile-seller-dashboard",
+          "url": "/seller",
+          "screenshot": "C:\\Users\\aitou\\pfe-antique-marketplace\\frontend\\qa-report-2026-06-18\\mobile-seller-dashboard.png",
+          "metrics": {
+            "title": "frontend",
+            "url": "http://127.0.0.1:5173/seller",
+            "overflowX": false,
+            "overflowY": true,
+            "brokenImages": [],
+            "text": "Artisan's Echo\nQa\nseller\n\nTrack inventory, manage gallery spaces, and keep the seller catalog organized.\n\nAnalytics\nProducts\nOrders received\nGalleries\nProfile\nCatalogue\nLog out\n\nSELLER WORKSPACE\n\nAnalytics\nBack to catalogue\n\nSELLER STATS\n\nWorkspace overview\nRefresh\n0\nTotal listings\n0\nPublished listings\n0\nPending listings\n0\nSold listings\n0\nTotal sales\n$0\nRevenue\n0\nSold artifacts\n0\nGalleries\n\nRECENT"
+          }
+        },
+        {
+          "name": "mobile-seller-products",
+          "url": "/seller/products",
+          "screenshot": "C:\\Users\\aitou\\pfe-antique-marketplace\\frontend\\qa-report-2026-06-18\\mobile-seller-products.png",
+          "metrics": {
+            "title": "frontend",
+            "url": "http://127.0.0.1:5173/seller/products",
+            "overflowX": false,
+            "overflowY": true,
+            "brokenImages": [],
+            "text": "Artisan's Echo\nQa\nseller\n\nCreate, edit, and preview antique listings with a studio workflow built for premium objects.\n\nAnalytics\nProducts\nOrders received\nGalleries\nProfile\nCatalogue\nLog out\n\nSELLER WORKSPACE\n\nProducts\nBack to catalogue\n\nLISTING STUDIO\n\nCreate listing\n\nMulti-image drafting, drag and drop upload, step-by-step sections, and a live preview before publish.\n\nNew listing\nClear media\n\nST"
+          }
+        },
+        {
+          "name": "mobile-seller-product-create",
+          "url": "/seller/products",
+          "screenshot": "C:\\Users\\aitou\\pfe-antique-marketplace\\frontend\\qa-report-2026-06-18\\mobile-seller-product-create.png",
+          "metrics": {
+            "title": "frontend",
+            "url": "http://127.0.0.1:5173/seller/products",
+            "overflowX": false,
+            "overflowY": true,
+            "brokenImages": [],
+            "text": "Artisan's Echo\nQa\nseller\n\nCreate, edit, and preview antique listings with a studio workflow built for premium objects.\n\nAnalytics\nProducts\nOrders received\nGalleries\nProfile\nCatalogue\nLog out\n\nSELLER WORKSPACE\n\nProducts\nBack to catalogue\n\nLISTING STUDIO\n\nCreate listing\n\nMulti-image drafting, drag and drop upload, step-by-step sections, and a live preview before publish.\n\nNew listing\nClear media\n\nST"
+          }
+        },
+        {
+          "name": "mobile-seller-orders",
+          "url": "/seller/orders",
+          "screenshot": "C:\\Users\\aitou\\pfe-antique-marketplace\\frontend\\qa-report-2026-06-18\\mobile-seller-orders.png",
+          "metrics": {
+            "title": "frontend",
+            "url": "http://127.0.0.1:5173/seller/orders",
+            "overflowX": false,
+            "overflowY": false,
+            "brokenImages": [],
+            "text": "Artisan's Echo\nQa\nseller\n\nView orders that include your antiques and track what buyers have purchased.\n\nAnalytics\nProducts\nOrders received\nGalleries\nProfile\nCatalogue\nLog out\n\nSELLER WORKSPACE\n\nOrders received\nBack to catalogue\n\nSELLER ORDERS\n\nReceived orders\nRefresh\nORDER ID\tBUYER\tPRODUCT\tTOTAL\tSTATUS\tDATE\tACTIONS"
+          }
+        },
+        {
+          "name": "mobile-seller-galleries",
+          "url": "/seller/galleries",
+          "screenshot": "C:\\Users\\aitou\\pfe-antique-marketplace\\frontend\\qa-report-2026-06-18\\mobile-seller-galleries.png",
+          "metrics": {
+            "title": "frontend",
+            "url": "http://127.0.0.1:5173/seller/galleries",
+            "overflowX": false,
+            "overflowY": true,
+            "brokenImages": [],
+            "text": "Artisan's Echo\nQa\nseller\n\nCreate and manage gallery spaces for your approved antique collections.\n\nAnalytics\nProducts\nOrders received\nGalleries\nProfile\nCatalogue\nLog out\n\nSELLER WORKSPACE\n\nGalleries\nBack to catalogue\n\nGALLERY MANAGEMENT\n\nCreate gallery\nNew gallery\nName\nTheme\nDescription\n3D layout path\nPublic gallery\nPublic\nPrivate\nCreate gallery\nClear form\nNo galleries yet\n\nCreate your first galle"
+          }
+        },
+        {
+          "name": "mobile-admin-dashboard",
+          "url": "/admin",
+          "screenshot": "C:\\Users\\aitou\\pfe-antique-marketplace\\frontend\\qa-report-2026-06-18\\mobile-admin-dashboard.png",
+          "metrics": {
+            "title": "frontend",
+            "url": "http://127.0.0.1:5173/admin",
+            "overflowX": false,
+            "overflowY": true,
+            "brokenImages": [],
+            "text": "Artisan's Echo\nQa\nadmin\n\nModerate listings, manage users, and keep the marketplace healthy.\n\nDashboard\nUsers\nArtifacts\nGalleries\nAudit trail\nCatalogue\nLog out\n\nADMINISTRATION WORKSPACE\n\nDashboard\nBack to catalogue\n\nPLATFORM OVERVIEW\n\nAdministration summary\nRefresh\n7\nTotal users\n3\nTotal sellers\n4\nTotal artifacts\n2\nTotal galleries\n1\nTotal orders\n1\nPending artifacts\n1\nPublished artifacts\n\nMODERATION "
+          }
+        },
+        {
+          "name": "mobile-admin-users",
+          "url": "/admin/users",
+          "screenshot": "C:\\Users\\aitou\\pfe-antique-marketplace\\frontend\\qa-report-2026-06-18\\mobile-admin-users.png",
+          "metrics": {
+            "title": "frontend",
+            "url": "http://127.0.0.1:5173/admin/users",
+            "overflowX": false,
+            "overflowY": true,
+            "brokenImages": [],
+            "text": "Artisan's Echo\nQa\nadmin\n\nSearch, review, and control marketplace accounts.\n\nDashboard\nUsers\nArtifacts\nGalleries\nAudit trail\nCatalogue\nLog out\n\nADMINISTRATION WORKSPACE\n\nUsers\nBack to catalogue\n\nUSER MANAGEMENT\n\nAll accounts\nRefresh\nSearch\nRole\nAll roles\nBuyer\nSeller\nAdmin\nAccount status\nAll accounts\nEnabled\nDisabled\nUSER\tEMAIL\tROLE\tSTATUS\tJOINED\tACTIONS\nLeila Zahra\tadmin.qa@example.com\tadmin\tActiv"
+          }
+        },
+        {
+          "name": "mobile-admin-user-detail",
+          "url": "/admin/users/3",
+          "screenshot": "C:\\Users\\aitou\\pfe-antique-marketplace\\frontend\\qa-report-2026-06-18\\mobile-admin-user-detail.png",
+          "metrics": {
+            "title": "frontend",
+            "url": "http://127.0.0.1:5173/admin/users/3",
+            "overflowX": false,
+            "overflowY": true,
+            "brokenImages": [],
+            "text": "Artisan's Echo\nQa\nadmin\n\nInspect account details and permissions.\n\nDashboard\nUsers\nArtifacts\nGalleries\nAudit trail\nCatalogue\nLog out\n\nADMINISTRATION WORKSPACE\n\nUser #3\nBack to catalogue\n\nACCOUNT DETAILS\n\nadmin.qa@example.com\nBack to users\nFirst name\nLast name\nEmail\nRole\nBuyer\nSeller\nAdmin\nAccount status\nEnabled\nDisabled\nSave changes\nadmin\nCurrent role\nEnabled\nAccount status\n17/06/2026 23:09:40\nDat"
+          }
+        },
+        {
+          "name": "mobile-admin-artifacts",
+          "url": "/admin/artifacts",
+          "screenshot": "C:\\Users\\aitou\\pfe-antique-marketplace\\frontend\\qa-report-2026-06-18\\mobile-admin-artifacts.png",
+          "metrics": {
+            "title": "frontend",
+            "url": "http://127.0.0.1:5173/admin/artifacts",
+            "overflowX": false,
+            "overflowY": true,
+            "brokenImages": [],
+            "text": "Artisan's Echo\nQa\nadmin\n\nReview and moderate pending product submissions.\n\nDashboard\nUsers\nArtifacts\nGalleries\nAudit trail\nCatalogue\nLog out\n\nADMINISTRATION WORKSPACE\n\nArtifacts\nBack to catalogue\n\nARTIFACT MODERATION\n\nListing review queue\nRefresh\nSearch\nStatus\nAll statuses\nPending\nApproved\nRejected\nDraft\nSold\nIMAGE\tARTIFACT\tSELLER\tCATEGORY\tPRICE\tSTATUS\tACTIONS\n\n\tFrench Gilt Candlesticks\tseller2.qa"
+          }
+        },
+        {
+          "name": "mobile-admin-galleries",
+          "url": "/admin/galleries",
+          "screenshot": "C:\\Users\\aitou\\pfe-antique-marketplace\\frontend\\qa-report-2026-06-18\\mobile-admin-galleries.png",
+          "metrics": {
+            "title": "frontend",
+            "url": "http://127.0.0.1:5173/admin/galleries",
+            "overflowX": false,
+            "overflowY": true,
+            "brokenImages": [],
+            "text": "Artisan's Echo\nQa\nadmin\n\nReview gallery spaces and remove inappropriate content.\n\nDashboard\nUsers\nArtifacts\nGalleries\nAudit trail\nCatalogue\nLog out\n\nADMINISTRATION WORKSPACE\n\nGalleries\nBack to catalogue\n\nGALLERY MODERATION\n\nAll galleries\nRefresh\nSearch\nGALLERY\tOWNER\tTHEME\tVISIBILITY\tACTIONS\nPrivate Study\tkhalid.ben.hamou@gmail.com\tQuiet study\tPrivate\tRemove\nSalon Moderne\tkhalid.ben.hamou@gmail.com"
+          }
+        },
+        {
+          "name": "mobile-admin-audit",
+          "url": "/admin/audit",
+          "screenshot": "C:\\Users\\aitou\\pfe-antique-marketplace\\frontend\\qa-report-2026-06-18\\mobile-admin-audit.png",
+          "metrics": {
+            "title": "frontend",
+            "url": "http://127.0.0.1:5173/admin/audit",
+            "overflowX": false,
+            "overflowY": true,
+            "brokenImages": [],
+            "text": "Artisan's Echo\nQa\nadmin\n\nReview the moderation record and actions taken by admins.\n\nDashboard\nUsers\nArtifacts\nGalleries\nAudit trail\nCatalogue\nLog out\n\nADMINISTRATION WORKSPACE\n\nAudit trail\nBack to catalogue\n\nAUDIT LOG\n\nModeration history\nRefresh\nSearch\nAction type\nAll actions\nArtifact approved\nArtifact rejected\nArtifact deleted\nGallery deleted\nUser role changed\nUser disabled\nUser enabled\nACTION\tTA"
+          }
+        }
+      ]
+    }
+  ]
+}

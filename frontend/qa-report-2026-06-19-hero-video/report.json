@@ -1,0 +1,29 @@
+[
+  {
+    "name": "home-video-hero-desktop",
+    "width": 1440,
+    "height": 1100,
+    "h1": "Rare Object Streams",
+    "hasVideo": true,
+    "scrollWidth": 1440,
+    "clientWidth": 1440,
+    "heroHeight": 997,
+    "overflowX": false
+  },
+  {
+    "name": "home-video-hero-mobile",
+    "width": 390,
+    "height": 1100,
+    "h1": "Rare Object Streams",
+    "hasVideo": true,
+    "scrollWidth": 390,
+    "clientWidth": 390,
+    "heroHeight": 780,
+    "overflowX": false
+  },
+  {
+    "name": "hero-filter-click",
+    "activeFilter": "All",
+    "catalogTop": 383
+  }
+]

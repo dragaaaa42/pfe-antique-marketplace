@@ -1,0 +1,230 @@
+{
+  "generatedAt": "2026-06-18T09:17:28.988Z",
+  "results": [
+    {
+      "viewport": "desktop",
+      "page": "homepage",
+      "url": "http://127.0.0.1:5173/",
+      "screenshot": "C:\\Users\\aitou\\pfe-antique-marketplace\\frontend\\qa-report-2026-06-18-fix\\desktop-homepage.png",
+      "consoleMessages": [],
+      "pageErrors": [],
+      "apiFailures": [],
+      "brokenImages": 0,
+      "overflow": {
+        "documentWidth": 1920,
+        "viewportWidth": 1920,
+        "bodyWidth": 1920
+      }
+    },
+    {
+      "viewport": "desktop",
+      "page": "catalog",
+      "url": "http://127.0.0.1:5173/#catalog",
+      "screenshot": "C:\\Users\\aitou\\pfe-antique-marketplace\\frontend\\qa-report-2026-06-18-fix\\desktop-catalog.png",
+      "consoleMessages": [],
+      "pageErrors": [],
+      "apiFailures": [],
+      "brokenImages": 0,
+      "overflow": {
+        "documentWidth": 1920,
+        "viewportWidth": 1920,
+        "bodyWidth": 1920
+      }
+    },
+    {
+      "viewport": "desktop",
+      "page": "product-detail",
+      "url": "http://127.0.0.1:5173/artifacts/4",
+      "screenshot": "C:\\Users\\aitou\\pfe-antique-marketplace\\frontend\\qa-report-2026-06-18-fix\\desktop-product-detail.png",
+      "consoleMessages": [],
+      "pageErrors": [],
+      "apiFailures": [],
+      "brokenImages": 0,
+      "overflow": {
+        "documentWidth": 1920,
+        "viewportWidth": 1920,
+        "bodyWidth": 1920
+      }
+    },
+    {
+      "viewport": "desktop",
+      "page": "seller-dashboard",
+      "url": "http://127.0.0.1:5173/seller",
+      "screenshot": "C:\\Users\\aitou\\pfe-antique-marketplace\\frontend\\qa-report-2026-06-18-fix\\desktop-seller-dashboard.png",
+      "consoleMessages": [],
+      "pageErrors": [],
+      "apiFailures": [],
+      "brokenImages": 0,
+      "overflow": {
+        "documentWidth": 1920,
+        "viewportWidth": 1920,
+        "bodyWidth": 1920
+      }
+    },
+    {
+      "viewport": "desktop",
+      "page": "admin-dashboard",
+      "url": "http://127.0.0.1:5173/admin",
+      "screenshot": "C:\\Users\\aitou\\pfe-antique-marketplace\\frontend\\qa-report-2026-06-18-fix\\desktop-admin-dashboard.png",
+      "consoleMessages": [],
+      "pageErrors": [],
+      "apiFailures": [],
+      "brokenImages": 0,
+      "overflow": {
+        "documentWidth": 1920,
+        "viewportWidth": 1920,
+        "bodyWidth": 1920
+      }
+    },
+    {
+      "viewport": "tablet",
+      "page": "homepage",
+      "url": "http://127.0.0.1:5173/",
+      "screenshot": "C:\\Users\\aitou\\pfe-antique-marketplace\\frontend\\qa-report-2026-06-18-fix\\tablet-homepage.png",
+      "consoleMessages": [],
+      "pageErrors": [],
+      "apiFailures": [],
+      "brokenImages": 0,
+      "overflow": {
+        "documentWidth": 768,
+        "viewportWidth": 768,
+        "bodyWidth": 768
+      }
+    },
+    {
+      "viewport": "tablet",
+      "page": "catalog",
+      "url": "http://127.0.0.1:5173/#catalog",
+      "screenshot": "C:\\Users\\aitou\\pfe-antique-marketplace\\frontend\\qa-report-2026-06-18-fix\\tablet-catalog.png",
+      "consoleMessages": [],
+      "pageErrors": [],
+      "apiFailures": [],
+      "brokenImages": 0,
+      "overflow": {
+        "documentWidth": 768,
+        "viewportWidth": 768,
+        "bodyWidth": 768
+      }
+    },
+    {
+      "viewport": "tablet",
+      "page": "product-detail",
+      "url": "http://127.0.0.1:5173/artifacts/4",
+      "screenshot": "C:\\Users\\aitou\\pfe-antique-marketplace\\frontend\\qa-report-2026-06-18-fix\\tablet-product-detail.png",
+      "consoleMessages": [],
+      "pageErrors": [],
+      "apiFailures": [],
+      "brokenImages": 0,
+      "overflow": {
+        "documentWidth": 768,
+        "viewportWidth": 768,
+        "bodyWidth": 768
+      }
+    },
+    {
+      "viewport": "tablet",
+      "page": "seller-dashboard",
+      "url": "http://127.0.0.1:5173/seller",
+      "screenshot": "C:\\Users\\aitou\\pfe-antique-marketplace\\frontend\\qa-report-2026-06-18-fix\\tablet-seller-dashboard.png",
+      "consoleMessages": [],
+      "pageErrors": [],
+      "apiFailures": [],
+      "brokenImages": 0,
+      "overflow": {
+        "documentWidth": 768,
+        "viewportWidth": 768,
+        "bodyWidth": 768
+      }
+    },
+    {
+      "viewport": "tablet",
+      "page": "admin-dashboard",
+      "url": "http://127.0.0.1:5173/admin",
+      "screenshot": "C:\\Users\\aitou\\pfe-antique-marketplace\\frontend\\qa-report-2026-06-18-fix\\tablet-admin-dashboard.png",
+      "consoleMessages": [],
+      "pageErrors": [],
+      "apiFailures": [],
+      "brokenImages": 0,
+      "overflow": {
+        "documentWidth": 768,
+        "viewportWidth": 768,
+        "bodyWidth": 768
+      }
+    },
+    {
+      "viewport": "mobile",
+      "page": "homepage",
+      "url": "http://127.0.0.1:5173/",
+      "screenshot": "C:\\Users\\aitou\\pfe-antique-marketplace\\frontend\\qa-report-2026-06-18-fix\\mobile-homepage.png",
+      "consoleMessages": [],
+      "pageErrors": [],
+      "apiFailures": [],
+      "brokenImages": 0,
+      "overflow": {
+        "documentWidth": 390,
+        "viewportWidth": 390,
+        "bodyWidth": 390
+      }
+    },
+    {
+      "viewport": "mobile",
+      "page": "catalog",
+      "url": "http://127.0.0.1:5173/#catalog",
+      "screenshot": "C:\\Users\\aitou\\pfe-antique-marketplace\\frontend\\qa-report-2026-06-18-fix\\mobile-catalog.png",
+      "consoleMessages": [],
+      "pageErrors": [],
+      "apiFailures": [],
+      "brokenImages": 0,
+      "overflow": {
+        "documentWidth": 390,
+        "viewportWidth": 390,
+        "bodyWidth": 390
+      }
+    },
+    {
+      "viewport": "mobile",
+      "page": "product-detail",
+      "url": "http://127.0.0.1:5173/artifacts/4",
+      "screenshot": "C:\\Users\\aitou\\pfe-antique-marketplace\\frontend\\qa-report-2026-06-18-fix\\mobile-product-detail.png",
+      "consoleMessages": [],
+      "pageErrors": [],
+      "apiFailures": [],
+      "brokenImages": 0,
+      "overflow": {
+        "documentWidth": 390,
+        "viewportWidth": 390,
+        "bodyWidth": 390
+      }
+    },
+    {
+      "viewport": "mobile",
+      "page": "seller-dashboard",
+      "url": "http://127.0.0.1:5173/seller",
+      "screenshot": "C:\\Users\\aitou\\pfe-antique-marketplace\\frontend\\qa-report-2026-06-18-fix\\mobile-seller-dashboard.png",
+      "consoleMessages": [],
+      "pageErrors": [],
+      "apiFailures": [],
+      "brokenImages": 0,
+      "overflow": {
+        "documentWidth": 390,
+        "viewportWidth": 390,
+        "bodyWidth": 390
+      }
+    },
+    {
+      "viewport": "mobile",
+      "page": "admin-dashboard",
+      "url": "http://127.0.0.1:5173/admin",
+      "screenshot": "C:\\Users\\aitou\\pfe-antique-marketplace\\frontend\\qa-report-2026-06-18-fix\\mobile-admin-dashboard.png",
+      "consoleMessages": [],
+      "pageErrors": [],
+      "apiFailures": [],
+      "brokenImages": 0,
+      "overflow": {
+        "documentWidth": 390,
+        "viewportWidth": 390,
+        "bodyWidth": 390
+      }
+    }
+  ]
+}

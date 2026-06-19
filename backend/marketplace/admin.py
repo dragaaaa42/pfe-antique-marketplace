@@ -1,5 +1,15 @@
 from django.contrib import admin
-from .models import Artifact, CartItem, Category, Exhibit, Gallery, Order, OrderItem, WishlistItem
+from .models import (
+    Artifact,
+    CartItem,
+    Category,
+    Exhibit,
+    Gallery,
+    ModerationAction,
+    Order,
+    OrderItem,
+    WishlistItem,
+)
 
 
 class ExhibitInline(admin.TabularInline):
@@ -64,3 +74,10 @@ class WishlistItemAdmin(admin.ModelAdmin):
 class CartItemAdmin(admin.ModelAdmin):
     list_display = ('user', 'artifact', 'quantity', 'updated_at')
     search_fields = ('user__email', 'artifact__title')
+
+
+@admin.register(ModerationAction)
+class ModerationActionAdmin(admin.ModelAdmin):
+    list_display = ('action_type', 'admin', 'target_model', 'target_id', 'created_at')
+    list_filter = ('action_type', 'target_model')
+    search_fields = ('admin__email', 'target_label', 'notes')

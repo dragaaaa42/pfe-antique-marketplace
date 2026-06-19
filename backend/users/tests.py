@@ -71,3 +71,59 @@ class AuthApiTests(APITestCase):
         self.assertEqual(me_response.status_code, status.HTTP_200_OK)
         self.assertEqual(me_response.data['email'], 'buyer@example.com')
         self.assertEqual(me_response.data['role'], UserProfile.Role.BUYER)
+
+    def test_me_endpoint_supports_profile_updates(self):
+        user = User.objects.create_user(
+            username='collector@example.com',
+            email='collector@example.com',
+            password='strong-password-123',
+            first_name='Old',
+            last_name='Name',
+        )
+        user.profile.role = UserProfile.Role.BUYER
+        user.profile.avatar_3d_path = '/avatars/old.glb'
+        user.profile.save(update_fields=['role', 'avatar_3d_path'])
+
+        self.client.force_authenticate(user)
+        response = self.client.patch(
+            '/api/auth/me/',
+            {
+                'email': 'new-collector@example.com',
+                'first_name': 'New',
+                'last_name': 'Collector',
+                'avatar_3d_path': '/avatars/new.glb',
+            },
+            format='json',
+        )
+
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
+        user.refresh_from_db()
+        user.profile.refresh_from_db()
+        self.assertEqual(user.email, 'new-collector@example.com')
+        self.assertEqual(user.username, 'new-collector@example.com')
+        self.assertEqual(user.first_name, 'New')
+        self.assertEqual(user.profile.avatar_3d_path, '/avatars/new.glb')
+
+    def test_change_password_updates_credentials(self):
+        user = User.objects.create_user(
+            username='password@example.com',
+            email='password@example.com',
+            password='old-password-123',
+        )
+        user.profile.role = UserProfile.Role.BUYER
+        user.profile.save(update_fields=['role'])
+
+        self.client.force_authenticate(user)
+        response = self.client.post(
+            '/api/auth/change-password/',
+            {
+                'current_password': 'old-password-123',
+                'new_password': 'new-password-123',
+                'confirm_password': 'new-password-123',
+            },
+            format='json',
+        )
+
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
+        user.refresh_from_db()
+        self.assertTrue(user.check_password('new-password-123'))

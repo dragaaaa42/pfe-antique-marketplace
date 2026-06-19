@@ -25,6 +25,7 @@ type AuthContextValue = {
   user: AuthUser | null
   isAuthenticated: boolean
   login: (payload: LoginPayload) => Promise<AuthSession>
+  updateUser: (user: AuthUser) => void
   logout: () => void
 }
 
@@ -33,6 +34,7 @@ const AuthContext = createContext<AuthContextValue | undefined>(undefined)
 export function AuthProvider({ children }: { children: ReactNode }) {
   const [status, setStatus] = useState<AuthStatus>('loading')
   const [user, setUser] = useState<AuthUser | null>(null)
+  const [session, setSession] = useState<AuthSession | null>(null)
 
   useEffect(() => {
     const session = loadAuthSession()
@@ -48,6 +50,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     const restoreSession = async () => {
       applyAccessToken(session.access)
       setUser(session.user)
+      setSession(session)
       setStatus('authenticated')
 
       try {
@@ -76,6 +79,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
           }
 
           saveAuthSession(nextSession)
+          setSession(nextSession)
           setUser(currentUser)
         } catch {
           if (cancelled) return
@@ -98,14 +102,29 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   async function login(payload: LoginPayload) {
     const session = await loginUser(payload)
     saveAuthSession(session)
+    setSession(session)
     setUser(session.user)
     setStatus('authenticated')
     return session
   }
 
+  function updateUser(nextUser: AuthUser) {
+    if (!session) return
+
+    const nextSession: AuthSession = {
+      ...session,
+      user: nextUser,
+    }
+
+    saveAuthSession(nextSession)
+    setSession(nextSession)
+    setUser(nextUser)
+  }
+
   function logout() {
     clearAuthSession()
     applyAccessToken(null)
+    setSession(null)
     setUser(null)
     setStatus('anonymous')
   }
@@ -117,6 +136,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
         user,
         isAuthenticated: status === 'authenticated' && Boolean(user),
         login,
+        updateUser,
         logout,
       }}
     >

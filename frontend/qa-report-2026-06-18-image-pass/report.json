@@ -1,0 +1,63 @@
+[
+  {
+    "page": "desktop-homepage",
+    "url": "http://127.0.0.1:5173/",
+    "consoleMessages": [],
+    "pageErrors": [],
+    "requestFailures": []
+  },
+  {
+    "page": "desktop-catalog",
+    "url": "http://127.0.0.1:5173/",
+    "consoleMessages": [],
+    "pageErrors": [],
+    "requestFailures": []
+  },
+  {
+    "page": "desktop-product-detail",
+    "url": "http://127.0.0.1:5173/artifacts/101",
+    "consoleMessages": [],
+    "pageErrors": [],
+    "requestFailures": []
+  },
+  {
+    "page": "desktop-admin-dashboard",
+    "url": "http://127.0.0.1:5173/admin",
+    "consoleMessages": [],
+    "pageErrors": [],
+    "requestFailures": []
+  },
+  {
+    "page": "desktop-seller-dashboard",
+    "url": "http://127.0.0.1:5173/seller",
+    "consoleMessages": [],
+    "pageErrors": [],
+    "requestFailures": []
+  },
+  {
+    "page": "mobile-catalog",
+    "url": "http://127.0.0.1:5173/",
+    "consoleMessages": [],
+    "pageErrors": [],
+    "requestFailures": [
+      "GET https://upload.wikimedia.org/wikipedia/commons/thumb/4/47/Antique_clock_in_Katowice_shop.JPG/1280px-Antique_clock_in_Katowice_shop.JPG :: net::ERR_ABORTED",
+      "GET https://upload.wikimedia.org/wikipedia/commons/1/14/Japansk_silvertekanna_med_dito_sil.jpg :: net::ERR_ABORTED",
+      "GET https://upload.wikimedia.org/wikipedia/commons/thumb/e/e5/JoanOfArcLarge.jpeg/1280px-JoanOfArcLarge.jpeg :: net::ERR_ABORTED",
+      "GET https://images.unsplash.com/photo-1594223274512-ad4803739b7c?auto=format&fit=crop&w=1200&q=85 :: net::ERR_ABORTED",
+      "GET https://upload.wikimedia.org/wikipedia/commons/thumb/6/6e/Cabinet_MET_210485.jpg/1280px-Cabinet_MET_210485.jpg :: net::ERR_ABORTED"
+    ]
+  },
+  {
+    "page": "mobile-product-detail",
+    "url": "http://127.0.0.1:5173/artifacts/101",
+    "consoleMessages": [],
+    "pageErrors": [],
+    "requestFailures": [
+      "GET https://upload.wikimedia.org/wikipedia/commons/thumb/4/47/Antique_clock_in_Katowice_shop.JPG/1280px-Antique_clock_in_Katowice_shop.JPG :: net::ERR_ABORTED",
+      "GET https://upload.wikimedia.org/wikipedia/commons/1/14/Japansk_silvertekanna_med_dito_sil.jpg :: net::ERR_ABORTED",
+      "GET https://upload.wikimedia.org/wikipedia/commons/thumb/e/e5/JoanOfArcLarge.jpeg/1280px-JoanOfArcLarge.jpeg :: net::ERR_ABORTED",
+      "GET https://images.unsplash.com/photo-1594223274512-ad4803739b7c?auto=format&fit=crop&w=1200&q=85 :: net::ERR_ABORTED",
+      "GET https://upload.wikimedia.org/wikipedia/commons/thumb/6/6e/Cabinet_MET_210485.jpg/1280px-Cabinet_MET_210485.jpg :: net::ERR_ABORTED"
+    ]
+  }
+]

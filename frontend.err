@@ -1,0 +1,2 @@
+[2m14:03:56[22m [31m[1m[vite][22m[39m [31m[2m(client)[22m[39m [2m[console.error] [22m[vite] SyntaxError: The requested module '/node_modules/.vite/deps/lucide-react.js?v=f23373fa' does not provide an export named 'Instagram'
+[2m14:03:56[22m [31m[1m[vite][22m[39m [31m[2m(client)[22m[39m [2m[console.error] [22m[vite] Failed to reload /src/App.tsx. This could be due to syntax errors or importing non-existent modules. (see errors above)

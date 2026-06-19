@@ -1,0 +1,14 @@
+{
+  "desktop": {
+    "headerExists": false,
+    "heroTop": 12,
+    "heroHeight": 976,
+    "overflowX": false
+  },
+  "mobile": {
+    "headerExists": false,
+    "heroTop": 7,
+    "heroHeight": 886,
+    "overflowX": false
+  }
+}

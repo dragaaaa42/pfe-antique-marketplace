@@ -1,6 +1,22 @@
-import axios from 'axios'
-import heroImage from './assets/hero.png'
-import type { Artifact, Category, Gallery, SellerDashboardSummary } from './types'
+﻿import axios from 'axios'
+import amazighJewelryImage from './assets/marketplace/amazigh-jewelry.jpg'
+import amazighArtworkImage from './assets/marketplace/amazigh-necklace.jpg'
+import antiqueTelephoneImage from './assets/marketplace/antique-telephone.jpg'
+import ceramicVaseImage from './assets/marketplace/ceramic-vase.jpg'
+import moroccanRugImage from './assets/marketplace/moroccan-rug.jpg'
+import royalCarouselImage from './assets/marketplace/royal-carousel.jpg'
+import traditionalCaftanImage from './assets/marketplace/traditional-caftan.jpg'
+import type {
+  CollectorDashboardSummary,
+  AdminDashboardSummary,
+  AdminUser,
+  Artifact,
+  Category,
+  Gallery,
+  ModerationAction,
+  SellerDashboardSummary,
+  SellerOrderRecord,
+} from './types'
 
 const api = axios.create({
   baseURL: import.meta.env.VITE_API_URL ?? 'http://127.0.0.1:8000/api',
@@ -18,6 +34,7 @@ export type AuthUser = {
   first_name: string
   last_name: string
   role: 'buyer' | 'seller' | 'admin'
+  is_active?: boolean
   profile?: {
     role: 'buyer' | 'seller' | 'admin'
     avatar_3d_path: string
@@ -42,6 +59,19 @@ export type RegisterPayload = {
   role: 'buyer' | 'seller'
   first_name: string
   last_name: string
+}
+
+export type CurrentUserUpdatePayload = {
+  email?: string
+  first_name?: string
+  last_name?: string
+  avatar_3d_path?: string
+}
+
+export type ChangePasswordPayload = {
+  current_password: string
+  new_password: string
+  confirm_password: string
 }
 
 export type WishlistItem = {
@@ -82,6 +112,31 @@ export type OrderRecord = {
   status: 'pending' | 'paid' | 'failed' | 'cancelled'
   created_at: string
   items: OrderItem[]
+}
+
+export type AdminUserUpdatePayload = Partial<Pick<AdminUser, 'email' | 'first_name' | 'last_name' | 'is_active'>> & {
+  role?: AdminUser['role']
+}
+
+export type AdminUserListParams = {
+  search?: string
+  role?: AdminUser['role'] | ''
+  is_active?: boolean | ''
+}
+
+export type AdminArtifactListParams = {
+  status?: string
+  search?: string
+}
+
+export type AdminGalleryListParams = {
+  search?: string
+  is_public?: boolean | ''
+}
+
+export type AdminAuditListParams = {
+  action_type?: ModerationAction['action_type'] | ''
+  search?: string
 }
 
 function persistAuthSession(session: AuthSession | null) {
@@ -142,231 +197,218 @@ export const demoArtifacts: Artifact[] = [
   {
     id: 101,
     category: 1,
-    category_name: 'Art',
-    title: 'Japanese Pine Trees Folding Screen',
+    category_name: 'Luxury Bags',
+    title: 'Ivory Suede Evening Bag',
     description:
-      'A calm folding screen with ink-painted pines, made for a room that values silence, shadow, and ceremony.',
+      'A structured evening bag in ivory suede with a polished clasp, refined proportions, and collector-level condition.',
     history:
-      'Japanese screens divided interiors while acting as portable paintings, changing the atmosphere of a room instantly.',
-    provenance: 'Wikimedia Commons open image record after Hasegawa Tohaku.',
-    condition: 'good',
-    price: '14800.00',
-    image: commonsImage('Hasegawa Tohaku - Pine Trees (ShÅrin-zu byÅbu) - right hand screen.jpg'),
+      'Luxury handbags became status objects through craftsmanship, materials, and the houses that shaped modern fashion history.',
+    provenance: 'Private collection demo record.',
+    condition: 'excellent',
+    price: '3200.00',
+    image:
+      'https://images.unsplash.com/photo-1594223274512-ad4803739b7c?auto=format&fit=crop&w=1200&q=85',
     model_3d: '/models/demo-antique.glb',
     status: 'approved',
   },
   {
     id: 102,
     category: 2,
-    category_name: 'Furniture',
-    title: 'French Medal Cabinet Interior',
+    category_name: 'Jewelry',
+    title: 'Diamond Floral Bracelet',
     description:
-      'A formal cabinet-room study with carved storage, old display rhythm, and the mood of a private collection.',
+      'A floral diamond bracelet with bright stones, delicate settings, and an elegant silhouette for formal dressing.',
     history:
-      'Cabinets of medals and curiosities shaped how collectors arranged small precious objects before modern museums.',
-    provenance: 'Bibliotheque nationale de France public photographic record.',
-    condition: 'restored',
-    price: '8200.00',
-    image: commonsImage('Cabinet des Medailles.jpg'),
+      'Fine jewelry carries family history, gifting rituals, and the precision of hand-set stones.',
+    provenance: 'Estate jewelry demo record.',
+    condition: 'excellent',
+    price: '14800.00',
+    image: amazighJewelryImage,
     model_3d: '/models/demo-antique.glb',
     status: 'approved',
   },
   {
     id: 103,
     category: 3,
-    category_name: 'Decor',
-    title: 'Vienna Mantel Clock',
+    category_name: 'Watches',
+    title: 'Sterling Chronograph Watch',
     description:
-      'A compact mantel clock with an aged case, formal dial, and the quiet authority of an old study shelf.',
+      'A vintage chronograph watch with a clean dial, brushed case, and the restrained luxury of a true collector timepiece.',
     history:
-      'Mantel clocks became domestic status pieces, bringing precision timekeeping into salons and libraries.',
-    provenance: 'Wikimedia Commons vintage clock archive.',
-    condition: 'good',
-    price: '2600.00',
-    image: commonsImage('Vienna - Vintage Table or Mantel Clock - 0554.jpg'),
+      'Mechanical watches combine precision engineering with the language of status and daily ritual.',
+    provenance: 'Watch collector demo record.',
+    condition: 'restored',
+    price: '8600.00',
+    image:
+      'https://images.unsplash.com/photo-1523170335258-f5ed11844a49?auto=format&fit=crop&w=1200&q=85',
     model_3d: '/models/demo-antique.glb',
     status: 'approved',
   },
   {
     id: 104,
     category: 4,
-    category_name: 'Instruments',
-    title: 'The Gould Violin',
+    category_name: 'Traditional Clothing',
+    title: 'Embroidered Silk Caftan',
     description:
-      'A refined antique violin with warm varnish, elegant curves, and a musician-object presence.',
+      'A ceremonial silk caftan with detailed embroidery, fluid drape, and the kind of textile presence collectors appreciate.',
     history:
-      'Historic violins are collected as instruments, sculpture, craft evidence, and cultural memory.',
-    provenance: 'Metropolitan Museum of Art open-access record.',
-    condition: 'excellent',
-    price: '17600.00',
-    image: commonsImage('"The Gould" Violin MET DT669.jpg'),
+      'Traditional dress preserves regional identity through weave, cut, ornament, and ceremonial use.',
+    provenance: 'Textile archive demo record.',
+    condition: 'good',
+    price: '5400.00',
+    image: traditionalCaftanImage,
     model_3d: '/models/demo-antique.glb',
     status: 'approved',
   },
   {
     id: 105,
     category: 5,
-    category_name: 'Ceramics',
-    title: 'Ming-Style Blue and White Gourd Vase',
+    category_name: 'Antique Furniture',
+    title: 'Walnut Display Cabinet',
     description:
-      'A blue-and-white porcelain gourd vase with dense lotus ornament and a strong collector silhouette.',
+      'A walnut display cabinet with glazed doors, tapered legs, and a warm patina suited to serious interiors.',
     history:
-      'Blue-and-white porcelain travelled through courts, merchants, and collectors for centuries.',
-    provenance: 'Wikimedia Commons museum-style porcelain record.',
-    condition: 'excellent',
-    price: '5400.00',
-    image: commonsImage('20241025 Gourd-Shaped Blue and White Porcelain Vase of Wanli Reign, Ming Dynasty.jpg'),
+      'Cabinets and vitrines have long been used to stage objects and signal collecting taste.',
+    provenance: 'Private collection demo record.',
+    condition: 'restored',
+    price: '12400.00',
+    image: commonsImage('Cabinet MET 210485.jpg'),
     model_3d: '/models/demo-antique.glb',
     status: 'approved',
   },
   {
     id: 106,
     category: 6,
-    category_name: 'Jewelry',
-    title: '18th-Century English Brooch',
+    category_name: 'Paintings and Artwork',
+    title: 'Grand Tour Landscape Painting',
     description:
-      'A small English brooch with jewel-like detail, intimate scale, and cabinet-of-curiosities appeal.',
+      'A softly lit landscape with classical atmosphere, ideal for a room anchored by refined wall art.',
     history:
-      'Brooches carried fashion, memory, rank, and sentiment in a form that could move between body and display case.',
-    provenance: 'Cooper Hewitt, Smithsonian Design Museum public-domain record.',
+      'Landscape painting captured travel, memory, and cultivated taste for collectors across generations.',
+    provenance: 'Works on paper demo record.',
     condition: 'good',
-    price: '3200.00',
-    image: commonsImage('Brooch (England), 18th century (CH 18800413).jpg'),
+    price: '11200.00',
+    image: amazighArtworkImage,
     model_3d: '/models/demo-antique.glb',
     status: 'approved',
   },
   {
     id: 107,
     category: 7,
-    category_name: 'Manuscripts',
-    title: 'Illuminated Bible Leaf',
+    category_name: 'Sculptures',
+    title: 'Marble Classical Bust',
     description:
-      'A richly colored manuscript leaf with medieval figures, script blocks, and devotional page architecture.',
+      'A marble bust with crisp carving, balanced scale, and the dignified presence of a gallery centerpiece.',
     history:
-      'Illuminated manuscripts joined text, pigment, gold, ritual, and handwork before printed books became dominant.',
-    provenance: 'Bibliotheque nationale de France public-domain manuscript image.',
-    condition: 'good',
-    price: '9100.00',
-    image: commonsImage('Grande Bible historiale complÃ©tÃ©e - BNF Fr159 f3r (TrinitÃ©).jpg'),
+      'Sculptural portraiture preserves form and status while carrying the memory of classical collecting.',
+    provenance: 'Museum-quality sculpture demo record.',
+    condition: 'excellent',
+    price: '18900.00',
+    image:
+      'https://images.unsplash.com/photo-1545239351-1141bd82e8a6?auto=format&fit=crop&w=1200&q=85',
     model_3d: '/models/demo-antique.glb',
     status: 'approved',
   },
   {
     id: 108,
     category: 8,
-    category_name: 'Silver',
-    title: 'Japanese Silver Teapot and Strainer',
+    category_name: 'Decorative Objects',
+    title: 'Gilt Mantel Clock',
     description:
-      'A silver teapot set with old-metal glow, ceremonial proportion, and refined table presence.',
+      'A gilt mantel clock with decorative ornament, aged brass tone, and an elegant profile for a curated shelf.',
     history:
-      'Silver tea objects moved between hospitality, ritual, display, and domestic prestige.',
-    provenance: 'Wikimedia Commons silver object record.',
-    condition: 'restored',
-    price: '4700.00',
-    image: commonsImage('Japansk silvertekanna med dito sil.jpg'),
+      'Decorative objects add rhythm and atmosphere to interiors while often becoming family keepsakes.',
+    provenance: 'Antique clock demo record.',
+    condition: 'fair',
+    price: '3800.00',
+    image: royalCarouselImage,
     model_3d: '/models/demo-antique.glb',
     status: 'approved',
   },
   {
     id: 109,
     category: 9,
-    category_name: 'Textiles',
-    title: 'Ardabil Carpet Study',
+    category_name: 'Vintage Collectibles',
+    title: 'Leica Rangefinder Camera',
     description:
-      'A grand historic carpet study with medallion geometry, deep ornament, and architectural textile presence.',
+      'A vintage rangefinder camera with a clean black finish, collector appeal, and compact mechanical character.',
     history:
-      'Court carpets shaped how collectors understood scale, symmetry, color, and room atmosphere.',
-    provenance: 'Wikimedia Commons open image record.',
+      'Vintage collectibles are valued for design, nostalgia, and the way they document an era of making.',
+    provenance: 'Photography collectible demo record.',
     condition: 'good',
-    price: '12200.00',
-    image: commonsImage('Ardabil Carpet.jpg'),
+    price: '7200.00',
+    image: antiqueTelephoneImage,
     model_3d: '/models/demo-antique.glb',
     status: 'approved',
   },
   {
     id: 110,
     category: 10,
-    category_name: 'Lighting',
-    title: 'Gilt-Bronze Argand Lamp',
+    category_name: 'Historical Artifacts',
+    title: 'Illuminated Chronicle Leaf',
     description:
-      'An early Argand lamp in gilt bronze, made for formal interiors before modern electric lighting.',
+      'A historic manuscript leaf with pigment, script, and ornamental framing that feels unmistakably archival.',
     history:
-      'Argand lamps were prized in the 19th century for a brighter and steadier flame.',
-    provenance: 'Metropolitan Museum of Art open-access record.',
-    condition: 'restored',
-    price: '6800.00',
-    image: commonsImage('Argand Lamp MET ADA3409.jpg'),
+      'Historical artifacts preserve the texture of daily life, learning, and belief across centuries.',
+    provenance: 'Archival study demo record.',
+    condition: 'good',
+    price: '9800.00',
+    image: commonsImage('JoanOfArcLarge.jpeg'),
     model_3d: '/models/demo-antique.glb',
     status: 'approved',
   },
   {
     id: 111,
     category: 11,
-    category_name: 'Fashion',
-    title: 'Robe a la Francaise Court Dress',
+    category_name: 'Ceramics',
+    title: 'Blue and White Porcelain Vase',
     description:
-      'An 18th-century court dress silhouette with sculptural volume, textile richness, and formal drama.',
+      'A blue and white porcelain vase with a tall silhouette, luminous glaze, and refined decorative patterning.',
     history:
-      'Robe a la Francaise gowns turned clothing into architecture through side hoops, drape, and courtly fabric.',
-    provenance: 'Metropolitan Museum of Art open-access costume record.',
-    condition: 'fair',
-    price: '7600.00',
-    image: commonsImage('Robe Ã  la FranÃ§aise MET DP156536.jpg'),
+      'Ceramics travel well through trade and collecting because they preserve both craft and cultural exchange.',
+    provenance: 'Porcelain collection demo record.',
+    condition: 'excellent',
+    price: '6200.00',
+    image: ceramicVaseImage,
     model_3d: '/models/demo-antique.glb',
     status: 'approved',
   },
   {
     id: 112,
     category: 12,
-    category_name: 'Furniture',
-    title: 'Arts and Crafts Oak Cabinet',
+    category_name: 'Rugs and Textiles',
+    title: 'Ardabil Carpet',
     description:
-      'An Arts and Crafts cabinet with disciplined geometry, sturdy oak construction, and museum-grade presence.',
+      'A museum-scale carpet with rich geometry, deep color, and the layered presence of a significant textile.',
     history:
-      'Stickley furniture helped define American Arts and Crafts interiors in the early 20th century.',
-    provenance: 'Metropolitan Museum of Art open-access record.',
-    condition: 'excellent',
-    price: '9500.00',
-    image: commonsImage('Cabinet MET 210485.jpg'),
+      'Rugs and textiles introduce scale, warmth, and pattern while reflecting trade routes and household taste.',
+    provenance: 'Textile collection demo record.',
+    condition: 'good',
+    price: '16400.00',
+    image: moroccanRugImage,
     model_3d: '/models/demo-antique.glb',
     status: 'approved',
   },
   {
     id: 113,
     category: 13,
-    category_name: 'Art',
-    title: 'Grand Tour Landscape Study',
+    category_name: 'Silverware',
+    title: 'Sterling Silver Tea Service',
     description:
-      'A delicate landscape work with pale sky, distant shoreline, and the softness of an old travel album.',
+      'A polished silver tea service with crisp handles, reflective surfaces, and the ceremonial feel of formal entertaining.',
     history:
-      'Grand Tour landscapes preserved views, memory, and status for collectors returning from Europe.',
-    provenance: 'European works-on-paper archive.',
-    condition: 'good',
-    price: '6100.00',
-    image:
-      'https://images.unsplash.com/photo-1578926375605-eaf7559b1458?auto=format&fit=crop&w=1200&q=85',
-    model_3d: '/models/demo-antique.glb',
-    status: 'approved',
-  },
-  {
-    id: 114,
-    category: 14,
-    category_name: 'Decor',
-    title: 'Antique Collector Clock',
-    description:
-      'A dark antique clock with worn surfaces, visible age, and the feeling of a collector shop discovery.',
-    history:
-      'Small clocks carried timekeeping into studies, bedrooms, counters, and personal collections.',
-    provenance: 'Wikimedia Commons antique clock archive.',
-    condition: 'fair',
-    price: '1900.00',
-    image: commonsImage('Antique clock in Katowice shop.JPG'),
+      'Silverware was often created for hospitality, display, and the ritual of hosting with style.',
+    provenance: 'Silver service demo record.',
+    condition: 'restored',
+    price: '9400.00',
+    image: commonsImage('Japansk silvertekanna med dito sil.jpg'),
     model_3d: '/models/demo-antique.glb',
     status: 'approved',
   },
 ]
 
-export const fallbackArtifactImage = heroImage
+export const fallbackArtifactImage =
+  'data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///ywAAAAAAQABAAACAUwAOw=='
 
 export async function getArtifacts() {
   const response = await api.get<Artifact[]>('/artifacts/')
@@ -403,8 +445,90 @@ export async function getCurrentUser() {
   return response.data
 }
 
+export async function updateCurrentUser(payload: CurrentUserUpdatePayload) {
+  const response = await api.patch<AuthUser>('/auth/me/', payload)
+  return response.data
+}
+
+export async function changePassword(payload: ChangePasswordPayload) {
+  const response = await api.post('/auth/change-password/', payload)
+  return response.data
+}
+
 export async function getSellerDashboardSummary() {
   const response = await api.get<SellerDashboardSummary>('/seller/dashboard/')
+  return response.data
+}
+
+export async function getCollectorDashboardSummary() {
+  const response = await api.get<CollectorDashboardSummary>('/collector/dashboard/')
+  return response.data
+}
+
+function buildQueryString(params?: Record<string, string | number | boolean | '' | undefined>) {
+  if (!params) {
+    return ''
+  }
+
+  const searchParams = new URLSearchParams()
+
+  Object.entries(params).forEach(([key, value]) => {
+    if (value === undefined || value === '') {
+      return
+    }
+    searchParams.set(key, String(value))
+  })
+
+  const query = searchParams.toString()
+  return query ? `?${query}` : ''
+}
+
+export async function getAdminDashboardSummary() {
+  const response = await api.get<AdminDashboardSummary>('/admin/dashboard/')
+  return response.data
+}
+
+export async function getAdminUsers(params?: AdminUserListParams) {
+  const response = await api.get<AdminUser[]>(`/admin/users/${buildQueryString(params)}`)
+  return response.data
+}
+
+export async function getAdminUser(id: number | string) {
+  const response = await api.get<AdminUser>(`/admin/users/${id}/`)
+  return response.data
+}
+
+export async function updateAdminUser(id: number | string, payload: AdminUserUpdatePayload) {
+  const response = await api.patch<AdminUser>(`/admin/users/${id}/`, payload)
+  return response.data
+}
+
+export async function getAdminArtifacts(params?: AdminArtifactListParams) {
+  const response = await api.get<Artifact[]>(`/admin/artifacts/${buildQueryString(params)}`)
+  return response.data
+}
+
+export async function approveAdminArtifact(id: number | string) {
+  const response = await api.post<Artifact>(`/admin/artifacts/${id}/approve/`, {})
+  return response.data
+}
+
+export async function rejectAdminArtifact(id: number | string, notes = '') {
+  const response = await api.post<Artifact>(`/admin/artifacts/${id}/reject/`, { notes })
+  return response.data
+}
+
+export async function getAdminGalleries(params?: AdminGalleryListParams) {
+  const response = await api.get<Gallery[]>(`/admin/galleries/${buildQueryString(params)}`)
+  return response.data
+}
+
+export async function deleteAdminGallery(id: number | string) {
+  await api.delete(`/admin/galleries/${id}/`)
+}
+
+export async function getAdminAuditTrail(params?: AdminAuditListParams) {
+  const response = await api.get<ModerationAction[]>(`/admin/audit-trail/${buildQueryString(params)}`)
   return response.data
 }
 
@@ -429,6 +553,16 @@ export async function deleteSellerArtifact(id: number) {
 
 export async function getSellerGalleries() {
   const response = await api.get<Gallery[]>('/seller/galleries/')
+  return response.data
+}
+
+export async function getSellerOrders() {
+  const response = await api.get<SellerOrderRecord[]>('/seller/orders/')
+  return response.data
+}
+
+export async function getSellerOrder(id: number | string) {
+  const response = await api.get<SellerOrderRecord>(`/seller/orders/${id}/`)
   return response.data
 }
 
@@ -501,3 +635,5 @@ export async function simulateOrderPayment(id: number | string, success: boolean
   const response = await api.post<OrderRecord>(`/orders/${id}/simulate_payment/`, { success })
   return response.data
 }
+
+

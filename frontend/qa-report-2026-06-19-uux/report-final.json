@@ -1,0 +1,54 @@
+[
+  {
+    "name": "home-desktop-final",
+    "url": "/",
+    "width": 1440,
+    "height": 1100,
+    "title": "Artisan's Echo | Premium Antique Marketplace",
+    "meta": "Artisan's Echo is a premium antique marketplace for verified sellers, curated collectibles, provenance-led discovery, and collector dashboards.",
+    "scrollWidth": 1440,
+    "clientWidth": 1440,
+    "h1": "Collect rare pieces with provenance, confidence, and taste.",
+    "focusables": 40,
+    "overflowX": false
+  },
+  {
+    "name": "home-mobile-final",
+    "url": "/",
+    "width": 390,
+    "height": 1100,
+    "title": "Artisan's Echo | Premium Antique Marketplace",
+    "meta": "Artisan's Echo is a premium antique marketplace for verified sellers, curated collectibles, provenance-led discovery, and collector dashboards.",
+    "scrollWidth": 390,
+    "clientWidth": 390,
+    "h1": "Collect rare pieces with provenance, confidence, and taste.",
+    "focusables": 40,
+    "overflowX": false
+  },
+  {
+    "name": "product-desktop-final",
+    "url": "/artifacts/101",
+    "width": 1440,
+    "height": 1100,
+    "title": "Artisan's Echo | Premium Antique Marketplace",
+    "meta": "Artisan's Echo is a premium antique marketplace for verified sellers, curated collectibles, provenance-led discovery, and collector dashboards.",
+    "scrollWidth": 1440,
+    "clientWidth": 1440,
+    "h1": "Ivory Suede Evening Bag",
+    "focusables": 10,
+    "overflowX": false
+  },
+  {
+    "name": "signup-mobile-final",
+    "url": "/signup",
+    "width": 390,
+    "height": 1100,
+    "title": "Artisan's Echo | Premium Antique Marketplace",
+    "meta": "Artisan's Echo is a premium antique marketplace for verified sellers, curated collectibles, provenance-led discovery, and collector dashboards.",
+    "scrollWidth": 390,
+    "clientWidth": 390,
+    "h1": "Join a marketplace built for objects with a past.",
+    "focusables": 8,
+    "overflowX": false
+  }
+]
