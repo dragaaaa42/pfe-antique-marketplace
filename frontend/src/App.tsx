@@ -764,7 +764,6 @@ function CatalogPage() {
     .slice(0, 3)
   const catalogPreviewArtifacts = sortedArtifacts
   const catalogResultCount = catalogPreviewArtifacts.length
-  const categoryCount = Math.max(categories.length - 1, 0)
   const heroArtifact = featuredPieces[0] ?? catalogSource[0] ?? demoArtifacts[0]
   const heroStats = [
     ['Curated lots', String(catalogSource.length).padStart(2, '0')],
@@ -971,12 +970,14 @@ function CatalogPage() {
       </div>
 
       <section className="page-section marketplace-section" id="featured-pieces">
-        <div className="section-heading marketplace-heading">
-          <div>
+        <div className="section-heading section-heading--framed marketplace-heading">
+          <span className="section-heading-line" aria-hidden="true" />
+          <div className="section-hero-card">
             <p className="eyebrow">Featured pieces</p>
             <h2>Pieces worth opening first</h2>
+            <span className="section-caption">Freshly curated from the marketplace</span>
           </div>
-          <span className="section-caption">Freshly curated from the marketplace</span>
+          <span className="section-heading-line" aria-hidden="true" />
         </div>
         <div className="artifact-grid marketplace-grid">
           {featuredPieces.map((artifact) => (
@@ -986,12 +987,14 @@ function CatalogPage() {
       </section>
 
       <section className="page-section marketplace-section" id="new-arrivals">
-        <div className="section-heading marketplace-heading">
-          <div>
+        <div className="section-heading section-heading--framed marketplace-heading">
+          <span className="section-heading-line" aria-hidden="true" />
+          <div className="section-hero-card">
             <p className="eyebrow">New arrivals</p>
             <h2>Recently added objects</h2>
+            <span className="section-caption">Newest listings from verified sellers</span>
           </div>
-          <span className="section-caption">Newest listings from verified sellers</span>
+          <span className="section-heading-line" aria-hidden="true" />
         </div>
         <div className="artifact-grid marketplace-grid">
           {newArrivals.map((artifact) => (
@@ -1038,27 +1041,17 @@ function CatalogPage() {
       </section>
 
       <section className="page-section catalog-shell" id="catalog">
-        <div className="catalog-header">
-          <div className="catalog-copy">
-            <p className="eyebrow">Browse catalogue</p>
-            <h2>Curated collection atlas</h2>
-            <p className="catalog-summary">
-              A live index of verified listings, tuned for quick comparison and cleaner discovery.
-            </p>
-            <div className="catalog-metrics" aria-label="Catalogue highlights">
-              <article>
-                <strong>{String(catalogResultCount).padStart(2, '0')}</strong>
-                <span>{catalogResultCount === 1 ? 'Live listing' : 'Live listings'}</span>
-              </article>
-              <article>
-                <strong>{String(categoryCount).padStart(2, '0')}</strong>
-                <span>{categoryCount === 1 ? 'Curated category' : 'Curated categories'}</span>
-              </article>
-              <article>
-                <strong>{String(featuredPieces.length).padStart(2, '0')}</strong>
-                <span>{featuredPieces.length === 1 ? 'Featured pick' : 'Featured picks'}</span>
-              </article>
+        <div className="catalog-header catalog-header--framed">
+          <div className="section-heading section-heading--framed catalog-heading">
+            <span className="section-heading-line" aria-hidden="true" />
+            <div className="section-hero-card section-hero-card--catalog">
+              <p className="eyebrow">Browse catalogue</p>
+              <h2>Curated collection atlas</h2>
+              <p className="catalog-summary">
+                A live index of verified listings, tuned for quick comparison and cleaner discovery.
+              </p>
             </div>
+            <span className="section-heading-line" aria-hidden="true" />
           </div>
           <div className="catalog-controls">
             <label className="catalog-sort">
@@ -1320,12 +1313,46 @@ function CatalogPage() {
               <img src="/favicon.svg" alt="" width="36" height="36" />
               <span>artisan&apos;s echo</span>
             </Link>
-          <nav className="atlas-site-footer-nav" aria-label="Footer navigation">
+            <nav className="atlas-site-footer-nav" aria-label="Footer navigation">
               <a href="#catalog">Catalogue</a>
               <a href="#featured-pieces">Featured</a>
               <Link to={dashboardPath}>{dashboardLabel}</Link>
               <Link to="/login">Sign in</Link>
-          </nav>
+            </nav>
+          </div>
+
+          <div className="atlas-site-footer-hero">
+            <div className="atlas-site-footer-hero-copy">
+              <p className="eyebrow">Archive room</p>
+              <h2>Objects with history, staged softly.</h2>
+            </div>
+            <p>
+              The footer closes the page like a final room in the gallery, with the same calm tone,
+              clearer navigation, and a bit more breathing space for the brand.
+            </p>
+          </div>
+
+          <div className="atlas-site-footer-panels">
+            <article>
+              <span>Catalogue</span>
+              <strong>Browse the featured edit, new arrivals, and the full collection atlas.</strong>
+            </article>
+            <article>
+              <span>Curators</span>
+              <strong>Seller stories, provenance notes, and 3D discovery stay visible.</strong>
+            </article>
+            <article>
+              <span>Collector care</span>
+              <strong>Protected checkout, saved objects, and account routes are ready.</strong>
+            </article>
+          </div>
+
+          <div className="atlas-site-footer-detail" aria-hidden="true">
+            <span className="atlas-site-footer-detail-label">Archive note</span>
+            <span className="atlas-site-footer-detail-rule" />
+            <span className="atlas-site-footer-detail-text">
+              Curated objects, provenance, and 3D discovery in one calm catalogue.
+            </span>
           </div>
 
           <div className="atlas-site-footer-bottom">

@@ -595,6 +595,131 @@ textarea {
   font-size: 0.9rem;
 }
 
+.section-heading h2,
+.catalog-header h2,
+.atlas-site-footer-hero h2,
+.promise-copy h2,
+.marketplace-intro-copy h2 {
+  font-family: "Bodoni Moda", Georgia, serif;
+  letter-spacing: -0.03em;
+}
+
+.section-hero-card {
+  display: grid;
+  justify-items: center;
+  gap: 0.45rem;
+  width: min(100%, 700px);
+  padding: clamp(1rem, 2.5vw, 1.5rem) clamp(1.1rem, 3vw, 1.9rem);
+  border: 1px solid rgba(28, 25, 23, 0.1);
+  border-radius: 1.5rem;
+  background:
+    linear-gradient(180deg, rgba(255, 255, 255, 0.82) 0%, rgba(248, 244, 237, 0.84) 100%);
+  box-shadow:
+    0 14px 28px rgba(28, 25, 23, 0.06),
+    inset 0 1px 0 rgba(255, 255, 255, 0.65);
+  backdrop-filter: blur(20px);
+  text-align: center;
+}
+
+.section-heading.section-heading--framed,
+.catalog-header.catalog-header--framed {
+  text-align: center;
+}
+
+.section-heading.section-heading--framed {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+  margin-bottom: clamp(1.35rem, 2.6vw, 1.95rem);
+}
+
+.section-heading-line {
+  flex: 1 1 0;
+  height: 1px;
+  background: linear-gradient(90deg, rgba(110, 95, 72, 0.02), rgba(110, 95, 72, 0.4), rgba(110, 95, 72, 0.02));
+}
+
+.section-hero-card .section-caption {
+  align-self: auto;
+  max-width: 52ch;
+}
+
+.section-hero-card--catalog {
+  gap: 0.55rem;
+  width: min(100%, 540px);
+}
+
+.section-hero-card--catalog .catalog-summary {
+  margin: 0;
+}
+
+.catalog-header.catalog-header--framed {
+  display: block;
+  gap: 1rem;
+  width: 100%;
+  padding-bottom: 1rem;
+  border-bottom: 1px solid var(--line);
+  justify-self: stretch;
+}
+
+.catalog-heading.section-heading.section-heading--framed {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) minmax(20rem, 33.75rem) minmax(0, 1fr);
+  align-items: center;
+  gap: clamp(0.8rem, 1.6vw, 1.5rem);
+  width: 100%;
+  margin: 0;
+}
+
+.catalog-heading.section-heading.section-heading--framed .section-heading-line {
+  width: 100%;
+  min-width: 0;
+}
+
+.catalog-heading.section-heading.section-heading--framed .section-hero-card--catalog {
+  width: 100%;
+  justify-self: center;
+}
+
+.catalog-controls {
+  display: grid;
+  justify-items: end;
+  gap: 0.7rem;
+  width: min(100%, 18rem);
+  justify-self: end;
+  margin-left: auto;
+  margin-top: 1.25rem;
+  padding-right: clamp(0.35rem, 2vw, 2rem);
+}
+
+.catalog-sort {
+  min-width: 12.5rem;
+  display: grid;
+  gap: 0.35rem;
+  font-size: 0.88rem;
+}
+
+.catalog-badges {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: flex-end;
+  gap: 0.45rem;
+}
+
+.catalog-status {
+  display: inline-flex;
+  align-items: center;
+  min-height: 2rem;
+  padding: 0.3rem 0.65rem;
+  border: 1px solid rgba(28, 25, 23, 0.08);
+  border-radius: 999px;
+  background: rgba(255, 255, 255, 0.7);
+  color: var(--muted);
+  font-size: 0.72rem;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+}
+
 .marketplace-grid,
 .catalog-grid,
 .product-rail {
@@ -602,6 +727,10 @@ textarea {
   grid-template-columns: repeat(auto-fit, minmax(18rem, 1fr));
   gap: 1rem;
   justify-content: start;
+}
+
+.marketplace-section .artifact-image {
+  aspect-ratio: 16 / 10.75;
 }
 
 .section-heading {
@@ -772,55 +901,6 @@ textarea {
   border-radius: 0.9rem;
   background: rgba(255, 255, 255, 0.68);
   backdrop-filter: blur(12px);
-}
-
-.catalog-metrics strong {
-  font-family: "Bodoni Moda", Georgia, serif;
-  font-size: 1.25rem;
-  line-height: 1;
-}
-
-.catalog-metrics span {
-  color: var(--muted);
-  font-size: 0.74rem;
-  letter-spacing: 0.12em;
-  text-transform: uppercase;
-}
-
-.catalog-controls {
-  display: grid;
-  align-content: start;
-  justify-items: end;
-  gap: 0.7rem;
-  min-width: 15rem;
-}
-
-.catalog-sort {
-  min-width: 12.5rem;
-  display: grid;
-  gap: 0.35rem;
-  font-size: 0.88rem;
-}
-
-.catalog-badges {
-  display: flex;
-  flex-wrap: wrap;
-  justify-content: flex-end;
-  gap: 0.45rem;
-}
-
-.catalog-status {
-  display: inline-flex;
-  align-items: center;
-  min-height: 2rem;
-  padding: 0.3rem 0.65rem;
-  border: 1px solid rgba(28, 25, 23, 0.08);
-  border-radius: 999px;
-  background: rgba(255, 255, 255, 0.7);
-  color: var(--muted);
-  font-size: 0.72rem;
-  letter-spacing: 0.08em;
-  text-transform: uppercase;
 }
 
 .catalog-layout {
@@ -1985,25 +2065,6 @@ textarea {
 @media (max-width: 720px) {
   .catalog-shell {
     padding: 0.9rem;
-  }
-
-  .catalog-metrics {
-    grid-template-columns: 1fr;
-  }
-
-  .catalog-controls {
-    width: 100%;
-    min-width: 0;
-    justify-items: stretch;
-  }
-
-  .catalog-sort {
-    width: 100%;
-    min-width: 0;
-  }
-
-  .catalog-badges {
-    justify-content: flex-start;
   }
 
   .catalog-results-head {
@@ -4522,10 +4583,10 @@ textarea {
 
 .atlas-site-footer-inner {
   display: grid;
-  gap: 1.25rem;
-  width: min(1320px, calc(100% - 2rem));
+  gap: 1rem;
+  width: min(1280px, calc(100% - 2rem));
   margin: 0 auto;
-  padding: 1.5rem 0 1.25rem;
+  padding: 1.1rem 0 1rem;
 }
 
 .atlas-site-footer-top,
@@ -4538,7 +4599,7 @@ textarea {
 .atlas-site-footer-top {
   flex-wrap: wrap;
   justify-content: space-between;
-  gap: 1rem 2rem;
+  gap: 0.85rem 1.5rem;
 }
 
 .atlas-site-footer-brand {
@@ -4556,7 +4617,7 @@ textarea {
 }
 
 .atlas-site-footer-brand span {
-  font-size: 1rem;
+  font-size: 0.95rem;
   font-weight: 600;
 }
 
@@ -4567,15 +4628,15 @@ textarea {
 
 .atlas-site-footer-nav {
   flex-wrap: wrap;
-  gap: 0.25rem 1.5rem;
+  gap: 0.2rem 1.15rem;
 }
 
 .atlas-site-footer-nav a {
-  min-height: 2.75rem;
+  min-height: 2.4rem;
   display: inline-flex;
   align-items: center;
   color: #17213a;
-  font-size: 0.86rem;
+  font-size: 0.82rem;
   text-decoration: none;
   transition: color 180ms ease;
 }
@@ -4584,12 +4645,104 @@ textarea {
   color: #56627d;
 }
 
+.atlas-site-footer-hero {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) minmax(18rem, 0.95fr);
+  gap: 1rem 2rem;
+  align-items: end;
+  padding: 0.75rem 0 0.2rem;
+}
+
+.atlas-site-footer-hero-copy {
+  display: grid;
+  gap: 0.25rem;
+}
+
+.atlas-site-footer-hero p {
+  margin: 0;
+  max-width: 44ch;
+  color: #4d586f;
+  line-height: 1.55;
+}
+
+.atlas-site-footer-hero h2 {
+  margin: 0;
+  color: #17213a;
+  font-size: clamp(1.9rem, 3.8vw, 3rem);
+  line-height: 0.96;
+}
+
+.atlas-site-footer-panels {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 0.75rem;
+}
+
+.atlas-site-footer-panels article {
+  display: grid;
+  gap: 0.42rem;
+  padding: 0.9rem 1rem;
+  border: 1px solid rgba(23, 33, 58, 0.14);
+  border-radius: 1rem;
+  background: rgba(255, 255, 255, 0.42);
+  box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.5);
+}
+
+.atlas-site-footer-panels span {
+  color: #8d5f34;
+  font-size: 0.68rem;
+  font-weight: 700;
+  letter-spacing: 0.16em;
+  text-transform: uppercase;
+}
+
+.atlas-site-footer-panels strong {
+  color: #17213a;
+  font-family: "Bodoni Moda", Georgia, serif;
+  font-size: 1.04rem;
+  line-height: 1.16;
+}
+
+.atlas-site-footer-detail {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  padding: 0.8rem 0 0.2rem;
+}
+
+.atlas-site-footer-detail-label {
+  display: inline-flex;
+  align-items: center;
+  min-height: 1.9rem;
+  padding: 0 0.6rem;
+  border: 1px solid rgba(23, 33, 58, 0.22);
+  border-radius: 999px;
+  color: #17213a;
+  font-size: 0.68rem;
+  font-weight: 700;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  background: rgba(255, 255, 255, 0.38);
+}
+
+.atlas-site-footer-detail-rule {
+  flex: 1;
+  height: 1px;
+  background: linear-gradient(90deg, rgba(23, 33, 58, 0.18), rgba(23, 33, 58, 0.62), rgba(23, 33, 58, 0.18));
+}
+
+.atlas-site-footer-detail-text {
+  color: #4d586f;
+  font-size: 0.78rem;
+  letter-spacing: 0.01em;
+}
+
 .atlas-site-footer-bottom {
   display: flex;
   flex-wrap: wrap;
   justify-content: space-between;
   gap: 0.75rem 2rem;
-  padding-top: 1rem;
+  padding-top: 0.85rem;
   border-top: 1px solid rgba(23, 33, 58, 0.2);
   color: #626d84;
   font-size: 0.78rem;
@@ -4600,13 +4753,70 @@ textarea {
 }
 
 @media (max-width: 639px) {
+  .section-heading.section-heading--framed,
+  .catalog-header.catalog-header--framed {
+    align-items: center;
+  }
+
+  .catalog-heading.section-heading.section-heading--framed {
+    grid-template-columns: 1fr;
+    width: 100%;
+  }
+
+  .catalog-heading.section-heading.section-heading--framed .section-heading-line {
+    display: none;
+  }
+
+  .catalog-heading.section-heading.section-heading--framed .section-hero-card--catalog {
+    width: 100%;
+  }
+
+  .catalog-controls {
+    width: 100%;
+    min-width: 0;
+    justify-items: stretch;
+    padding-right: 0;
+  }
+
+  .catalog-sort {
+    width: 100%;
+    min-width: 0;
+  }
+
+  .catalog-badges {
+    justify-content: flex-start;
+  }
+
+  .section-heading-line {
+    width: 100%;
+  }
+
   .atlas-site-footer-top {
     align-items: flex-start;
     flex-direction: column;
   }
 
+  .atlas-site-footer-hero {
+    grid-template-columns: 1fr;
+    align-items: start;
+  }
+
+  .atlas-site-footer-panels {
+    grid-template-columns: 1fr;
+  }
+
   .atlas-site-footer-nav {
     gap: 0 1.15rem;
+  }
+
+  .atlas-site-footer-detail {
+    align-items: flex-start;
+    flex-direction: column;
+    gap: 0.45rem;
+  }
+
+  .atlas-site-footer-detail-rule {
+    width: 100%;
   }
 }
 
