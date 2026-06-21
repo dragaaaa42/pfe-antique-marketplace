@@ -430,8 +430,7 @@ export const demoArtifacts: Artifact[] = [
   },
 ]
 
-export const fallbackArtifactImage =
-  'data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///ywAAAAAAQABAAACAUwAOw=='
+export const fallbackArtifactImage = chronicleLeafImage
 
 export async function getArtifacts() {
   const response = await api.get<Artifact[]>('/artifacts/')

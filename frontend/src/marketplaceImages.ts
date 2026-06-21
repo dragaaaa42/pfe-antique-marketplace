@@ -1,4 +1,6 @@
 import type { Artifact } from './types'
+const API_BASE_URL = (import.meta.env.VITE_API_URL ?? 'http://127.0.0.1:8000/api').replace(/\/$/, '')
+const API_HOST = API_BASE_URL.replace(/\/api$/, '')
 import amazighJewelryImage from './assets/marketplace/amazigh-jewelry.jpg'
 import amazighNecklaceImage from './assets/marketplace/amazigh-necklace.jpg'
 import antiqueTelephoneImage from './assets/marketplace/antique-telephone.jpg'
@@ -42,6 +44,22 @@ export function resolveMarketplaceImage(
   const useFallbackLibrary = title.includes('japanese pine trees folding screen')
 
   if (artifact.image && !useFallbackLibrary) {
+    // If the backend returned a full URL or data URL, use it as-is.
+    if (artifact.image.startsWith('http') || artifact.image.startsWith('data:')) {
+      return artifact.image
+    }
+
+    // If backend returned an absolute media path (eg. "/media/.."), prefix with API host.
+    if (artifact.image.startsWith('/')) {
+      return `${API_HOST}${artifact.image}`
+    }
+
+    // If backend returned a relative uploads/media path, prefix with API host.
+    if (/^media\//.test(artifact.image) || /^uploads\//.test(artifact.image)) {
+      return `${API_HOST}/${artifact.image.replace(/^\/+/, '')}`
+    }
+
+    // Otherwise return whatever was provided (may be a bundler asset or already correct).
     return artifact.image
   }
 
