@@ -13,7 +13,6 @@ export type Artifact = {
   condition: string
   price: string
   image?: string
-  model_3d?: string
   textures_path?: string
   metadata_json?: Record<string, unknown>
   status: string
@@ -132,10 +131,13 @@ export type SellerDashboardSummary = {
     total_sales: number
     revenue: string
     sold_artifacts: number
+    open_conversations: number
+    unread_conversations: number
   }
   recent_artifacts: Artifact[]
   recent_galleries: Gallery[]
   recent_orders: SellerOrderRecord[]
+  recent_conversations: ConversationSummary[]
 }
 
 export type SellerOrderRecord = {
@@ -183,4 +185,46 @@ export type AdminDashboardSummary = {
   pending_artifacts: Artifact[]
   recent_galleries: Gallery[]
   recent_actions: ModerationAction[]
+}
+
+export type ConversationMessage = {
+  id: number
+  sender: number
+  sender_email: string
+  sender_username: string
+  sender_first_name: string
+  sender_last_name: string
+  sender_avatar_path: string
+  sender_role: 'buyer' | 'seller' | 'admin'
+  body: string
+  created_at: string
+  read_at: string | null
+}
+
+export type ConversationSummary = {
+  id: number
+  artifact: number
+  artifact_detail: Artifact
+  buyer: number
+  buyer_email: string
+  buyer_username: string
+  buyer_first_name: string
+  buyer_last_name: string
+  buyer_avatar_path: string
+  seller: number
+  seller_email: string
+  seller_username: string
+  seller_first_name: string
+  seller_last_name: string
+  seller_avatar_path: string
+  created_at: string
+  updated_at: string
+  unread_count: number
+  messages_count: number
+  last_message_preview: string
+  last_message_at: string | null
+}
+
+export type ConversationDetail = ConversationSummary & {
+  messages: ConversationMessage[]
 }

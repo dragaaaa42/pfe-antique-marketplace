@@ -1,6 +1,7 @@
 from decimal import Decimal
 
 from django.contrib.auth import get_user_model
+from django.utils import timezone
 from rest_framework import serializers
 
 from users.models import UserProfile
@@ -9,6 +10,8 @@ from .models import (
     Artifact,
     CartItem,
     Category,
+    Conversation,
+    ConversationMessage,
     Exhibit,
     Gallery,
     ModerationAction,
@@ -313,3 +316,197 @@ class CartItemSerializer(serializers.ModelSerializer):
         instance.quantity = validated_data.get('quantity', instance.quantity)
         instance.save(update_fields=['quantity', 'updated_at'])
         return instance
+
+
+class ConversationMessageSerializer(serializers.ModelSerializer):
+    sender_email = serializers.EmailField(source='sender.email', read_only=True)
+    sender_username = serializers.CharField(source='sender.username', read_only=True)
+    sender_first_name = serializers.CharField(source='sender.first_name', read_only=True)
+    sender_last_name = serializers.CharField(source='sender.last_name', read_only=True)
+    sender_avatar_path = serializers.SerializerMethodField()
+    sender_role = serializers.SerializerMethodField()
+
+    class Meta:
+        model = ConversationMessage
+        fields = (
+            'id',
+            'sender',
+            'sender_email',
+            'sender_username',
+            'sender_first_name',
+            'sender_last_name',
+            'sender_avatar_path',
+            'sender_role',
+            'body',
+            'created_at',
+            'read_at',
+        )
+        read_only_fields = fields
+
+    def get_sender_role(self, obj):
+        return getattr(getattr(obj.sender, 'profile', None), 'role', UserProfile.Role.BUYER)
+
+    def get_sender_avatar_path(self, obj):
+        return getattr(getattr(obj.sender, 'profile', None), 'avatar_3d_path', '')
+
+
+class ConversationListSerializer(serializers.ModelSerializer):
+    artifact_detail = ArtifactSerializer(source='artifact', read_only=True)
+    buyer_email = serializers.EmailField(source='buyer.email', read_only=True)
+    buyer_username = serializers.CharField(source='buyer.username', read_only=True)
+    buyer_first_name = serializers.CharField(source='buyer.first_name', read_only=True)
+    buyer_last_name = serializers.CharField(source='buyer.last_name', read_only=True)
+    buyer_avatar_path = serializers.SerializerMethodField()
+    seller_email = serializers.EmailField(source='seller.email', read_only=True)
+    seller_username = serializers.CharField(source='seller.username', read_only=True)
+    seller_first_name = serializers.CharField(source='seller.first_name', read_only=True)
+    seller_last_name = serializers.CharField(source='seller.last_name', read_only=True)
+    seller_avatar_path = serializers.SerializerMethodField()
+    unread_count = serializers.SerializerMethodField()
+    messages_count = serializers.SerializerMethodField()
+    last_message_preview = serializers.SerializerMethodField()
+    last_message_at = serializers.SerializerMethodField()
+
+    class Meta:
+        model = Conversation
+        fields = (
+            'id',
+            'artifact',
+            'artifact_detail',
+            'buyer',
+            'buyer_email',
+            'buyer_username',
+            'buyer_first_name',
+            'buyer_last_name',
+            'buyer_avatar_path',
+            'seller',
+            'seller_email',
+            'seller_username',
+            'seller_first_name',
+            'seller_last_name',
+            'seller_avatar_path',
+            'created_at',
+            'updated_at',
+            'unread_count',
+            'messages_count',
+            'last_message_preview',
+            'last_message_at',
+        )
+        read_only_fields = fields
+
+    def _viewer(self):
+        request = self.context.get('request')
+        return getattr(request, 'user', None)
+
+    def _last_message(self, obj):
+        prefetched = getattr(obj, '_prefetched_objects_cache', {}).get('messages')
+        if prefetched:
+            prefetched_messages = list(prefetched)
+            return prefetched_messages[-1]
+        return obj.messages.select_related('sender').order_by('created_at', 'id').last()
+
+    def get_unread_count(self, obj):
+        viewer = self._viewer()
+        if not viewer or not viewer.is_authenticated:
+            return 0
+        return obj.messages.filter(read_at__isnull=True).exclude(sender=viewer).count()
+
+    def get_buyer_avatar_path(self, obj):
+        return getattr(getattr(obj.buyer, 'profile', None), 'avatar_3d_path', '')
+
+    def get_seller_avatar_path(self, obj):
+        return getattr(getattr(obj.seller, 'profile', None), 'avatar_3d_path', '')
+
+    def get_messages_count(self, obj):
+        prefetched = getattr(obj, '_prefetched_objects_cache', {}).get('messages')
+        if prefetched is not None:
+            return len(prefetched)
+        return obj.messages.count()
+
+    def get_last_message_preview(self, obj):
+        message = self._last_message(obj)
+        if not message:
+            return ''
+        body = message.body.strip()
+        return body if len(body) <= 140 else f'{body[:137]}...'
+
+    def get_last_message_at(self, obj):
+        message = self._last_message(obj)
+        return message.created_at if message else obj.updated_at
+
+
+class ConversationDetailSerializer(ConversationListSerializer):
+    messages = ConversationMessageSerializer(many=True, read_only=True)
+
+    class Meta(ConversationListSerializer.Meta):
+        fields = ConversationListSerializer.Meta.fields + ('messages',)
+        read_only_fields = fields
+
+
+class ConversationCreateSerializer(serializers.Serializer):
+    artifact = serializers.PrimaryKeyRelatedField(
+        queryset=Artifact.objects.select_related('seller', 'category').all(),
+    )
+    body = serializers.CharField()
+
+    def validate_artifact(self, artifact):
+        if artifact.status != Artifact.Status.APPROVED:
+            raise serializers.ValidationError('Only approved artifacts can receive a new conversation.')
+        return artifact
+
+    def validate_body(self, value):
+        body = value.strip()
+        if not body:
+            raise serializers.ValidationError('Write a message before starting the conversation.')
+        return body
+
+    def validate(self, attrs):
+        request = self.context['request']
+        role = getattr(getattr(request.user, 'profile', None), 'role', None)
+
+        if role != UserProfile.Role.BUYER:
+            raise serializers.ValidationError({'detail': 'Only collector accounts can start a new seller conversation.'})
+
+        artifact = attrs['artifact']
+        if artifact.seller_id == request.user.id:
+            raise serializers.ValidationError({'detail': 'You cannot start a conversation with your own listing.'})
+        return attrs
+
+    def create(self, validated_data):
+        request = self.context['request']
+        artifact = validated_data['artifact']
+        body = validated_data['body'].strip()
+        conversation, _ = Conversation.objects.get_or_create(
+            artifact=artifact,
+            buyer=request.user,
+            seller=artifact.seller,
+        )
+        ConversationMessage.objects.create(
+            conversation=conversation,
+            sender=request.user,
+            body=body,
+        )
+        conversation.save(update_fields=['updated_at'])
+        return conversation
+
+
+class ConversationReplySerializer(serializers.Serializer):
+    body = serializers.CharField()
+
+    def validate_body(self, value):
+        body = value.strip()
+        if not body:
+            raise serializers.ValidationError('Write a message before sending it.')
+        return body
+
+    def create(self, validated_data):
+        conversation = self.context['conversation']
+        sender = self.context['request'].user
+        message = ConversationMessage.objects.create(
+            conversation=conversation,
+            sender=sender,
+            body=validated_data['body'].strip(),
+        )
+        conversation.save(update_fields=['updated_at'])
+        conversation.messages.exclude(sender=sender).filter(read_at__isnull=True).update(read_at=timezone.now())
+        return message

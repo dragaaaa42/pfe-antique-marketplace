@@ -1,50 +1,32 @@
 import type { Artifact } from './types'
-
-const encodeFile = (fileName: string) =>
-  `https://commons.wikimedia.org/wiki/Special:FilePath/${encodeURIComponent(fileName)}?width=1200`
+import amazighJewelryImage from './assets/marketplace/amazigh-jewelry.jpg'
+import amazighNecklaceImage from './assets/marketplace/amazigh-necklace.jpg'
+import antiqueTelephoneImage from './assets/marketplace/antique-telephone.jpg'
+import ceramicVaseAltImage from './assets/marketplace/ceramic-vase-alt.jpg'
+import ceramicVaseImage from './assets/marketplace/ceramic-vase.jpg'
+import chronicleLeafImage from './assets/marketplace/chronicle-leaf.jpg'
+import chronographWatchImage from './assets/marketplace/chronograph-watch.jpg'
+import classicalBustImage from './assets/marketplace/classical-bust.jpg'
+import luxuryBagImage from './assets/marketplace/luxury-bag.jpg'
+import moroccanRugImage from './assets/marketplace/moroccan-rug.jpg'
+import royalCarouselImage from './assets/marketplace/royal-carousel.jpg'
+import silverTeaServiceImage from './assets/marketplace/silver-tea-service.jpg'
+import traditionalCaftanImage from './assets/marketplace/traditional-caftan.jpg'
+import walnutCabinetImage from './assets/marketplace/walnut-cabinet.jpg'
 
 const transparentImage = 'data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///ywAAAAAAQABAAACAUwAOw=='
 
 const imageLibrary = {
-  art: [
-    'https://images.unsplash.com/photo-1513364776144-60967b0f800f?auto=format&fit=crop&w=1200&q=85',
-    'https://images.unsplash.com/photo-1578926375605-eaf7559b1458?auto=format&fit=crop&w=1200&q=85',
-    'https://images.unsplash.com/photo-1501386761578-eac5c94b800a?auto=format&fit=crop&w=1200&q=85',
-    'https://images.unsplash.com/photo-1460661419201-fd4cecdf8a8d?auto=format&fit=crop&w=1200&q=85',
-  ],
-  furniture: [
-    encodeFile('Old-table-and-chairs.jpg'),
-    encodeFile('Antique Closet (3139773451).jpg'),
-    encodeFile('Baleen and ebony table cabinet attributed to herman doomer.jpg'),
-    encodeFile('Cabinet MET 210485.jpg'),
-  ],
-  jewelry: [
-    encodeFile('AntiquejewelsHMM.jpg'),
-    encodeFile('Beatrice-Cenci-Brosche-Gold-um-1850.jpeg'),
-    encodeFile('English - Silver Ring Brooch - Walters 571990.jpg'),
-    encodeFile('Luckenbooth brooches .jpg'),
-    encodeFile('Ancient Assyria Jewelry (28089395963).jpg'),
-  ],
-  decor: [
-    encodeFile('Antique clock in Katowice shop.JPG'),
-    encodeFile('Grandfather clock.JPG'),
-    encodeFile('Antique grandfather clock (26282562111).jpg'),
-    encodeFile('Antique Grandfather Clock by Grantham Clockmaker 18th century.JPG'),
-  ],
-  lighting: [
-    encodeFile('Argand Lamp MET ADA3409.jpg'),
-    encodeFile('Antique clock in Katowice shop.JPG'),
-  ],
-  ceramics: [
-    encodeFile('Saint Cloud soft porcelain vase with blue designs under glaze 1695-1700.jpg'),
-    encodeFile('Blue & white porcelain lidded jar.jpg'),
-    encodeFile('Export porcelain vase with European scene Kangxi period.jpg'),
-    encodeFile('Ming Dynasty porcelain vase, Wanli Reign Period (2).JPG'),
-  ],
-  textiles: [encodeFile('Ardabil Carpet.jpg')],
-  fashion: [encodeFile('Louis XIV of France.jpg')],
-  instruments: [encodeFile('"The Gould" Violin MET DT669.jpg')],
-  manuscripts: [encodeFile('JoanOfArcLarge.jpeg')],
+  art: [luxuryBagImage, classicalBustImage, chronicleLeafImage, royalCarouselImage],
+  furniture: [walnutCabinetImage, royalCarouselImage, silverTeaServiceImage, antiqueTelephoneImage],
+  jewelry: [amazighJewelryImage, amazighNecklaceImage, classicalBustImage, chronographWatchImage],
+  decor: [antiqueTelephoneImage, silverTeaServiceImage, royalCarouselImage, walnutCabinetImage],
+  lighting: [silverTeaServiceImage, antiqueTelephoneImage, royalCarouselImage, chronographWatchImage],
+  ceramics: [ceramicVaseImage, ceramicVaseAltImage, silverTeaServiceImage, royalCarouselImage],
+  textiles: [moroccanRugImage, traditionalCaftanImage, chronicleLeafImage, luxuryBagImage],
+  fashion: [traditionalCaftanImage, luxuryBagImage, amazighNecklaceImage, royalCarouselImage],
+  instruments: [chronographWatchImage, antiqueTelephoneImage, silverTeaServiceImage, royalCarouselImage],
+  manuscripts: [chronicleLeafImage, royalCarouselImage, silverTeaServiceImage, antiqueTelephoneImage],
   default: [transparentImage],
 } as const
 

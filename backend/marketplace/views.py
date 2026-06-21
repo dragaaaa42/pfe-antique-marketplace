@@ -3,7 +3,8 @@ from decimal import Decimal
 from django.contrib.auth import get_user_model
 from django.db import transaction
 from django.db.models import Q
-from rest_framework import permissions, status, viewsets
+from django.utils import timezone
+from rest_framework import mixins, permissions, status, viewsets
 from rest_framework.decorators import action
 from rest_framework.exceptions import ValidationError
 from rest_framework.response import Response
@@ -17,6 +18,7 @@ from .models import (
     Artifact,
     CartItem,
     Category,
+    Conversation,
     Exhibit,
     Gallery,
     ModerationAction,
@@ -28,6 +30,7 @@ from .permissions import (
     IsAdminOrReadOnly,
     IsBuyerOwnedResource,
     IsBuyerOwnerOrAdmin,
+    IsConversationParticipantOrAdmin,
     IsGalleryOwnerOrAdminForWrites,
     IsSellerOrAdminRole,
     IsSellerOwnedResource,
@@ -40,6 +43,10 @@ from .serializers import (
     ArtifactSerializer,
     CartItemSerializer,
     CategorySerializer,
+    ConversationCreateSerializer,
+    ConversationDetailSerializer,
+    ConversationListSerializer,
+    ConversationReplySerializer,
     ExhibitSerializer,
     GallerySerializer,
     OrderSerializer,
@@ -131,12 +138,22 @@ class SellerDashboardView(APIView):
         artifact_queryset = Artifact.objects.select_related('seller', 'category')
         gallery_queryset = Gallery.objects.select_related('owner')
         order_queryset = Order.objects.prefetch_related('items__artifact').select_related('buyer')
+        conversation_queryset = Conversation.objects.select_related(
+            'artifact',
+            'artifact__category',
+            'artifact__seller',
+            'buyer',
+            'buyer__profile',
+            'seller',
+            'seller__profile',
+        ).prefetch_related('messages__sender', 'messages__sender__profile')
         role = user_role(request.user)
 
         if role != 'admin':
             artifact_queryset = artifact_queryset.filter(seller=request.user)
             gallery_queryset = gallery_queryset.filter(owner=request.user)
             order_queryset = order_queryset.filter(items__artifact__seller=request.user).distinct()
+            conversation_queryset = conversation_queryset.filter(seller=request.user)
 
         sold_items = order_queryset.filter(status=Order.Status.PAID)
         seller_items = [
@@ -158,11 +175,17 @@ class SellerDashboardView(APIView):
             'total_sales': sum(item.quantity for item in seller_items),
             'revenue': str(revenue),
             'sold_artifacts': len({item.artifact_id for item in seller_items}),
+            'open_conversations': conversation_queryset.count(),
+            'unread_conversations': conversation_queryset.filter(messages__read_at__isnull=True)
+            .exclude(messages__sender=request.user)
+            .distinct()
+            .count(),
         }
 
         recent_artifacts = artifact_queryset.order_by('-created_at')[:6]
         recent_galleries = gallery_queryset.order_by('-created_at')[:4]
         recent_orders = order_queryset.order_by('-created_at')[:5]
+        recent_conversations = conversation_queryset.order_by('-updated_at')[:5]
 
         return Response(
             {
@@ -173,6 +196,11 @@ class SellerDashboardView(APIView):
                     recent_orders,
                     many=True,
                     context={'seller_user': request.user},
+                ).data,
+                'recent_conversations': ConversationListSerializer(
+                    recent_conversations,
+                    many=True,
+                    context={'request': request},
                 ).data,
             }
         )
@@ -601,3 +629,87 @@ class OrderViewSet(viewsets.ReadOnlyModelViewSet):
         if failure_message:
             return Response({'detail': failure_message, 'order': self.get_serializer(order).data}, status=400)
         return Response(self.get_serializer(order).data, status=status.HTTP_200_OK)
+
+
+class ConversationViewSet(
+    mixins.CreateModelMixin,
+    mixins.ListModelMixin,
+    mixins.RetrieveModelMixin,
+    viewsets.GenericViewSet,
+):
+    permission_classes = (permissions.IsAuthenticated, IsConversationParticipantOrAdmin)
+
+    def get_queryset(self):
+        queryset = Conversation.objects.select_related(
+            'artifact',
+            'artifact__category',
+            'artifact__seller',
+            'buyer',
+            'buyer__profile',
+            'seller',
+            'seller__profile',
+        ).prefetch_related('messages__sender', 'messages__sender__profile')
+        role = user_role(self.request.user)
+
+        if role == 'admin':
+            return queryset
+        if role == 'seller':
+            return queryset.filter(seller=self.request.user)
+        if role == 'buyer':
+            return queryset.filter(buyer=self.request.user)
+        return queryset.none()
+
+    def get_serializer_class(self):
+        if self.action == 'create':
+            return ConversationCreateSerializer
+        if self.action == 'reply':
+            return ConversationReplySerializer
+        if self.action == 'retrieve':
+            return ConversationDetailSerializer
+        return ConversationListSerializer
+
+    def get_queryset_filtered(self):
+        queryset = self.get_queryset()
+        artifact_id = self.request.query_params.get('artifact')
+        if artifact_id:
+            queryset = queryset.filter(artifact_id=artifact_id)
+        return queryset
+
+    def list(self, request, *args, **kwargs):
+        queryset = self.get_queryset_filtered()
+        serializer = self.get_serializer(queryset, many=True)
+        return Response(serializer.data)
+
+    def retrieve(self, request, *args, **kwargs):
+        conversation = self.get_object()
+        conversation.messages.exclude(sender=request.user).filter(read_at__isnull=True).update(read_at=timezone.now())
+        serializer = self.get_serializer(conversation)
+        return Response(serializer.data)
+
+    def create(self, request, *args, **kwargs):
+        serializer = self.get_serializer(data=request.data)
+        serializer.is_valid(raise_exception=True)
+        conversation = serializer.save()
+        detail = ConversationDetailSerializer(conversation, context={'request': request})
+        return Response(detail.data, status=status.HTTP_201_CREATED)
+
+    @action(detail=True, methods=['post'])
+    def reply(self, request, pk=None):
+        conversation = self.get_object()
+        serializer = self.get_serializer(
+            data=request.data,
+            context={'request': request, 'conversation': conversation},
+        )
+        serializer.is_valid(raise_exception=True)
+        serializer.save()
+        refreshed = Conversation.objects.select_related(
+            'artifact',
+            'artifact__category',
+            'artifact__seller',
+            'buyer',
+            'buyer__profile',
+            'seller',
+            'seller__profile',
+        ).prefetch_related('messages__sender', 'messages__sender__profile').get(pk=conversation.pk)
+        detail = ConversationDetailSerializer(refreshed, context={'request': request})
+        return Response(detail.data, status=status.HTTP_201_CREATED)

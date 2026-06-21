@@ -10,6 +10,7 @@ from .views import (
     ArtifactViewSet,
     CartViewSet,
     CategoryViewSet,
+    ConversationViewSet,
     CollectorDashboardView,
     ExhibitViewSet,
     GalleryViewSet,
@@ -29,6 +30,7 @@ router.register('exhibits', ExhibitViewSet, basename='exhibit')
 router.register('orders', OrderViewSet, basename='order')
 router.register('wishlist', WishlistViewSet, basename='wishlist')
 router.register('cart', CartViewSet, basename='cart')
+router.register('conversations', ConversationViewSet, basename='conversation')
 
 seller_router = DefaultRouter()
 seller_router.register('artifacts', SellerArtifactViewSet, basename='seller-artifact')

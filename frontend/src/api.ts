@@ -3,10 +3,18 @@ import amazighJewelryImage from './assets/marketplace/amazigh-jewelry.jpg'
 import amazighArtworkImage from './assets/marketplace/amazigh-necklace.jpg'
 import antiqueTelephoneImage from './assets/marketplace/antique-telephone.jpg'
 import ceramicVaseImage from './assets/marketplace/ceramic-vase.jpg'
+import chronicleLeafImage from './assets/marketplace/chronicle-leaf.jpg'
+import chronographWatchImage from './assets/marketplace/chronograph-watch.jpg'
+import classicalBustImage from './assets/marketplace/classical-bust.jpg'
+import luxuryBagImage from './assets/marketplace/luxury-bag.jpg'
 import moroccanRugImage from './assets/marketplace/moroccan-rug.jpg'
 import royalCarouselImage from './assets/marketplace/royal-carousel.jpg'
+import silverTeaServiceImage from './assets/marketplace/silver-tea-service.jpg'
 import traditionalCaftanImage from './assets/marketplace/traditional-caftan.jpg'
+import walnutCabinetImage from './assets/marketplace/walnut-cabinet.jpg'
 import type {
+  ConversationDetail,
+  ConversationSummary,
   CollectorDashboardSummary,
   AdminDashboardSummary,
   AdminUser,
@@ -18,14 +26,13 @@ import type {
   SellerOrderRecord,
 } from './types'
 
+const apiBaseURL = (import.meta.env.VITE_API_URL ?? 'http://127.0.0.1:8000/api').replace(/\/$/, '')
+
 const api = axios.create({
-  baseURL: import.meta.env.VITE_API_URL ?? 'http://127.0.0.1:8000/api',
+  baseURL: apiBaseURL,
 })
 
 const authStorageKey = 'artisan-echo-auth'
-
-const commonsImage = (fileName: string) =>
-  `https://commons.wikimedia.org/wiki/Special:FilePath/${encodeURIComponent(fileName)}?width=1200`
 
 export type AuthUser = {
   id: number
@@ -53,6 +60,9 @@ export type LoginPayload = {
   password: string
 }
 
+export type SocialAuthProvider = 'google' | 'github'
+export type SocialAuthMode = 'login' | 'signup'
+
 export type RegisterPayload = {
   email: string
   password: string
@@ -66,6 +76,8 @@ export type CurrentUserUpdatePayload = {
   first_name?: string
   last_name?: string
   avatar_3d_path?: string
+  avatar_image?: File | null
+  remove_avatar?: boolean
 }
 
 export type ChangePasswordPayload = {
@@ -139,6 +151,10 @@ export type AdminAuditListParams = {
   search?: string
 }
 
+export type ConversationListParams = {
+  artifact?: number | string
+}
+
 function persistAuthSession(session: AuthSession | null) {
   if (session) {
     localStorage.setItem(authStorageKey, JSON.stringify(session))
@@ -193,6 +209,29 @@ export function applyAccessToken(accessToken: string | null) {
   delete api.defaults.headers.common.Authorization
 }
 
+export function buildSocialAuthStartUrl(
+  provider: SocialAuthProvider,
+  options: {
+    mode: SocialAuthMode
+    role?: RegisterPayload['role']
+    redirectTo?: string
+  },
+) {
+  const params = new URLSearchParams({
+    mode: options.mode,
+  })
+
+  if (options.role) {
+    params.set('role', options.role)
+  }
+
+  if (options.redirectTo) {
+    params.set('redirect_to', options.redirectTo)
+  }
+
+  return `${apiBaseURL}/auth/social/${provider}/start/?${params.toString()}`
+}
+
 export const demoArtifacts: Artifact[] = [
   {
     id: 101,
@@ -206,9 +245,7 @@ export const demoArtifacts: Artifact[] = [
     provenance: 'Private collection demo record.',
     condition: 'excellent',
     price: '3200.00',
-    image:
-      'https://images.unsplash.com/photo-1594223274512-ad4803739b7c?auto=format&fit=crop&w=1200&q=85',
-    model_3d: '/models/demo-antique.glb',
+    image: luxuryBagImage,
     status: 'approved',
   },
   {
@@ -224,7 +261,6 @@ export const demoArtifacts: Artifact[] = [
     condition: 'excellent',
     price: '14800.00',
     image: amazighJewelryImage,
-    model_3d: '/models/demo-antique.glb',
     status: 'approved',
   },
   {
@@ -239,9 +275,7 @@ export const demoArtifacts: Artifact[] = [
     provenance: 'Watch collector demo record.',
     condition: 'restored',
     price: '8600.00',
-    image:
-      'https://images.unsplash.com/photo-1523170335258-f5ed11844a49?auto=format&fit=crop&w=1200&q=85',
-    model_3d: '/models/demo-antique.glb',
+    image: chronographWatchImage,
     status: 'approved',
   },
   {
@@ -257,7 +291,6 @@ export const demoArtifacts: Artifact[] = [
     condition: 'good',
     price: '5400.00',
     image: traditionalCaftanImage,
-    model_3d: '/models/demo-antique.glb',
     status: 'approved',
   },
   {
@@ -272,8 +305,7 @@ export const demoArtifacts: Artifact[] = [
     provenance: 'Private collection demo record.',
     condition: 'restored',
     price: '12400.00',
-    image: commonsImage('Cabinet MET 210485.jpg'),
-    model_3d: '/models/demo-antique.glb',
+    image: walnutCabinetImage,
     status: 'approved',
   },
   {
@@ -289,7 +321,6 @@ export const demoArtifacts: Artifact[] = [
     condition: 'good',
     price: '11200.00',
     image: amazighArtworkImage,
-    model_3d: '/models/demo-antique.glb',
     status: 'approved',
   },
   {
@@ -304,9 +335,7 @@ export const demoArtifacts: Artifact[] = [
     provenance: 'Museum-quality sculpture demo record.',
     condition: 'excellent',
     price: '18900.00',
-    image:
-      'https://images.unsplash.com/photo-1545239351-1141bd82e8a6?auto=format&fit=crop&w=1200&q=85',
-    model_3d: '/models/demo-antique.glb',
+    image: classicalBustImage,
     status: 'approved',
   },
   {
@@ -322,7 +351,6 @@ export const demoArtifacts: Artifact[] = [
     condition: 'fair',
     price: '3800.00',
     image: royalCarouselImage,
-    model_3d: '/models/demo-antique.glb',
     status: 'approved',
   },
   {
@@ -338,7 +366,6 @@ export const demoArtifacts: Artifact[] = [
     condition: 'good',
     price: '7200.00',
     image: antiqueTelephoneImage,
-    model_3d: '/models/demo-antique.glb',
     status: 'approved',
   },
   {
@@ -353,8 +380,7 @@ export const demoArtifacts: Artifact[] = [
     provenance: 'Archival study demo record.',
     condition: 'good',
     price: '9800.00',
-    image: commonsImage('JoanOfArcLarge.jpeg'),
-    model_3d: '/models/demo-antique.glb',
+    image: chronicleLeafImage,
     status: 'approved',
   },
   {
@@ -370,7 +396,6 @@ export const demoArtifacts: Artifact[] = [
     condition: 'excellent',
     price: '6200.00',
     image: ceramicVaseImage,
-    model_3d: '/models/demo-antique.glb',
     status: 'approved',
   },
   {
@@ -386,7 +411,6 @@ export const demoArtifacts: Artifact[] = [
     condition: 'good',
     price: '16400.00',
     image: moroccanRugImage,
-    model_3d: '/models/demo-antique.glb',
     status: 'approved',
   },
   {
@@ -401,8 +425,7 @@ export const demoArtifacts: Artifact[] = [
     provenance: 'Silver service demo record.',
     condition: 'restored',
     price: '9400.00',
-    image: commonsImage('Japansk silvertekanna med dito sil.jpg'),
-    model_3d: '/models/demo-antique.glb',
+    image: silverTeaServiceImage,
     status: 'approved',
   },
 ]
@@ -446,7 +469,28 @@ export async function getCurrentUser() {
 }
 
 export async function updateCurrentUser(payload: CurrentUserUpdatePayload) {
-  const response = await api.patch<AuthUser>('/auth/me/', payload)
+  const formData = new FormData()
+
+  if (payload.email !== undefined) {
+    formData.append('email', payload.email)
+  }
+  if (payload.first_name !== undefined) {
+    formData.append('first_name', payload.first_name)
+  }
+  if (payload.last_name !== undefined) {
+    formData.append('last_name', payload.last_name)
+  }
+  if (payload.avatar_3d_path !== undefined) {
+    formData.append('avatar_3d_path', payload.avatar_3d_path)
+  }
+  if (payload.avatar_image) {
+    formData.append('avatar_image', payload.avatar_image)
+  }
+  if (payload.remove_avatar) {
+    formData.append('remove_avatar', 'true')
+  }
+
+  const response = await api.patch<AuthUser>('/auth/me/', formData)
   return response.data
 }
 
@@ -628,6 +672,26 @@ export async function getOrders() {
 
 export async function getOrder(id: number | string) {
   const response = await api.get<OrderRecord>(`/orders/${id}/`)
+  return response.data
+}
+
+export async function getConversations(params?: ConversationListParams) {
+  const response = await api.get<ConversationSummary[]>(`/conversations/${buildQueryString(params)}`)
+  return response.data
+}
+
+export async function getConversation(id: number | string) {
+  const response = await api.get<ConversationDetail>(`/conversations/${id}/`)
+  return response.data
+}
+
+export async function createConversation(artifact: number, body: string) {
+  const response = await api.post<ConversationDetail>('/conversations/', { artifact, body })
+  return response.data
+}
+
+export async function replyConversation(id: number | string, body: string) {
+  const response = await api.post<ConversationDetail>(`/conversations/${id}/reply/`, { body })
   return response.data
 }
 

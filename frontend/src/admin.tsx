@@ -15,6 +15,8 @@ import {
 import { useAuth } from './auth'
 import { MarketplaceImage } from './components/MarketplaceImage'
 import { resolveMarketplaceImage } from './marketplaceImages'
+import { currentUserAvatarPath, currentUserDisplayName, UserAvatar } from './messageIdentity'
+import { getDashboardPathForRole } from './roleRouting'
 import type {
   AdminUser,
   Artifact,
@@ -54,18 +56,7 @@ function AdminGate({ children }: { children: ReactNode }) {
   }
 
   if (user.role !== 'admin') {
-    return (
-      <main className="empty-page">
-        <section className="empty-card">
-          <p className="eyebrow">Access denied</p>
-          <h1>This area is only for administrators.</h1>
-          <p>Sellers and collectors can continue using their own dashboards.</p>
-          <Link className="solid-button" to="/">
-            Return to catalogue
-          </Link>
-        </section>
-      </main>
-    )
+    return <Navigate replace to={getDashboardPathForRole(user.role)} />
   }
 
   return children
@@ -81,19 +72,26 @@ function AdminLayout({
   children: ReactNode
 }) {
   const { user, logout } = useAuth()
+  const currentUserName = currentUserDisplayName(user, 'Admin')
+  const currentUserAvatar = currentUserAvatarPath(user)
 
   return (
-    <main className="dashboard-page">
-      <aside className="dashboard-rail">
-        <Link className="brand-mark" to="/">
-          Artisan&apos;s Echo
-        </Link>
-        <div className="dashboard-user">
-          <strong>{user?.first_name || user?.email}</strong>
-          <span>{user?.role}</span>
+    <main className="dashboard-page dashboard-page--workspace">
+      <aside className="dashboard-rail dashboard-rail--workspace">
+        <div className="dashboard-user dashboard-user--workspace">
+          <UserAvatar
+            avatarPath={currentUserAvatar}
+            className="dashboard-avatar-frame"
+            initialsClassName="text-lg font-semibold uppercase tracking-[0.16em] text-white"
+            label={currentUserName}
+          />
+          <div>
+            <strong>{currentUserName}</strong>
+            <span className="dashboard-role-chip">{user?.role}</span>
+          </div>
           <p>{description}</p>
         </div>
-        <nav className="dashboard-nav" aria-label="Admin navigation">
+        <nav className="dashboard-nav dashboard-nav--workspace" aria-label="Admin navigation">
           <NavLink end to="/admin">
             Dashboard
           </NavLink>
@@ -101,23 +99,31 @@ function AdminLayout({
           <NavLink to="/admin/artifacts">Artifacts</NavLink>
           <NavLink to="/admin/galleries">Galleries</NavLink>
           <NavLink to="/admin/audit">Audit trail</NavLink>
-          <NavLink to="/">Catalogue</NavLink>
+          <NavLink end to="/">Catalogue</NavLink>
         </nav>
-        <button className="ghost-button" onClick={logout} type="button">
-          Log out
-        </button>
+        <div className="dashboard-rail-footer">
+          <Link className="dashboard-cta-button" to="/admin/users">
+            Review users
+          </Link>
+        </div>
       </aside>
-      <section className="dashboard-content">
-        <div className="dashboard-header">
+      <section className="dashboard-content dashboard-content--workspace">
+        <div className="dashboard-header dashboard-header--workspace">
           <div>
             <p className="eyebrow">Administration workspace</p>
             <h1>{title}</h1>
+            <p className="dashboard-header-copy">Moderation, users, galleries, and artifact approvals live in one cleaner control surface.</p>
           </div>
-          <Link className="ghost-button" to="/">
-            Back to catalogue
-          </Link>
+          <div className="dashboard-header-actions">
+            <Link className="ghost-button" to="/">
+              Back to catalogue
+            </Link>
+            <button className="ghost-button" onClick={logout} type="button">
+              Log out
+            </button>
+          </div>
         </div>
-        {children}
+        <div className="dashboard-shell-body">{children}</div>
       </section>
     </main>
   )
@@ -231,6 +237,7 @@ function AdminDashboardBody() {
                             <MarketplaceImage
                               alt={artifact.title}
                               className="table-thumb"
+                              loading="eager"
                               src={resolveMarketplaceImage(artifact)}
                             />
                           </td>
@@ -775,6 +782,7 @@ function AdminArtifactsBody() {
                     <MarketplaceImage
                       alt={artifact.title}
                       className="table-thumb"
+                      loading="eager"
                       src={resolveMarketplaceImage(artifact)}
                     />
                   </td>

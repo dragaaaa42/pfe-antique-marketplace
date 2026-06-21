@@ -206,6 +206,55 @@ class CartItem(models.Model):
         return f'{self.quantity} x {self.artifact} in cart for {self.user}'
 
 
+class Conversation(models.Model):
+    artifact = models.ForeignKey(
+        Artifact,
+        on_delete=models.CASCADE,
+        related_name='conversations',
+    )
+    buyer = models.ForeignKey(
+        settings.AUTH_USER_MODEL,
+        on_delete=models.CASCADE,
+        related_name='buyer_conversations',
+    )
+    seller = models.ForeignKey(
+        settings.AUTH_USER_MODEL,
+        on_delete=models.CASCADE,
+        related_name='seller_conversations',
+    )
+    created_at = models.DateTimeField(auto_now_add=True)
+    updated_at = models.DateTimeField(auto_now=True)
+
+    class Meta:
+        ordering = ('-updated_at', '-created_at')
+        unique_together = ('artifact', 'buyer', 'seller')
+
+    def __str__(self):
+        return f'Conversation #{self.pk} for {self.artifact}'
+
+
+class ConversationMessage(models.Model):
+    conversation = models.ForeignKey(
+        Conversation,
+        on_delete=models.CASCADE,
+        related_name='messages',
+    )
+    sender = models.ForeignKey(
+        settings.AUTH_USER_MODEL,
+        on_delete=models.CASCADE,
+        related_name='sent_conversation_messages',
+    )
+    body = models.TextField()
+    created_at = models.DateTimeField(auto_now_add=True)
+    read_at = models.DateTimeField(blank=True, null=True)
+
+    class Meta:
+        ordering = ('created_at', 'id')
+
+    def __str__(self):
+        return f'Message #{self.pk} in conversation #{self.conversation_id}'
+
+
 class ModerationAction(models.Model):
     class ActionType(models.TextChoices):
         ARTIFACT_APPROVED = 'artifact_approved', 'Artifact approved'

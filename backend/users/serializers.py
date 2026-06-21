@@ -1,4 +1,6 @@
 from django.contrib.auth import authenticate, get_user_model
+from django.core.files.storage import default_storage
+from django.conf import settings
 from rest_framework import serializers
 from rest_framework_simplejwt.serializers import TokenObtainPairSerializer
 
@@ -30,10 +32,12 @@ class CurrentUserSerializer(serializers.ModelSerializer):
         required=False,
         allow_blank=True,
     )
+    avatar_image = serializers.FileField(write_only=True, required=False, allow_null=True)
+    remove_avatar = serializers.BooleanField(write_only=True, required=False, default=False)
 
     class Meta:
         model = User
-        fields = ('email', 'first_name', 'last_name', 'avatar_3d_path')
+        fields = ('email', 'first_name', 'last_name', 'avatar_3d_path', 'avatar_image', 'remove_avatar')
 
     def validate_email(self, value):
         email = value.strip().lower()
@@ -44,18 +48,54 @@ class CurrentUserSerializer(serializers.ModelSerializer):
     def update(self, instance, validated_data):
         profile_data = validated_data.pop('profile', {})
         avatar_3d_path = profile_data.get('avatar_3d_path')
+        avatar_image = validated_data.pop('avatar_image', None)
+        remove_avatar = validated_data.pop('remove_avatar', False)
         email = validated_data.get('email')
 
         if email:
             validated_data['username'] = email
 
         user = super().update(instance, validated_data)
+        profile = user.profile
+
+        if remove_avatar:
+            self._delete_avatar_file(profile.avatar_3d_path)
+            profile.avatar_3d_path = ''
 
         if avatar_3d_path is not None:
-            user.profile.avatar_3d_path = avatar_3d_path
-            user.profile.save(update_fields=['avatar_3d_path'])
+            profile.avatar_3d_path = avatar_3d_path
+
+        if avatar_image is not None:
+            self.validate_avatar_image(avatar_image)
+            self._delete_avatar_file(profile.avatar_3d_path)
+            saved_path = default_storage.save(f'avatars/{avatar_image.name}', avatar_image)
+            profile.avatar_3d_path = f"{settings.BACKEND_URL.rstrip('/')}{default_storage.url(saved_path)}"
+
+        profile.save(update_fields=['avatar_3d_path'])
 
         return user
+
+    def validate_avatar_image(self, value):
+        content_type = getattr(value, 'content_type', '')
+        if content_type and not content_type.startswith('image/'):
+            raise serializers.ValidationError('Upload an image file for the profile picture.')
+        return value
+
+    def _delete_avatar_file(self, path_value):
+        if not path_value:
+            return
+
+        normalized = str(path_value).strip()
+        backend_root = settings.BACKEND_URL.rstrip('/')
+        if normalized.startswith(backend_root):
+            normalized = normalized.replace(backend_root, '', 1)
+
+        if not normalized.startswith('/media/avatars/'):
+            return
+
+        storage_path = normalized.replace('/media/', '', 1)
+        if default_storage.exists(storage_path):
+            default_storage.delete(storage_path)
 
 
 class ChangePasswordSerializer(serializers.Serializer):
