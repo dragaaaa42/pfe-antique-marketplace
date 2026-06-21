@@ -59,7 +59,6 @@ import {
   AdminArtifactsPage,
   AdminAuditPage,
   AdminDashboardPage,
-  AdminGalleriesPage,
   AdminUserDetailPage,
   AdminUsersPage,
 } from './admin'
@@ -67,7 +66,6 @@ import { MarketplaceImage } from './components/MarketplaceImage'
 import atlasPoster from './assets/marketplace/silver-tea-service.jpg'
 import {
   SellerDashboardPage,
-  SellerGalleriesPage,
   SellerMessagesPage,
   SellerOrderDetailPage,
   SellerOrdersPage,
@@ -99,14 +97,12 @@ export default function App() {
           <Route path="/seller/products" element={<SellerProductsPage />} />
           <Route path="/seller/messages" element={<SellerMessagesPage />} />
           <Route path="/seller/messages/:id" element={<SellerMessagesPage />} />
-          <Route path="/seller/galleries" element={<SellerGalleriesPage />} />
           <Route path="/seller/orders" element={<SellerOrdersPage />} />
           <Route path="/seller/orders/:id" element={<SellerOrderDetailPage />} />
           <Route path="/admin" element={<AdminDashboardPage />} />
           <Route path="/admin/users" element={<AdminUsersPage />} />
           <Route path="/admin/users/:id" element={<AdminUserDetailPage />} />
           <Route path="/admin/artifacts" element={<AdminArtifactsPage />} />
-          <Route path="/admin/galleries" element={<AdminGalleriesPage />} />
           <Route path="/admin/audit" element={<AdminAuditPage />} />
           <Route path="/artifacts/:id" element={<ArtifactDetailPage />} />
           <Route path="/artifacts/:id/message" element={<ProductMessagePage />} />
@@ -2134,16 +2130,19 @@ function LegacyArtifactDetailPage() {
               </button>
             ))}
           </div>
-          <section className="viewer-dossier">
-            <div>
-              <p className="eyebrow">Image study</p>
-              <h2>Compare the hero shot with the supporting views.</h2>
-              <p className="product-description">
-                Each listing uses editorial photography, close crops, and detail shots so collectors
-                can inspect the surface without a model viewer.
-              </p>
-            </div>
-          </section>
+
+          {galleryImages.length > 1 && (
+            <section className="viewer-dossier">
+              <div>
+                <p className="eyebrow">Image study</p>
+                <h2>Compare the hero shot with the supporting views.</h2>
+                <p className="product-description">
+                  Each listing uses editorial photography, close crops, and detail shots so collectors
+                  can inspect the surface without a model viewer.
+                </p>
+              </div>
+            </section>
+          )}
         </div>
 
         <aside className="product-summary">
@@ -2312,6 +2311,18 @@ function LegacyArtifactDetailPage() {
           </div>
         </article>
       </section>
+
+        <section className="related-section">
+          <div className="section-heading">
+            <h2>Related objects</h2>
+            <Link to="/">Return to collection</Link>
+          </div>
+          <div className="product-rail">
+            {relatedArtifacts.map((item) => (
+              <ArtifactCard artifact={item} key={`related-${item.id}`} />
+            ))}
+          </div>
+        </section>
 
         <section className="service-strip" aria-label="Buyer services">
           {[

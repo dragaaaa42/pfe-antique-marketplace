@@ -160,7 +160,6 @@ function SellerLayout({
             {conversationStats.unread > 0 ? <span className="nav-badge">{conversationStats.unread}</span> : null}
           </NavLink>
           <NavLink to="/seller/orders">Orders received</NavLink>
-          <NavLink to="/seller/galleries">Galleries</NavLink>
           <NavLink to="/account">Profile</NavLink>
           <NavLink end to="/">Catalogue</NavLink>
         </nav>
@@ -175,7 +174,7 @@ function SellerLayout({
           <div>
             <p className="eyebrow">Seller workspace</p>
             <h1>{title}</h1>
-            <p className="dashboard-header-copy">Keep your listings, orders, galleries, and collector conversations inside one sharper seller command room.</p>
+            <p className="dashboard-header-copy">Keep your listings, orders, and collector conversations inside one sharper seller command room.</p>
           </div>
           <div className="dashboard-header-actions flex flex-wrap items-center gap-3">
             <Link className="ghost-button" to="/">
@@ -489,10 +488,7 @@ function SellerDashboardBody() {
                 <strong>{data.stats.sold_listings}</strong>
                 <span>Marked sold</span>
               </article>
-              <article>
-                <strong>{data.stats.total_galleries}</strong>
-                <span>Galleries</span>
-              </article>
+              
               <article>
                 <strong>{data.stats.unread_conversations}</strong>
                 <span>Unread messages</span>
@@ -573,46 +569,7 @@ function SellerDashboardBody() {
                 )}
               </section>
 
-              <section className="panel-card">
-                <div className="panel-head">
-                  <div>
-                    <p className="eyebrow">Gallery spaces</p>
-                    <h3>Optional galleries</h3>
-                  </div>
-                  <Link
-                    className="text-link"
-                    state={{ editGalleryId: data.recent_galleries[0]?.id }}
-                    to="/seller/galleries"
-                  >
-                    Manage galleries
-                  </Link>
-                </div>
-                <div className="table-shell">
-                  <table className="management-table">
-                    <thead>
-                      <tr>
-                        <th>Gallery</th>
-                        <th>Description</th>
-                        <th>Visibility</th>
-                        <th>Created</th>
-                      </tr>
-                    </thead>
-                    <tbody>
-                      {data.recent_galleries.map((gallery) => (
-                        <tr key={gallery.id}>
-                          <td>
-                            <strong>{gallery.name}</strong>
-                            <span>{gallery.owner_email || 'Seller gallery'}</span>
-                          </td>
-                          <td>{gallery.description || 'No description'}</td>
-                          <td>{gallery.is_public ? 'Public' : 'Private'}</td>
-                          <td>{gallery.created_at ? formatDate(gallery.created_at) : '—'}</td>
-                        </tr>
-                      ))}
-                    </tbody>
-                  </table>
-                </div>
-              </section>
+              
             </div>
 
             <section className="panel-card">

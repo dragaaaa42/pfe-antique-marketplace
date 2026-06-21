@@ -97,7 +97,6 @@ function AdminLayout({
           </NavLink>
           <NavLink to="/admin/users">Users</NavLink>
           <NavLink to="/admin/artifacts">Artifacts</NavLink>
-          <NavLink to="/admin/galleries">Galleries</NavLink>
           <NavLink to="/admin/audit">Audit trail</NavLink>
           <NavLink end to="/">Catalogue</NavLink>
         </nav>
@@ -112,7 +111,7 @@ function AdminLayout({
           <div>
             <p className="eyebrow">Administration workspace</p>
             <h1>{title}</h1>
-            <p className="dashboard-header-copy">Moderation, users, galleries, and artifact approvals live in one cleaner control surface.</p>
+            <p className="dashboard-header-copy">Moderation, users, and artifact approvals live in one cleaner control surface.</p>
           </div>
           <div className="dashboard-header-actions">
             <Link className="ghost-button" to="/">
@@ -190,10 +189,7 @@ function AdminDashboardBody() {
                 <strong>{data.stats.total_artifacts}</strong>
                 <span>Total artifacts</span>
               </article>
-              <article>
-                <strong>{data.stats.total_galleries}</strong>
-                <span>Total galleries</span>
-              </article>
+              
               <article>
                 <strong>{data.stats.total_orders}</strong>
                 <span>Total orders</span>
