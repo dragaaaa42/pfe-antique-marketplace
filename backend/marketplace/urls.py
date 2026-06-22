@@ -7,6 +7,7 @@ from .views import (
     AdminDashboardView,
     AdminGalleryViewSet,
     AdminUserViewSet,
+    ArtifactImageDeleteView,
     ArtifactViewSet,
     CartViewSet,
     CategoryViewSet,
@@ -51,4 +52,5 @@ urlpatterns = [
     path('seller/orders/', SellerOrderViewSet.as_view({'get': 'list'}), name='seller-orders'),
     path('seller/orders/<int:pk>/', SellerOrderViewSet.as_view({'get': 'retrieve'}), name='seller-order-detail'),
     path('seller/', include(seller_router.urls)),
+    path('artifact-images/<int:pk>/', ArtifactImageDeleteView.as_view(), name='artifact-image-delete'),
 ]

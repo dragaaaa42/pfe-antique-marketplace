@@ -606,6 +606,10 @@ export async function deleteSellerArtifact(id: number) {
   await api.delete(`/seller/artifacts/${id}/`)
 }
 
+export async function deleteArtifactImage(imageId: number) {
+  await api.delete(`/artifact-images/${imageId}/`)
+}
+
 export async function getSellerGalleries() {
   const response = await api.get<Gallery[]>('/seller/galleries/')
   return response.data

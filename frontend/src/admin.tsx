@@ -1441,6 +1441,9 @@ function AdminArtifactEditBody() {
   const [imageFile, setImageFile] = useState<File | null>(null)
   const [imagePreview, setImagePreview] = useState('')
   const fileInputRef = useRef<HTMLInputElement | null>(null)
+  const [newGalleryFiles, setNewGalleryFiles] = useState<File[]>([])
+  const [deletedGalleryIds, setDeletedGalleryIds] = useState<number[]>([])
+  const galleryInputRef = useRef<HTMLInputElement | null>(null)
 
   useEffect(() => {
     if (!id) return
@@ -1510,6 +1513,24 @@ function AdminArtifactEditBody() {
     setImagePreview(URL.createObjectURL(file))
   }
 
+  function handleGalleryImagePick(event: ChangeEvent<HTMLInputElement>) {
+    const files = Array.from(event.target.files ?? [])
+    if (!artifact) return
+    const existingCount = (artifact.gallery_images ?? []).filter(img => !deletedGalleryIds.includes(img.id)).length
+    const totalAllowed = 3 - existingCount - newGalleryFiles.length
+    const toAdd = files.slice(0, totalAllowed)
+    setNewGalleryFiles((prev) => [...prev, ...toAdd])
+    event.target.value = ''
+  }
+
+  function removeNewGalleryFile(index: number) {
+    setNewGalleryFiles((prev) => prev.filter((_, i) => i !== index))
+  }
+
+  function markGalleryImageDeleted(imgId: number) {
+    setDeletedGalleryIds((prev) => [...prev, imgId])
+  }
+
   async function handleSubmit(event: FormEvent<HTMLFormElement>) {
     event.preventDefault()
     if (!artifact) return
@@ -1533,6 +1554,13 @@ function AdminArtifactEditBody() {
 
       if (imageFile) {
         payload.append('image', imageFile)
+      }
+
+      for (const id of deletedGalleryIds) {
+        payload.append('deleted_gallery_images', String(id))
+      }
+      for (const file of newGalleryFiles) {
+        payload.append('gallery_images', file)
       }
 
       const updated = await updateAdminArtifact(artifact.id, payload)
@@ -1777,6 +1805,96 @@ function AdminArtifactEditBody() {
                   </div>
                 )}
               </div>
+            </div>
+
+            {/* Gallery Images */}
+            <div className="panel-card p-5 border border-[var(--line)] shadow-sm bg-white flex flex-col gap-4" style={{ borderRadius: '1rem' }}>
+              <div>
+                <span className="text-xs text-[#8fa0b8] font-semibold uppercase tracking-wider block mb-1">Gallery Images</span>
+                <p className="text-[11px] text-[var(--muted)] leading-relaxed">
+                  Main image is required. Extra gallery images are optional and must belong to this same product. Max 4 images total (1 main + up to 3 extra).
+                </p>
+              </div>
+
+              {/* Existing gallery images */}
+              {(artifact.gallery_images ?? []).length > 0 && (
+                <div className="flex flex-col gap-2">
+                  <span className="text-[11px] font-semibold text-[var(--ink)] uppercase tracking-wide">Existing extra images</span>
+                  <div className="flex gap-2 flex-wrap">
+                    {(artifact.gallery_images ?? []).map((img) => {
+                      const isDeleted = deletedGalleryIds.includes(img.id)
+                      return (
+                        <div key={img.id} className={`relative w-20 h-20 rounded-lg overflow-hidden border ${isDeleted ? 'opacity-40 border-rose-300' : 'border-[var(--line)]'}`}>
+                          <img src={img.image} alt="gallery" className="w-full h-full object-cover" />
+                          {!isDeleted ? (
+                            <button
+                              className="absolute top-1 right-1 bg-rose-600 text-white text-[9px] font-bold px-1.5 py-0.5 rounded-full shadow"
+                              onClick={() => markGalleryImageDeleted(img.id)}
+                              type="button"
+                              title="Remove this image"
+                            >×</button>
+                          ) : (
+                            <button
+                              className="absolute top-1 right-1 bg-emerald-600 text-white text-[9px] font-bold px-1.5 py-0.5 rounded-full shadow"
+                              onClick={() => setDeletedGalleryIds((prev) => prev.filter(id => id !== img.id))}
+                              type="button"
+                              title="Undo removal"
+                            >↩</button>
+                          )}
+                        </div>
+                      )
+                    })}
+                  </div>
+                </div>
+              )}
+
+              {/* New gallery images staged for upload */}
+              {newGalleryFiles.length > 0 && (
+                <div className="flex flex-col gap-2">
+                  <span className="text-[11px] font-semibold text-[var(--ink)] uppercase tracking-wide">Staged for upload</span>
+                  <div className="flex gap-2 flex-wrap">
+                    {newGalleryFiles.map((file, i) => (
+                      <div key={i} className="relative w-20 h-20 rounded-lg overflow-hidden border border-blue-200 bg-blue-50">
+                        <img src={URL.createObjectURL(file)} alt="new gallery" className="w-full h-full object-cover" />
+                        <button
+                          className="absolute top-1 right-1 bg-rose-600 text-white text-[9px] font-bold px-1.5 py-0.5 rounded-full shadow"
+                          onClick={() => removeNewGalleryFile(i)}
+                          type="button"
+                          title="Cancel upload"
+                        >×</button>
+                      </div>
+                    ))}
+                  </div>
+                </div>
+              )}
+
+              {/* Add gallery image button */}
+              {(() => {
+                const existingCount = (artifact.gallery_images ?? []).filter(img => !deletedGalleryIds.includes(img.id)).length
+                const total = existingCount + newGalleryFiles.length
+                return total < 3 ? (
+                  <>
+                    <button
+                      className="ghost-button w-full !py-2 shadow-sm text-xs border border-[var(--line)] hover:bg-slate-50 text-center"
+                      style={{ borderRadius: '0.5rem' }}
+                      onClick={() => galleryInputRef.current?.click()}
+                      type="button"
+                    >
+                      + Add gallery image ({total}/3 extra)
+                    </button>
+                    <input
+                      ref={galleryInputRef}
+                      type="file"
+                      accept="image/*"
+                      multiple
+                      onChange={handleGalleryImagePick}
+                      style={{ display: 'none' }}
+                    />
+                  </>
+                ) : (
+                  <p className="text-[11px] text-amber-600 font-medium">Maximum 3 extra images reached.</p>
+                )
+              })()}
             </div>
 
             {/* Seller Information */}

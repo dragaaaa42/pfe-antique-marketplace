@@ -80,13 +80,19 @@ class ArtifactViewSet(viewsets.ModelViewSet):
     permission_classes = (IsSellerOrAdminForWrites,)
 
     def get_queryset(self):
-        queryset = Artifact.objects.select_related('seller', 'category')
+        queryset = Artifact.objects.select_related('seller', 'category').prefetch_related('gallery_images')
         role = user_role(self.request.user)
 
         if role == 'admin':
             return queryset
         if role == 'seller':
+            if getattr(self, 'action', '') == 'retrieve':
+                return queryset
             return queryset.filter(Q(status=Artifact.Status.APPROVED) | Q(seller=self.request.user))
+            
+        if getattr(self, 'action', '') == 'retrieve':
+            return queryset
+            
         return queryset.filter(status=Artifact.Status.APPROVED)
 
     def get_serializer_class(self):
@@ -95,7 +101,23 @@ class ArtifactViewSet(viewsets.ModelViewSet):
         return ArtifactSerializer
 
     def perform_create(self, serializer):
-        serializer.save(seller=self.request.user)
+        artifact = serializer.save(seller=self.request.user)
+        self._handle_gallery_images(artifact)
+
+    def perform_update(self, serializer):
+        artifact = serializer.save()
+        self._handle_gallery_images(artifact)
+
+    def _handle_gallery_images(self, artifact):
+        from .models import ArtifactImage
+        deleted_ids = self.request.data.getlist('deleted_gallery_images')
+        if deleted_ids:
+            ArtifactImage.objects.filter(artifact=artifact, id__in=deleted_ids).delete()
+            
+        images = self.request.FILES.getlist('gallery_images')
+        for img in images:
+            if artifact.gallery_images.count() < 3:
+                ArtifactImage.objects.create(artifact=artifact, image=img)
 
 
 class GalleryViewSet(viewsets.ModelViewSet):
@@ -217,7 +239,23 @@ class SellerArtifactViewSet(viewsets.ModelViewSet):
         return queryset.filter(seller=self.request.user)
 
     def perform_create(self, serializer):
-        serializer.save(seller=self.request.user)
+        artifact = serializer.save(seller=self.request.user)
+        self._handle_gallery_images(artifact)
+
+    def perform_update(self, serializer):
+        artifact = serializer.save()
+        self._handle_gallery_images(artifact)
+
+    def _handle_gallery_images(self, artifact):
+        from .models import ArtifactImage
+        deleted_ids = self.request.data.getlist('deleted_gallery_images')
+        if deleted_ids:
+            ArtifactImage.objects.filter(artifact=artifact, id__in=deleted_ids).delete()
+            
+        images = self.request.FILES.getlist('gallery_images')
+        for img in images:
+            if artifact.gallery_images.count() < 3:
+                ArtifactImage.objects.create(artifact=artifact, image=img)
 
 
 class SellerGalleryViewSet(viewsets.ModelViewSet):
@@ -442,6 +480,26 @@ class AdminArtifactViewSet(viewsets.ReadOnlyModelViewSet):
             notes=request.data.get('notes', ''),
         )
         return Response(self.get_serializer(artifact).data)
+
+
+
+class ArtifactImageDeleteView(APIView):
+    """Allow sellers or admins to delete a gallery image by ID."""
+    permission_classes = (permissions.IsAuthenticated,)
+
+    def delete(self, request, pk=None):
+        from .models import ArtifactImage
+        try:
+            img = ArtifactImage.objects.select_related('artifact__seller').get(pk=pk)
+        except ArtifactImage.DoesNotExist:
+            return Response({'detail': 'Not found.'}, status=status.HTTP_404_NOT_FOUND)
+
+        role = user_role(request.user)
+        if role != 'admin' and img.artifact.seller_id != request.user.id:
+            return Response({'detail': 'Not authorized.'}, status=status.HTTP_403_FORBIDDEN)
+
+        img.delete()
+        return Response(status=status.HTTP_204_NO_CONTENT)
 
 
 class AdminGalleryViewSet(viewsets.ModelViewSet):

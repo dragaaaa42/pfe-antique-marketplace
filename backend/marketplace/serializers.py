@@ -8,6 +8,7 @@ from users.models import UserProfile
 
 from .models import (
     Artifact,
+    ArtifactImage,
     CartItem,
     Category,
     Conversation,
@@ -29,9 +30,16 @@ class CategorySerializer(serializers.ModelSerializer):
         fields = ('id', 'name', 'description')
 
 
+class ArtifactImageSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = ArtifactImage
+        fields = ('id', 'image', 'order')
+
+
 class ArtifactSerializer(serializers.ModelSerializer):
     seller_email = serializers.EmailField(source='seller.email', read_only=True)
     category_name = serializers.CharField(source='category.name', read_only=True)
+    gallery_images = ArtifactImageSerializer(many=True, read_only=True)
 
     class Meta:
         model = Artifact
@@ -48,6 +56,7 @@ class ArtifactSerializer(serializers.ModelSerializer):
             'condition',
             'price',
             'image',
+            'gallery_images',
             'model_3d',
             'textures_path',
             'materials',

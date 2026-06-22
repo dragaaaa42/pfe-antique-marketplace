@@ -1,3 +1,9 @@
+export type ArtifactImage = {
+  id: number
+  image: string
+  order: number
+}
+
 export type Artifact = {
   id: number
   seller?: number
@@ -13,6 +19,7 @@ export type Artifact = {
   condition: string
   price: string
   image?: string
+  gallery_images?: ArtifactImage[]
   textures_path?: string
   metadata_json?: Record<string, unknown>
   status: string

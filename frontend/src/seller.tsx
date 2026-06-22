@@ -833,18 +833,23 @@ function SellerProductsBody() {
         ...current,
         availability: selectedArtifact.status === 'approved' ? 'available' : current.availability,
       }))
-      setMediaItems(
-        selectedArtifact.image
-          ? [
-            {
-              id: `existing-${selectedArtifact.id}`,
-              source: 'existing',
-              url: selectedArtifact.image,
-              name: selectedArtifact.title,
-            },
-          ]
-          : [],
-      )
+      const mainMediaItem: DraftMediaItem | null = selectedArtifact.image
+        ? {
+          id: `existing-main-${selectedArtifact.id}`,
+          source: 'existing',
+          url: selectedArtifact.image,
+          name: selectedArtifact.title,
+        }
+        : null
+
+      const galleryMediaItems: DraftMediaItem[] = (selectedArtifact.gallery_images ?? []).slice(0, 3).map((img) => ({
+        id: `existing-gallery-${img.id}`,
+        source: 'existing',
+        url: img.image,
+        name: `Gallery image ${img.id}`,
+      }))
+
+      setMediaItems([...(mainMediaItem ? [mainMediaItem] : []), ...galleryMediaItems])
       return
     }
 
@@ -999,6 +1004,14 @@ function SellerProductsBody() {
       payload.append('provenance', form.provenance)
       payload.append('condition', form.condition)
       payload.append('price', form.price)
+
+      // Attach up to 3 additional gallery images (items after the first)
+      const extraItems = mediaItems.slice(1, 4)
+      for (const item of extraItems) {
+        if (item.source === 'local' && item.file) {
+          payload.append('gallery_images', item.file)
+        }
+      }
 
       if (editingArtifactId) {
         await updateSellerArtifact(editingArtifactId, payload)

@@ -130,10 +130,7 @@ export function ArtifactDetailPage() {
     getArtifacts()
       .then((items) => {
         if (items.length > 0) {
-          setCatalogArtifacts([
-            ...items,
-            ...demoArtifacts.filter((demo) => !items.some((item) => item.id === demo.id)),
-          ])
+          setCatalogArtifacts(items)
         }
       })
       .catch(() => undefined)
@@ -319,12 +316,13 @@ export function ArtifactDetailPage() {
     .filter((item, index, items) => items.findIndex((c) => c.id === item.id) === index)
     .slice(0, 3)
 
-  const galleryImages = [
-    resolveMarketplaceImage(artifact),
-    ...relatedArtifacts.slice(0, 3).map((item) => resolveMarketplaceImage(item)),
-  ]
+  const mainImage = resolveMarketplaceImage(artifact)
+  const extraImages: string[] = (artifact.gallery_images ?? [])
+    .slice(0, 3)
+    .map((img) => img.image)
+  const galleryImages = [mainImage, ...extraImages].filter(Boolean).slice(0, 4)
   const selectedImage = galleryImages[selectedImageIndex] ?? galleryImages[0]
-  const sellerName = artifact.seller_email || 'Verified seller'
+  const sellerName = artifact.seller_email ? artifact.seller_email.split('@')[0] : 'Verified seller'
 
   /* ── Reviews Carousel Logic ────────────────────────────────── */
   const visibleReviews = [
@@ -475,11 +473,34 @@ export function ArtifactDetailPage() {
                 </div>
 
                 {/* Seller Card */}
-                <div className="ad-seller-card">
-                  <p className="ad-seller-eyebrow">Presented by</p>
-                  <h3 className="ad-seller-name">{sellerName}</h3>
-                  <p className="ad-seller-desc">
-                    Verified listing with provenance notes and protected collector access.
+                <div className="flex flex-col gap-3 p-4 rounded-xl bg-blue-50/50 border border-blue-100/80">
+                  <div className="flex items-center justify-between">
+                    <div className="flex items-center gap-3">
+                      <div className="w-10 h-10 rounded-full bg-blue-600 text-white flex items-center justify-center font-bold text-lg shadow-sm">
+                        {sellerName.charAt(0).toUpperCase()}
+                      </div>
+                      <div>
+                        <div className="flex items-center gap-1.5">
+                          <h3 className="m-0 text-base font-semibold text-slate-900">{sellerName}</h3>
+                          <span className="flex items-center justify-center w-4 h-4 rounded-full bg-blue-500 text-white shadow-sm" title="Verified Seller">
+                            <Check size={10} strokeWidth={3} />
+                          </span>
+                        </div>
+                        <p className="m-0 text-xs text-slate-500 font-medium">Verified Gallery</p>
+                      </div>
+                    </div>
+                    {user?.role !== 'admin' && (
+                      <button 
+                        onClick={openSellerThread}
+                        disabled={actionStatus === 'loading' || artifact.status !== 'approved'}
+                        className={`px-3 py-1.5 rounded-full text-xs font-semibold border transition-colors shadow-sm ${artifact.status !== 'approved' ? 'border-slate-200 text-slate-400 cursor-not-allowed bg-slate-50 opacity-70' : 'border-blue-200 text-blue-700 bg-white hover:bg-blue-50'}`}
+                      >
+                        Message
+                      </button>
+                    )}
+                  </div>
+                  <p className="m-0 text-sm text-slate-600 leading-relaxed">
+                    Verified seller. All objects undergo condition and provenance review prior to marketplace listing.
                   </p>
                 </div>
 
@@ -594,12 +615,14 @@ export function ArtifactDetailPage() {
                     <motion.button
                       className="ad-btn ad-btn--accent ad-btn--full"
                       onClick={openSellerThread}
+                      disabled={actionStatus === 'loading' || artifact.status !== 'approved'}
                       type="button"
-                      whileHover={{ scale: 1.01 }}
-                      whileTap={{ scale: 0.98 }}
+                      whileHover={{ scale: artifact.status === 'approved' ? 1.01 : 1 }}
+                      whileTap={{ scale: artifact.status === 'approved' ? 0.98 : 1 }}
+                      style={{ opacity: artifact.status !== 'approved' ? 0.6 : 1, cursor: artifact.status !== 'approved' ? 'not-allowed' : 'pointer' }}
                     >
                       <MessageCircle size={16} />
-                      Message Seller
+                      {artifact.status !== 'approved' ? 'Messaging Unavailable (Not Approved)' : 'Message Seller'}
                     </motion.button>
                   </div>
                 )}

@@ -68,6 +68,23 @@ class Artifact(models.Model):
         return self.title
 
 
+class ArtifactImage(models.Model):
+    artifact = models.ForeignKey(
+        Artifact,
+        on_delete=models.CASCADE,
+        related_name='gallery_images',
+    )
+    image = models.ImageField(upload_to='artifacts/images/gallery/')
+    order = models.PositiveIntegerField(default=0)
+    created_at = models.DateTimeField(auto_now_add=True)
+
+    class Meta:
+        ordering = ('order', 'id')
+
+    def __str__(self):
+        return f'Image for {self.artifact}'
+
+
 class Gallery(models.Model):
     owner = models.ForeignKey(
         settings.AUTH_USER_MODEL,

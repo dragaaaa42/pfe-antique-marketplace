@@ -252,6 +252,15 @@ function ArtifactCard({
   )
 }
 
+function getArtifactSellerName(artifact: Artifact) {
+  if (artifact.seller_email) {
+    return artifact.seller_email.split('@')[0]
+  }
+  return 'Verified Seller'
+}
+
+
+
 function LegacyCatalogPage() {
   const [artifacts, setArtifacts] = useState<Artifact[]>(demoArtifacts)
   const [query, setQuery] = useState('')
@@ -901,10 +910,7 @@ function CatalogPage() {
     }
   }, [user])
 
-  const marketplaceArtifacts =
-    artifacts.length > 0
-      ? [...artifacts, ...demoArtifacts.filter((demo) => !artifacts.some((item) => item.id === demo.id))]
-      : demoArtifacts
+  const marketplaceArtifacts = artifacts.length > 0 ? artifacts : demoArtifacts
   const publicArtifacts = marketplaceArtifacts.filter((artifact) => artifact.status === 'approved')
   const catalogSource = publicArtifacts.length >= 4 ? publicArtifacts : marketplaceArtifacts
 
@@ -935,12 +941,23 @@ function CatalogPage() {
     }
   }, [sortBy, visibleArtifacts])
 
-  const homeFeatureCategories = new Set(['Luxury Bags', 'Traditional Clothing', 'Watches'])
-  const homeArrivalCategories = new Set(['Historical Artifacts', 'Ceramics', 'Rugs and Textiles', 'Vintage Collectibles'])
-  const featuredPieces = catalogSource.filter((artifact) => homeFeatureCategories.has(artifact.category_name ?? ''))
-  const newArrivals = catalogSource
+  const homeFeatureCategories = new Set(['Luxury Bags', 'Traditional Clothing', 'Watches', 'Jewelry', 'Vintage Collectibles'])
+  const homeArrivalCategories = new Set(['Historical Artifacts', 'Ceramics', 'Rugs and Textiles', 'Furniture', 'Art', 'Lighting', 'Decor'])
+  let featuredPieces = catalogSource
+    .filter((artifact) => homeFeatureCategories.has(artifact.category_name ?? ''))
+    .slice(0, 3)
+  if (featuredPieces.length < 3) {
+    const remaining = catalogSource.filter((a) => !featuredPieces.some((f) => f.id === a.id))
+    featuredPieces = [...featuredPieces, ...remaining.slice(0, 3 - featuredPieces.length)]
+  }
+
+  let newArrivals = catalogSource
     .filter((artifact) => homeArrivalCategories.has(artifact.category_name ?? ''))
     .slice(0, 3)
+  if (newArrivals.length < 3) {
+    const remaining = catalogSource.filter((a) => !featuredPieces.some((f) => f.id === a.id) && !newArrivals.some((n) => n.id === a.id))
+    newArrivals = [...newArrivals, ...remaining.slice(0, 3 - newArrivals.length)]
+  }
   const catalogPreviewArtifacts = sortedArtifacts
   const catalogResultCount = catalogPreviewArtifacts.length
   const heroArtifact = featuredPieces[0] ?? catalogSource[0] ?? demoArtifacts[0]
@@ -2452,10 +2469,7 @@ function LegacyArtifactDetailPage2() {
     getArtifacts()
       .then((items) => {
         if (items.length > 0) {
-          setCatalogArtifacts([
-            ...items,
-            ...demoArtifacts.filter((demo) => !items.some((item) => item.id === demo.id)),
-          ])
+          setCatalogArtifacts(items)
         }
       })
       .catch(() => undefined)
