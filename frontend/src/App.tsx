@@ -61,6 +61,7 @@ import {
   AdminDashboardPage,
   AdminUserDetailPage,
   AdminUsersPage,
+  AdminArtifactEditPage,
 } from './admin'
 import { MarketplaceImage } from './components/MarketplaceImage'
 import atlasPoster from './assets/marketplace/silver-tea-service.jpg'
@@ -70,10 +71,12 @@ import {
   SellerOrderDetailPage,
   SellerOrdersPage,
   SellerProductsPage,
+  SellerProfilePage,
 } from './seller'
 import { resolveMarketplaceImage } from './marketplaceImages'
 import { getDashboardPathForRole, getWorkspaceLabelForRole } from './roleRouting'
 import type { Artifact, ConversationDetail, ConversationMessage } from './types'
+import { ArtifactDetailPage } from './ArtifactDetailPage'
 
 export default function App() {
   return (
@@ -95,6 +98,7 @@ export default function App() {
           <Route path="/orders/:id" element={<OrderDetailPage />} />
           <Route path="/seller" element={<SellerDashboardPage />} />
           <Route path="/seller/products" element={<SellerProductsPage />} />
+          <Route path="/seller/profile" element={<SellerProfilePage />} />
           <Route path="/seller/messages" element={<SellerMessagesPage />} />
           <Route path="/seller/messages/:id" element={<SellerMessagesPage />} />
           <Route path="/seller/orders" element={<SellerOrdersPage />} />
@@ -103,8 +107,10 @@ export default function App() {
           <Route path="/admin/users" element={<AdminUsersPage />} />
           <Route path="/admin/users/:id" element={<AdminUserDetailPage />} />
           <Route path="/admin/artifacts" element={<AdminArtifactsPage />} />
+          <Route path="/admin/artifacts/:id/edit" element={<AdminArtifactEditPage />} />
           <Route path="/admin/audit" element={<AdminAuditPage />} />
           <Route path="/artifacts/:id" element={<ArtifactDetailPage />} />
+          <Route path="/__legacy/artifacts-v2/:id" element={<LegacyArtifactDetailPage2 />} />
           <Route path="/artifacts/:id/message" element={<ProductMessagePage />} />
           <Route path="/__legacy/catalog" element={<LegacyCatalogPage />} />
           <Route path="/__legacy/artifacts/:id" element={<LegacyArtifactDetailPage />} />
@@ -1275,8 +1281,8 @@ function CatalogPage() {
                       {category === 'All'
                         ? catalogSource.length
                         : catalogSource.filter(
-                            (item) => (item.category_name ?? 'Uncategorized') === category,
-                          ).length}
+                          (item) => (item.category_name ?? 'Uncategorized') === category,
+                        ).length}
                     </strong>
                   </button>
                 ))}
@@ -1580,9 +1586,26 @@ function SignupPage() {
       setMessage('Your account is ready. Continue with the same email on the login page.')
       setForm({ email: '', password: '', role: 'buyer', first_name: '', last_name: '' })
       navigate('/login', { state: { email: submittedEmail } })
-    } catch {
+    } catch (error: any) {
       setStatus('error')
-      setMessage('Signup was not accepted. Check that the backend is running on port 8000.')
+      let errorMsg = 'Signup was not accepted. Check that the backend is running on port 8000.'
+      if (error?.response?.data) {
+        if (typeof error.response.data === 'string') {
+          // If the backend returns HTML (e.g. 500 error), do not dump it to the UI
+          if (error.response.data.trim().startsWith('<')) {
+            errorMsg = 'A server error occurred. Please try again later.'
+          } else {
+            errorMsg = error.response.data
+          }
+        } else if (error.response.data.email) {
+          errorMsg = error.response.data.email[0]
+        } else if (error.response.data.detail) {
+          errorMsg = error.response.data.detail
+        } else {
+          errorMsg = JSON.stringify(error.response.data)
+        }
+      }
+      setMessage(errorMsg)
     }
   }
 
@@ -1617,11 +1640,10 @@ function SignupPage() {
               const active = form.role === role
               return (
                 <button
-                  className={`h-12 rounded-xl border text-sm font-medium transition ${
-                    active
+                  className={`h-12 rounded-xl border text-sm font-medium transition ${active
                       ? 'border-[#93abdb] bg-[#eef4ff] text-[#18366f]'
                       : 'border-[#c8d7ef] bg-[#f7faff] text-[#556b97] hover:bg-[#edf3ff]'
-                  }`}
+                    }`}
                   key={role}
                   onClick={() => updateField('role', role)}
                   type="button"
@@ -1721,10 +1743,26 @@ function LoginPage() {
   const [showPassword, setShowPassword] = useState(false)
 
   useEffect(() => {
-    if (isAuthenticated) {
-      navigate(locationState?.redirectTo ?? getDashboardPathForRole(user?.role), { replace: true })
+    if (isAuthenticated && user) {
+      let targetPath = locationState?.redirectTo
+      const expectedDashboard = getDashboardPathForRole(user.role)
+
+      if (targetPath) {
+        const isTargetValid =
+          (user.role === 'admin' && targetPath.startsWith('/admin')) ||
+          (user.role === 'seller' && targetPath.startsWith('/seller')) ||
+          (user.role === 'buyer' && targetPath.startsWith('/collector'))
+
+        if (!isTargetValid) {
+          targetPath = expectedDashboard
+        }
+      } else {
+        targetPath = expectedDashboard
+      }
+
+      navigate(targetPath, { replace: true })
     }
-  }, [isAuthenticated, locationState?.redirectTo, navigate, user?.role])
+  }, [isAuthenticated, locationState?.redirectTo, navigate, user])
 
   function updateField(field: keyof typeof form, value: string) {
     setForm((current) => ({ ...current, [field]: value }))
@@ -1854,7 +1892,23 @@ function SocialAuthCallbackPage() {
           user,
         })
 
-        window.location.replace(redirectTo || getDashboardPathForRole(user.role))
+        let targetPath = redirectTo
+        const expectedDashboard = getDashboardPathForRole(user.role)
+
+        if (targetPath) {
+          const isTargetValid =
+            (user.role === 'admin' && targetPath.startsWith('/admin')) ||
+            (user.role === 'seller' && targetPath.startsWith('/seller')) ||
+            (user.role === 'buyer' && targetPath.startsWith('/collector'))
+
+          if (!isTargetValid) {
+            targetPath = expectedDashboard
+          }
+        } else {
+          targetPath = expectedDashboard
+        }
+
+        window.location.replace(targetPath)
       } catch {
         if (cancelled) return
 
@@ -2312,20 +2366,20 @@ function LegacyArtifactDetailPage() {
         </article>
       </section>
 
-        <section className="related-section">
-          <div className="section-heading">
-            <h2>Related objects</h2>
-            <Link to="/">Return to collection</Link>
-          </div>
-          <div className="product-rail">
-            {relatedArtifacts.map((item) => (
-              <ArtifactCard artifact={item} key={`related-${item.id}`} />
-            ))}
-          </div>
-        </section>
+      <section className="related-section">
+        <div className="section-heading">
+          <h2>Related objects</h2>
+          <Link to="/">Return to collection</Link>
+        </div>
+        <div className="product-rail">
+          {relatedArtifacts.map((item) => (
+            <ArtifactCard artifact={item} key={`related-${item.id}`} />
+          ))}
+        </div>
+      </section>
 
-        <section className="service-strip" aria-label="Buyer services">
-          {[
+      <section className="service-strip" aria-label="Buyer services">
+        {[
           ['Protected checkout', 'Simulated payment workflow for the PFE demo.'],
           ['Curator validation', 'Admin review can approve or reject marketplace objects.'],
           ['Seller contact', 'Buyer and seller flows are prepared for marketplace expansion.'],
@@ -2373,7 +2427,7 @@ function LegacyArtifactDetailPage() {
   )
 }
 
-function ArtifactDetailPage() {
+function LegacyArtifactDetailPage2() {
   const { id } = useParams()
   const navigate = useNavigate()
   const { user } = useAuth()
@@ -2629,11 +2683,10 @@ function ArtifactDetailPage() {
                   {galleryImages.map((image, index) => (
                     <button
                       aria-label={`View product image ${index + 1}`}
-                      className={`overflow-hidden rounded-[1.4rem] border bg-white text-left shadow-[0_18px_48px_rgba(15,23,42,0.06)] transition hover:-translate-y-0.5 ${
-                        index === selectedImageIndex
+                      className={`overflow-hidden rounded-[1.4rem] border bg-white text-left shadow-[0_18px_48px_rgba(15,23,42,0.06)] transition hover:-translate-y-0.5 ${index === selectedImageIndex
                           ? 'border-[#3857a6] ring-2 ring-[#3857a6]/15'
                           : 'border-[#d7e0ec] hover:border-[#9fb2d0]'
-                      }`}
+                        }`}
                       key={`${image}-${index}`}
                       onClick={() => setSelectedImageIndex(index)}
                       type="button"
@@ -2736,11 +2789,10 @@ function ArtifactDetailPage() {
                       {cartQuantity > 0 ? `Add one more (${cartQuantity})` : 'Add to cart'}
                     </button>
                     <button
-                      className={`h-14 rounded-2xl border px-5 text-sm font-medium transition disabled:cursor-not-allowed disabled:opacity-60 ${
-                        wishlistItemId
+                      className={`h-14 rounded-2xl border px-5 text-sm font-medium transition disabled:cursor-not-allowed disabled:opacity-60 ${wishlistItemId
                           ? 'border-[#3857a6] bg-[#eef4ff] text-[#3857a6]'
                           : 'border-[#d7e0ec] bg-white text-[#18212f] hover:border-[#9fb2d0]'
-                      }`}
+                        }`}
                       disabled={actionStatus === 'loading'}
                       onClick={() => {
                         void handleWishlistToggle()
@@ -2767,11 +2819,10 @@ function ArtifactDetailPage() {
 
                   {actionMessage ? (
                     <p
-                      className={`rounded-2xl border px-4 py-3 text-sm ${
-                        actionStatus === 'error'
+                      className={`rounded-2xl border px-4 py-3 text-sm ${actionStatus === 'error'
                           ? 'border-red-200 bg-red-50 text-red-700'
                           : 'border-emerald-200 bg-emerald-50 text-emerald-700'
-                      }`}
+                        }`}
                     >
                       {actionMessage}
                     </p>
@@ -3074,34 +3125,33 @@ function ProductMessagePage() {
               const isSellerMessage = message.sender_role === 'seller' && message.sender !== user?.id
 
               return (
-              <div
-                className={`flex ${isBuyerMessage ? 'justify-end' : isSellerMessage ? 'justify-start' : 'justify-center'}`}
-                key={`message-${message.id}`}
-              >
-                <article
-                  className={`max-w-2xl rounded-[1.6rem] px-4 py-4 text-sm leading-7 shadow-sm ${
-                    isBuyerMessage
-                      ? 'bg-[#3857a6] text-white'
-                      : isSellerMessage
-                        ? 'border border-[#d7e0ec] bg-white text-[#18212f]'
-                        : 'border border-[#d7e0ec] bg-[#f7f9fc] text-[#5c6c82]'
-                  }`}
+                <div
+                  className={`flex ${isBuyerMessage ? 'justify-end' : isSellerMessage ? 'justify-start' : 'justify-center'}`}
+                  key={`message-${message.id}`}
                 >
-                  <div className="mb-2 flex items-center justify-between gap-4 text-[11px] uppercase tracking-[0.24em]">
-                    <span>
-                      {isBuyerMessage
-                        ? 'Collector'
+                  <article
+                    className={`max-w-2xl rounded-[1.6rem] px-4 py-4 text-sm leading-7 shadow-sm ${isBuyerMessage
+                        ? 'bg-[#3857a6] text-white'
                         : isSellerMessage
-                          ? sellerName
-                          : 'Conversation'}
-                    </span>
-                    <span className={isBuyerMessage ? 'text-white/60' : 'text-[#8da0b8]'}>
-                      {formatConversationTimestamp(message.created_at)}
-                    </span>
-                  </div>
-                  <p>{message.body}</p>
-                </article>
-              </div>
+                          ? 'border border-[#d7e0ec] bg-white text-[#18212f]'
+                          : 'border border-[#d7e0ec] bg-[#f7f9fc] text-[#5c6c82]'
+                      }`}
+                  >
+                    <div className="mb-2 flex items-center justify-between gap-4 text-[11px] uppercase tracking-[0.24em]">
+                      <span>
+                        {isBuyerMessage
+                          ? 'Collector'
+                          : isSellerMessage
+                            ? sellerName
+                            : 'Conversation'}
+                      </span>
+                      <span className={isBuyerMessage ? 'text-white/60' : 'text-[#8da0b8]'}>
+                        {formatConversationTimestamp(message.created_at)}
+                      </span>
+                    </div>
+                    <p>{message.body}</p>
+                  </article>
+                </div>
               )
             })}
           </div>
@@ -3182,9 +3232,9 @@ function AuroraAuthShell({
       transition: reduceMotion
         ? { duration: 0.01 }
         : {
-            staggerChildren: 0.15,
-            delayChildren: 0.2,
-          },
+          staggerChildren: 0.15,
+          delayChildren: 0.2,
+        },
     },
   }
 
@@ -3287,11 +3337,10 @@ function AuroraAuthShell({
           {message ? (
             <p
               aria-live="polite"
-              className={`rounded-xl border px-4 py-3 text-sm ${
-                messageTone === 'error'
+              className={`rounded-xl border px-4 py-3 text-sm ${messageTone === 'error'
                   ? 'border-red-300 bg-red-50 text-red-700'
                   : 'border-emerald-300 bg-emerald-50 text-emerald-700'
-              }`}
+                }`}
             >
               {message}
             </p>
@@ -3315,16 +3364,14 @@ function StepItem({
 }) {
   return (
     <div
-      className={`flex items-center gap-4 rounded-2xl px-4 py-4 transition ${
-        active
+      className={`flex items-center gap-4 rounded-2xl px-4 py-4 transition ${active
           ? 'border border-[#c8d7ef] bg-[#eef4ff] text-[#18366f]'
           : 'border-none bg-[rgba(199,216,244,0.2)] text-white'
-      }`}
+        }`}
     >
       <span
-        className={`flex h-9 w-9 items-center justify-center rounded-full text-sm font-semibold ${
-          active ? 'bg-[#18366f] text-white' : 'bg-white/10 text-white/55'
-        }`}
+        className={`flex h-9 w-9 items-center justify-center rounded-full text-sm font-semibold ${active ? 'bg-[#18366f] text-white' : 'bg-white/10 text-white/55'
+          }`}
       >
         {number}
       </span>

@@ -1,4 +1,4 @@
-import { useEffect, useState, type ImgHTMLAttributes } from 'react'
+import { type ImgHTMLAttributes } from 'react'
 
 import { fallbackArtifactImage } from '../api'
 
@@ -15,22 +15,21 @@ export function MarketplaceImage({
   decoding = 'async',
   ...props
 }: MarketplaceImageProps) {
-  const [currentSrc, setCurrentSrc] = useState(src || fallbackSrc)
-
-  useEffect(() => {
-    setCurrentSrc(src || fallbackSrc)
-  }, [src, fallbackSrc])
-
+  // We avoid mutating src state on error inside the component
+  // to prevent infinite loops or complicated state syncing, 
+  // and instead just let the consumer manage it or just let the browser handle it
+  // But if we want to fallback locally, we can just use the DOM node directly:
   return (
     <img
       {...props}
       alt={alt}
       decoding={decoding}
       loading={loading}
-      src={currentSrc}
+      src={src || fallbackSrc}
       onError={(event) => {
-        if (currentSrc !== fallbackSrc) {
-          setCurrentSrc(fallbackSrc)
+        const target = event.currentTarget
+        if (target.src !== fallbackSrc) {
+          target.src = fallbackSrc
         }
         onError?.(event)
       }}

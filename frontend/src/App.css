@@ -1176,6 +1176,18 @@ textarea {
   text-transform: uppercase;
 }
 
+.info-chip {
+  display: inline-flex;
+  align-items: center;
+  padding: 0.25rem 0.6rem;
+  font-size: 0.8rem;
+  border-radius: 0.4rem;
+  background: rgba(95, 112, 255, 0.06);
+  color: #4658c6;
+  border: 1px solid rgba(95, 112, 255, 0.12);
+  font-weight: 500;
+}
+
 .status-approved {
   color: #2f6a47;
 }
@@ -1287,9 +1299,11 @@ textarea {
 .dashboard-page--workspace {
   --workspace-rail-width: 300px;
   --workspace-shell-gap: 1rem;
-  align-items: stretch;
-  min-height: calc(100vh - 1rem);
-  overscroll-behavior: none;
+}
+
+.dashboard-page--full {
+  width: calc(100% - 1rem) !important;
+  max-width: none !important;
 }
 
 .dashboard-rail {
@@ -1487,17 +1501,14 @@ textarea {
 }
 
 .dashboard-shell-body {
-  min-height: 0;
   display: grid;
   align-content: start;
   gap: 1.2rem;
-  overflow-y: auto;
-  overscroll-behavior: contain;
-  padding-right: 0.2rem;
-  scrollbar-gutter: stable;
+  padding-bottom: 2rem;
 }
 
 .dashboard-shell-body--messages {
+  min-height: 0;
   overflow: hidden;
   padding-right: 0;
 }
@@ -3770,10 +3781,9 @@ textarea {
 
 .artifact-card.is-compact {
   display: grid;
-  grid-template-columns: 10.5rem minmax(0, 1fr);
-  align-items: stretch;
-  height: 100%;
+  grid-template-columns: 12rem minmax(0, 1fr);
   min-height: 0;
+  max-height: 14rem;
 }
 
 .artifact-card:hover {
@@ -3782,10 +3792,9 @@ textarea {
 }
 
 .artifact-image,
-.hero-object-media,
-.preview-hero,
-.media-card {
+.hero-object-media {
   position: relative;
+  overflow: hidden;
 }
 
 .artifact-image {
@@ -3805,9 +3814,7 @@ textarea {
 }
 
 .artifact-image img,
-.hero-object-media img,
-.product-primary-image img,
-.preview-hero img {
+.hero-object-media img {
   display: block;
   width: 100%;
   height: 100%;
@@ -3816,11 +3823,9 @@ textarea {
 }
 
 .table-thumb {
-  display: block;
   width: 64px;
   height: 64px;
   object-fit: cover;
-  flex: 0 0 auto;
   border: 1px solid var(--line);
 }
 
@@ -4045,19 +4050,23 @@ textarea {
 }
 
 .dashboard-page--workspace {
-  grid-template-columns: minmax(0, 1fr);
-  margin-bottom: 0.5rem;
-  padding-left: calc(var(--workspace-rail-width) + var(--workspace-shell-gap));
-  min-height: calc(100dvh - 1rem);
-  max-height: calc(100dvh - 1rem);
-  overflow: hidden;
+  display: flex !important;
+  align-items: stretch !important;
+  height: 100vh !important;
+  max-height: 100vh !important;
+  margin: 0 !important;
+  padding: 0 !important;
+  width: 100% !important;
+  max-width: 100% !important;
+  overflow: hidden !important;
 }
 
 .dashboard-page--workspace .dashboard-rail--workspace {
-  position: fixed;
-  inset: 0.5rem auto 0.5rem 0.5rem;
-  width: var(--workspace-rail-width);
-  height: calc(100vh - 1rem);
+  position: static !important;
+  flex-shrink: 0;
+  width: var(--workspace-rail-width) !important;
+  height: calc(100vh - 1rem) !important;
+  margin: 0.5rem 0 0.5rem 0.5rem !important;
   overflow-y: auto;
   z-index: 20;
   border: 1px solid rgba(132, 148, 214, 0.18);
@@ -4068,13 +4077,16 @@ textarea {
 }
 
 .dashboard-page--workspace .dashboard-content--workspace {
-  display: grid;
-  grid-template-rows: auto minmax(0, 1fr);
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  height: 100vh !important;
+  max-height: 100vh !important;
+  overflow-y: auto !important;
+  overflow-x: hidden;
+  padding: 0.5rem 1rem 0.5rem var(--workspace-shell-gap) !important;
+  margin: 0 !important;
   width: 100%;
-  max-width: none;
-  height: calc(100dvh - 1rem);
-  min-height: calc(100dvh - 1rem);
-  overflow: hidden;
 }
 
 .dashboard-page--workspace .dashboard-user--workspace {

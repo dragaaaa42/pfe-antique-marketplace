@@ -50,6 +50,8 @@ class ArtifactSerializer(serializers.ModelSerializer):
             'image',
             'model_3d',
             'textures_path',
+            'materials',
+            'dimensions',
             'metadata_json',
             'status',
             'created_at',

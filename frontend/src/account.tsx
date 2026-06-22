@@ -44,6 +44,7 @@ function AccountPageBody() {
     display_name: user?.first_name ?? '',
     username: user?.username ?? '',
   })
+
   const [avatarFile, setAvatarFile] = useState<File | null>(null)
   const [avatarPreview, setAvatarPreview] = useState(user ? currentUserAvatarPath(user) : '')
   const [removeAvatar, setRemoveAvatar] = useState(false)
@@ -60,11 +61,7 @@ function AccountPageBody() {
   const currentAvatar = avatarPreview || currentUserAvatarPath(user)
   const dashboardPath = getDashboardPathForRole(user?.role)
 
-  const hasChanges =
-    profileForm.display_name !== (user?.first_name ?? '') ||
-    profileForm.email !== (user?.email ?? '') ||
-    !!avatarFile ||
-    removeAvatar
+
 
   const accountLinks = useMemo(() => {
     const links = [{ to: '/account', label: 'Account settings' }]
@@ -255,121 +252,124 @@ function AccountPageBody() {
           <div className="dashboard-grid dashboard-grid--account">
             <div className="account-left-col">
               <section className="panel-card account-profile-hero account-profile-hero--compact">
-                <div className="account-profile-hero__visual">
-                  <div className="account-profile-hero__left">
+                <div className="flex items-center justify-between gap-4 p-1">
+                  <div className="flex items-center gap-5">
                     <UserAvatar
                       avatarPath={currentAvatar}
                       className="account-profile-avatar"
                       initialsClassName="text-2xl font-semibold uppercase tracking-[0.18em] text-white"
                       label={currentName}
                     />
-                    <div className="avatar-actions">
-                      <button className="ghost-button" onClick={() => fileInputRef.current?.click()} type="button">Edit photo</button>
-                      {avatarPreview ? (
-                        <button className="ghost-button" onClick={handleAvatarRemove} type="button">Remove</button>
-                      ) : null}
+                    <div className="flex flex-col gap-1">
+                      <div className="flex items-center gap-3">
+                        <h2 className="mb-0 text-xl font-semibold text-[var(--ink)]">{currentName}</h2>
+                        <span className="info-chip">Active</span>
+                        <span className="info-chip capitalize">{user?.role}</span>
+                      </div>
+                      <div className="flex flex-wrap items-center gap-2 mt-1">
+                        <span className="text-[#5c6c82] text-sm">@{user?.username || profileForm.username || 'username'}</span>
+                        <span className="text-[#5c6c82] text-sm">&bull;</span>
+                        <span className="text-[#5c6c82] text-sm">{user?.email || profileForm.email || 'email@example.com'}</span>
+                        <span className="text-[#5c6c82] text-sm">&bull;</span>
+                        <span className="text-[#5c6c82] text-sm">Member since {user?.profile?.created_at ? new Date(user.profile.created_at).toLocaleDateString() : '—'}</span>
+                      </div>
+                      {avatarFile ? <p className="account-file-meta mt-1">{avatarFile.name}</p> : null}
                     </div>
-                    <input ref={fileInputRef} onChange={handleAvatarPick} accept="image/*" type="file" style={{ display: 'none' }} />
                   </div>
-
-                  <div className="account-profile-hero__right">
-                    <div className="account-profile-hero__title">
-                      <h2 className="mb-0">{currentName}</h2>
-                      <span className="dashboard-role-chip">{user?.role}</span>
-                    </div>
-                    <p className="mt-1 text-sm text-[#dfe8ff]">Member since {user?.profile?.created_at ? new Date(user.profile.created_at).toLocaleDateString() : '—'}</p>
-                    {avatarFile ? <p className="account-file-meta">{avatarFile.name}</p> : null}
+                  
+                  <div className="flex items-center gap-2">
+                    <button className="ghost-button" style={{ minHeight: '2rem', padding: '0 0.8rem', fontSize: '0.85rem', borderRadius: '0.4rem', border: '1px solid var(--line)' }} onClick={() => fileInputRef.current?.click()} type="button">Edit photo</button>
+                    {avatarPreview ? (
+                      <button className="ghost-button" style={{ minHeight: '2rem', padding: '0 0.8rem', fontSize: '0.85rem', borderRadius: '0.4rem', border: '1px solid var(--line)', color: '#d63939' }} onClick={handleAvatarRemove} type="button">Remove</button>
+                    ) : null}
+                    <input ref={fileInputRef} onChange={handleAvatarPick} accept="image/*" type="file" style={{ display: 'none' }} />
                   </div>
                 </div>
                 {/* metrics removed for compact profile hero (show in dashboard panels instead) */}
               </section>
 
               <section className="panel-card">
-                <form ref={formRef} className="editor-card account-editor-card account-editor-card--compact" onSubmit={handleProfileSubmit}>
-                  <div className="editor-grid">
+                <form ref={formRef} className="editor-card account-editor-card account-editor-card--compact" onSubmit={handleProfileSubmit} style={{ padding: '1.25rem' }}>
+                  <div className="editor-grid" style={{ gridTemplateColumns: '1fr 1fr', gap: '1rem' }}>
                     <label>
                       Display name
                       <input onChange={(event) => updateProfileField('display_name', event.target.value)} required value={profileForm.display_name} />
                     </label>
                     <label>
                       Username
-                      <div className="username-readonly">@{profileForm.username}</div>
+                      <div className="username-readonly" style={{ padding: '0.65rem 0.8rem', border: '1px solid var(--line)', borderRadius: '0.6rem', background: 'var(--surface-soft)', color: 'var(--muted)', fontSize: '0.92rem' }}>@{profileForm.username}</div>
                     </label>
-                    <label>
+                    <label style={{ gridColumn: '1 / -1' }}>
                       Email
                       <input onChange={(event) => updateProfileField('email', event.target.value)} required type="email" value={profileForm.email} />
                     </label>
                   </div>
-                  <div className="editor-actions mt-4">
-                    <button className="solid-button" disabled={profileStatus === 'loading'} type="submit">{profileStatus === 'loading' ? 'Saving...' : 'Save profile'}</button>
+                  <div className="editor-actions mt-4" style={{ justifyContent: 'flex-end', display: 'flex' }}>
+                    <button className="solid-button" disabled={profileStatus === 'loading'} type="submit" style={{ minHeight: '2.5rem', padding: '0 1.5rem', borderRadius: '0.6rem' }}>{profileStatus === 'loading' ? 'Saving...' : 'Save profile'}</button>
                   </div>
                   {profileMessage ? <p className={profileStatus === 'error' ? 'error-message' : 'success-message'}>{profileMessage}</p> : null}
                 </form>
               </section>
             </div>
 
-            <aside className="account-right-col">
-              <section className="panel-card">
-                <div className="panel-head">
+            <aside className="account-right-col" style={{ gap: '0.8rem' }}>
+              <section className="panel-card" style={{ padding: '1rem 1.25rem' }}>
+                <div className="panel-head" style={{ marginBottom: '0.2rem' }}>
                   <div>
-                    <p className="eyebrow">Security</p>
-                    <h2>Two-Factor Authentication</h2>
+                    <p className="eyebrow" style={{ marginBottom: '0.2rem' }}>Security</p>
+                    <h2 style={{ fontSize: '1.1rem' }}>Two-Factor Auth</h2>
                   </div>
                 </div>
-                <div className="form-section">
-                  <div className="flex items-center justify-between">
-                    <div>
-                      <strong>Two-Factor Authentication</strong>
-                      <p className="text-sm text-[#5c6c82]">Add an extra layer of account security.</p>
-                    </div>
-                    <div>
-                      <button className="solid-button" onClick={() => alert('2FA not implemented')} type="button">Enable 2FA</button>
-                    </div>
+                <div className="flex items-center justify-between bg-[var(--surface-soft)] p-3 rounded-lg border border-[var(--line)]">
+                  <div>
+                    <strong style={{ fontSize: '0.9rem' }}>Protect your account</strong>
+                    <p className="text-xs text-[#5c6c82] m-0 mt-0.5">Add an extra layer of security.</p>
                   </div>
+                  <button className="solid-button" style={{ minHeight: '2rem', padding: '0 1rem', fontSize: '0.8rem', borderRadius: '0.5rem' }} onClick={() => alert('2FA not implemented')} type="button">Enable 2FA</button>
                 </div>
               </section>
 
-              <section className="panel-card">
-                <div className="panel-head">
+              <section className="panel-card" style={{ padding: '1rem 1.25rem' }}>
+                <div className="panel-head" style={{ marginBottom: '0.2rem' }}>
                   <div>
-                    <p className="eyebrow">Security</p>
-                    <h2>Change password</h2>
+                    <p className="eyebrow" style={{ marginBottom: '0.2rem' }}>Security</p>
+                    <h2 style={{ fontSize: '1.1rem' }}>Change password</h2>
                   </div>
                 </div>
-                <form className="editor-card" onSubmit={handlePasswordSubmit}>
-                  <div className="editor-grid">
-                    <label>
+                <form onSubmit={handlePasswordSubmit} style={{ display: 'grid', gap: '0.8rem' }}>
+                  <div style={{ display: 'grid', gap: '0.6rem' }}>
+                    <label style={{ fontSize: '0.85rem', display: 'grid', gap: '0.3rem' }}>
                       Current password
-                      <input onChange={(event) => updatePasswordField('current_password', event.target.value)} required type="password" value={passwordForm.current_password} />
+                      <input style={{ padding: '0.5rem 0.6rem', fontSize: '0.9rem', borderRadius: '0.5rem', border: '1px solid var(--line)' }} onChange={(event) => updatePasswordField('current_password', event.target.value)} required type="password" value={passwordForm.current_password} />
                     </label>
-                    <label>
-                      New password
-                      <input minLength={8} onChange={(event) => updatePasswordField('new_password', event.target.value)} required type="password" value={passwordForm.new_password} />
-                    </label>
-                    <label>
-                      Confirm password
-                      <input minLength={8} onChange={(event) => updatePasswordField('confirm_password', event.target.value)} required type="password" value={passwordForm.confirm_password} />
-                    </label>
+                    <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '0.6rem' }}>
+                      <label style={{ fontSize: '0.85rem', display: 'grid', gap: '0.3rem' }}>
+                        New password
+                        <input style={{ padding: '0.5rem 0.6rem', fontSize: '0.9rem', borderRadius: '0.5rem', border: '1px solid var(--line)' }} minLength={8} onChange={(event) => updatePasswordField('new_password', event.target.value)} required type="password" value={passwordForm.new_password} />
+                      </label>
+                      <label style={{ fontSize: '0.85rem', display: 'grid', gap: '0.3rem' }}>
+                        Confirm password
+                        <input style={{ padding: '0.5rem 0.6rem', fontSize: '0.9rem', borderRadius: '0.5rem', border: '1px solid var(--line)' }} minLength={8} onChange={(event) => updatePasswordField('confirm_password', event.target.value)} required type="password" value={passwordForm.confirm_password} />
+                      </label>
+                    </div>
                   </div>
-                  <div className="editor-actions mt-4">
-                    <button className="solid-button" disabled={passwordStatus === 'loading'} type="submit">{passwordStatus === 'loading' ? 'Updating...' : 'Change password'}</button>
+                  <div className="editor-actions mt-2" style={{ justifyContent: 'flex-end', display: 'flex' }}>
+                    <button className="solid-button" disabled={passwordStatus === 'loading'} type="submit" style={{ minHeight: '2.2rem', padding: '0 1rem', fontSize: '0.85rem', borderRadius: '0.5rem' }}>{passwordStatus === 'loading' ? 'Updating...' : 'Change password'}</button>
                   </div>
-                  {passwordMessage ? <p className={passwordStatus === 'error' ? 'error-message' : 'success-message'}>{passwordMessage}</p> : null}
+                  {passwordMessage ? <p className={passwordStatus === 'error' ? 'error-message text-sm' : 'success-message text-sm'}>{passwordMessage}</p> : null}
                 </form>
               </section>
 
-              <section className="panel-card">
-                <div className="panel-head">
+              <section className="panel-card" style={{ padding: '1rem 1.25rem' }}>
+                <div className="panel-head" style={{ marginBottom: '0.2rem' }}>
                   <div>
-                    <p className="eyebrow">Danger zone</p>
-                    <h2>Account controls</h2>
+                    <p className="eyebrow" style={{ marginBottom: '0.2rem' }}>Danger zone</p>
+                    <h2 style={{ fontSize: '1.1rem' }}>Account controls</h2>
                   </div>
                 </div>
-                <div className="form-section">
-                  <div className="flex gap-3">
-                    <button className="ghost-button" onClick={() => { if (confirm('Deactivate account?')) alert('Not implemented') }} type="button">Deactivate account</button>
-                    <button className="solid-button" onClick={() => { if (confirm('Delete account permanently?')) alert('Not implemented') }} type="button">Delete account</button>
-                  </div>
+                <div className="flex gap-2">
+                  <button className="ghost-button flex-1" style={{ minHeight: '2.2rem', fontSize: '0.85rem', borderRadius: '0.5rem' }} onClick={() => { if (confirm('Deactivate account?')) alert('Not implemented') }} type="button">Deactivate</button>
+                  <button className="solid-button flex-1" onClick={() => { if (confirm('Delete account permanently?')) alert('Not implemented') }} type="button" style={{ background: '#d63939', borderColor: '#d63939', minHeight: '2.2rem', fontSize: '0.85rem', borderRadius: '0.5rem' }}>Delete account</button>
                 </div>
               </section>
             </aside>

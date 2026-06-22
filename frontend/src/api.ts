@@ -1,4 +1,4 @@
-﻿import axios from 'axios'
+import axios from 'axios'
 import amazighJewelryImage from './assets/marketplace/amazigh-jewelry.jpg'
 import amazighArtworkImage from './assets/marketplace/amazigh-necklace.jpg'
 import antiqueTelephoneImage from './assets/marketplace/antique-telephone.jpg'
@@ -26,7 +26,10 @@ import type {
   SellerOrderRecord,
 } from './types'
 
-const apiBaseURL = (import.meta.env.VITE_API_URL ?? 'http://127.0.0.1:8000/api').replace(/\/$/, '')
+let apiBaseURL = (import.meta.env.VITE_API_URL ?? 'http://127.0.0.1:8000/api').replace(/\/$/, '')
+if (!apiBaseURL.endsWith('/api')) {
+  apiBaseURL += '/api'
+}
 
 const api = axios.create({
   baseURL: apiBaseURL,
@@ -234,7 +237,7 @@ export function buildSocialAuthStartUrl(
 
 export const demoArtifacts: Artifact[] = [
   {
-    id: 101,
+    id: 1,
     category: 1,
     category_name: 'Luxury Bags',
     title: 'Ivory Suede Evening Bag',
@@ -249,7 +252,7 @@ export const demoArtifacts: Artifact[] = [
     status: 'approved',
   },
   {
-    id: 102,
+    id: 2,
     category: 2,
     category_name: 'Jewelry',
     title: 'Diamond Floral Bracelet',
@@ -264,7 +267,7 @@ export const demoArtifacts: Artifact[] = [
     status: 'approved',
   },
   {
-    id: 103,
+    id: 3,
     category: 3,
     category_name: 'Watches',
     title: 'Sterling Chronograph Watch',
@@ -279,7 +282,7 @@ export const demoArtifacts: Artifact[] = [
     status: 'approved',
   },
   {
-    id: 104,
+    id: 4,
     category: 4,
     category_name: 'Traditional Clothing',
     title: 'Embroidered Silk Caftan',
@@ -294,7 +297,7 @@ export const demoArtifacts: Artifact[] = [
     status: 'approved',
   },
   {
-    id: 105,
+    id: 5,
     category: 5,
     category_name: 'Antique Furniture',
     title: 'Walnut Display Cabinet',
@@ -559,6 +562,15 @@ export async function approveAdminArtifact(id: number | string) {
 export async function rejectAdminArtifact(id: number | string, notes = '') {
   const response = await api.post<Artifact>(`/admin/artifacts/${id}/reject/`, { notes })
   return response.data
+}
+
+export async function updateAdminArtifact(id: number | string, payload: FormData) {
+  const response = await api.patch<Artifact>(`/artifacts/${id}/`, payload)
+  return response.data
+}
+
+export async function deleteAdminArtifact(id: number | string) {
+  await api.delete(`/artifacts/${id}/`)
 }
 
 export async function getAdminGalleries(params?: AdminGalleryListParams) {

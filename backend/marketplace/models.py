@@ -51,6 +51,8 @@ class Artifact(models.Model):
     image = models.ImageField(upload_to='artifacts/images/', blank=True)
     model_3d = models.FileField(upload_to='artifacts/models/', blank=True)
     textures_path = models.CharField(max_length=255, blank=True)
+    materials = models.CharField(max_length=255, blank=True, default='')
+    dimensions = models.CharField(max_length=255, blank=True, default='')
     metadata_json = models.JSONField(default=dict, blank=True)
     status = models.CharField(
         max_length=20,

@@ -16,7 +16,7 @@ export function resolveMarketplaceImage(image_url?: string): string {
 }
 
 export function MarketplaceImage({ image_url, alt, className = '', size = 'md' }: MarketplaceImageProps) {
-  const [src, setSrc] = useState<string>(resolveMarketplaceImage(image_url))
+  const src = resolveMarketplaceImage(image_url)
   const [error, setError] = useState(false)
 
   const sizeClasses = {

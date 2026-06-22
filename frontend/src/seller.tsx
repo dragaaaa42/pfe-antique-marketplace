@@ -81,7 +81,7 @@ function SellerGate({ children }: { children: ReactNode }) {
     return <Navigate replace state={{ redirectTo: location.pathname }} to="/login" />
   }
 
-  if (user.role !== 'seller' && user.role !== 'admin') {
+  if (user.role !== 'seller') {
     return <Navigate replace to={getDashboardPathForRole(user.role)} />
   }
 
@@ -92,11 +92,13 @@ function SellerLayout({
   title,
   description,
   shellBodyClassName = '',
+  compactHeader,
   children,
 }: {
   title: string
   description: string
   shellBodyClassName?: string
+  compactHeader?: boolean
   children: ReactNode
 }) {
   const { user, logout } = useAuth()
@@ -137,18 +139,24 @@ function SellerLayout({
   return (
     <main className="dashboard-page dashboard-page--workspace">
       <aside className="dashboard-rail dashboard-rail--workspace">
-        <div className="dashboard-user dashboard-user--workspace">
-          <UserAvatar
-            avatarPath={currentUserAvatar}
-            className="dashboard-avatar-frame"
-            initialsClassName="text-lg font-semibold uppercase tracking-[0.16em] text-white"
-            label={currentUserName}
-          />
-          <div>
-            <strong>{currentUserName}</strong>
-            <span className="dashboard-role-chip">{user?.role}</span>
+        <div className="dashboard-user dashboard-user--workspace flex flex-col gap-3 p-4" style={{ padding: '1.25rem' }}>
+          <div className="flex items-center gap-3">
+            <UserAvatar
+              avatarPath={currentUserAvatar}
+              className="w-12 h-12 rounded-xl overflow-hidden shrink-0 shadow-md"
+              initialsClassName="text-base font-semibold uppercase tracking-[0.16em] text-white bg-[linear-gradient(135deg,#5b76ff,#2a376f)]"
+              label={currentUserName}
+            />
+            <div className="flex flex-col items-start min-w-0">
+              <strong className="text-white text-base truncate w-full leading-tight m-0">{currentUserName}</strong>
+              <span className="info-chip mt-1 text-[0.65rem] border border-[rgba(255,255,255,0.2)] bg-[rgba(0,0,0,0.2)] text-white px-2 rounded-full font-medium tracking-wide">
+                {user?.role === 'seller' ? 'SELLER' : user?.role?.toUpperCase()}
+              </span>
+            </div>
           </div>
-          <p>{description}</p>
+          <p className="text-xs text-[rgba(255,255,255,0.6)] leading-relaxed m-0 border-t border-[rgba(255,255,255,0.1)] pt-3">
+            {description}
+          </p>
         </div>
         <nav className="dashboard-nav dashboard-nav--workspace" aria-label="Seller navigation">
           <NavLink end to="/seller">
@@ -160,7 +168,7 @@ function SellerLayout({
             {conversationStats.unread > 0 ? <span className="nav-badge">{conversationStats.unread}</span> : null}
           </NavLink>
           <NavLink to="/seller/orders">Orders received</NavLink>
-          <NavLink to="/account">Profile</NavLink>
+          <NavLink to="/seller/profile">Profile</NavLink>
           <NavLink end to="/">Catalogue</NavLink>
         </nav>
         <div className="dashboard-rail-footer">
@@ -170,21 +178,39 @@ function SellerLayout({
         </div>
       </aside>
       <section className="dashboard-content dashboard-content--workspace">
-        <div className="dashboard-header dashboard-header--workspace flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
-          <div>
-            <p className="eyebrow">Seller workspace</p>
-            <h1>{title}</h1>
-            <p className="dashboard-header-copy">Keep your listings, orders, and collector conversations inside one sharper seller command room.</p>
+        {compactHeader ? (
+          <div className="dashboard-header dashboard-header--workspace flex flex-col sm:flex-row sm:items-center sm:justify-between pb-3 mb-4 border-b border-[var(--line)]">
+            <div className="flex flex-row items-baseline gap-3">
+              <h1 className="!m-0 text-xl font-medium tracking-tight text-[var(--ink)]">{title}</h1>
+              <p className="text-sm text-[var(--muted)] m-0">{description}</p>
+            </div>
+            <div className="dashboard-header-actions flex flex-wrap items-center gap-2 ml-auto">
+              <span className="info-chip text-[0.65rem] border border-[var(--line)] px-2 py-1 rounded-full bg-[rgba(255,255,255,0.6)] text-[var(--muted)] tracking-wide uppercase font-medium">Inventory Mode</span>
+              <Link className="ghost-button !text-xs !py-1.5 !px-3 border border-transparent hover:border-[var(--line)] bg-[rgba(255,255,255,0.4)]" to="/">
+                Back to catalogue
+              </Link>
+              <button className="ghost-button !text-xs !py-1.5 !px-3 border border-[rgba(255,0,0,0.1)] text-red-600 hover:bg-red-50" onClick={logout} type="button">
+                Log out
+              </button>
+            </div>
           </div>
-          <div className="dashboard-header-actions flex flex-wrap items-center gap-3">
-            <Link className="ghost-button" to="/">
-              Back to catalogue
-            </Link>
-            <button className="ghost-button" onClick={logout} type="button">
-              Log out
-            </button>
+        ) : (
+          <div className="dashboard-header dashboard-header--workspace flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
+            <div>
+              <p className="eyebrow">Seller workspace</p>
+              <h1>{title}</h1>
+              <p className="dashboard-header-copy">Keep your listings, orders, and collector conversations inside one sharper seller command room.</p>
+            </div>
+            <div className="dashboard-header-actions flex flex-wrap items-center gap-3">
+              <Link className="ghost-button" to="/">
+                Back to catalogue
+              </Link>
+              <button className="ghost-button" onClick={logout} type="button">
+                Log out
+              </button>
+            </div>
           </div>
-        </div>
+        )}
         <div className={`dashboard-shell-body ${shellBodyClassName}`.trim()}>{children}</div>
       </section>
     </main>
@@ -246,61 +272,125 @@ function useSellerOrdersData() {
 function SellerOrdersPageBody() {
   const { orders, loading, error, refresh } = useSellerOrdersData()
 
+  const pendingCount = orders.filter(o => o.status === 'pending').length
+  const completedCount = orders.filter(o => o.status === 'paid').length
+  const totalRevenue = orders.reduce((sum, o) => sum + Number(o.seller_revenue), 0)
+
   return (
     <SellerLayout
       description="View orders that include your antiques and track what buyers have purchased."
       title="Orders received"
     >
-      <div className="panel-card">
-        <div className="panel-head">
+      <div className="flex flex-col gap-6 animate-fade-in" style={{ animation: 'fadeIn 0.5s ease-out' }}>
+        <style>{`
+          @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(10px); }
+            to { opacity: 1; transform: translateY(0); }
+          }
+        `}</style>
+
+        <div className="flex justify-between items-end mb-1">
           <div>
-            <p className="eyebrow">Seller orders</p>
-            <h2>Received orders</h2>
+            <h2 className="text-xl font-semibold text-[var(--ink)] m-0">All orders</h2>
+            <p className="text-sm text-[#5c6c82] mt-1 m-0">Review your past and current sales.</p>
           </div>
-          <button className="ghost-button" onClick={() => void refresh()} type="button">
-            Refresh
-          </button>
+          <div className="flex gap-2">
+            <button className="ghost-button" style={{ minHeight: '2rem', padding: '0 0.8rem', fontSize: '0.85rem' }} onClick={() => void refresh()} type="button">
+              Refresh Data
+            </button>
+          </div>
         </div>
-        {loading && <p>Loading received orders...</p>}
-        {error && <p className="error-message">{error}</p>}
-        <div className="table-shell">
-          <table className="management-table">
-            <thead>
-              <tr>
-                <th>Order ID</th>
-                <th>Buyer</th>
-                <th>Product</th>
-                <th>Total</th>
-                <th>Status</th>
-                <th>Date</th>
-                <th>Actions</th>
-              </tr>
-            </thead>
-            <tbody>
+
+        {/* Order Summaries */}
+        <div className="grid grid-cols-2 md:grid-cols-4 gap-4 mt-2">
+          <div className="panel-card flex flex-col p-5 hover:shadow-lg transition-all duration-300 transform hover:-translate-y-1 bg-white cursor-default border border-[var(--line)]">
+            <div className="flex justify-between items-center mb-3">
+              <div className="w-10 h-10 rounded-full flex items-center justify-center bg-[rgba(95,112,255,0.1)] text-[#4658c6] text-xl">🛍️</div>
+              <span className="text-2xl font-bold text-[#1a2035]">{orders.length}</span>
+            </div>
+            <strong className="text-[#1a2035] text-sm">Total orders</strong>
+            <span className="text-xs text-[#5c6c82] mt-0.5">All time</span>
+          </div>
+          <div className="panel-card flex flex-col p-5 hover:shadow-lg transition-all duration-300 transform hover:-translate-y-1 bg-white cursor-default border border-[var(--line)]">
+            <div className="flex justify-between items-center mb-3">
+              <div className="w-10 h-10 rounded-full flex items-center justify-center bg-[rgba(214,133,57,0.1)] text-[#d68539] text-xl">⏳</div>
+              <span className="text-2xl font-bold text-[#1a2035]">{pendingCount}</span>
+            </div>
+            <strong className="text-[#1a2035] text-sm">Pending</strong>
+            <span className="text-xs text-[#5c6c82] mt-0.5">Awaiting fulfillment</span>
+          </div>
+          <div className="panel-card flex flex-col p-5 hover:shadow-lg transition-all duration-300 transform hover:-translate-y-1 bg-white cursor-default border border-[var(--line)]">
+            <div className="flex justify-between items-center mb-3">
+              <div className="w-10 h-10 rounded-full flex items-center justify-center bg-[rgba(34,197,94,0.1)] text-[#22c55e] text-xl">✅</div>
+              <span className="text-2xl font-bold text-[#1a2035]">{completedCount}</span>
+            </div>
+            <strong className="text-[#1a2035] text-sm">Completed</strong>
+            <span className="text-xs text-[#5c6c82] mt-0.5">Successfully fulfilled</span>
+          </div>
+          <div className="panel-card flex flex-col p-5 hover:shadow-lg transition-all duration-300 transform hover:-translate-y-1 bg-white cursor-default border border-[var(--line)]">
+            <div className="flex justify-between items-center mb-3">
+              <div className="w-10 h-10 rounded-full flex items-center justify-center bg-[rgba(95,112,255,0.1)] text-[#4658c6] text-xl">💳</div>
+              <span className="text-2xl font-bold text-[#1a2035]">{formatPrice(String(totalRevenue))}</span>
+            </div>
+            <strong className="text-[#1a2035] text-sm">Total revenue</strong>
+            <span className="text-xs text-[#5c6c82] mt-0.5">Earned from sales</span>
+          </div>
+        </div>
+
+        {loading && <p className="text-sm text-[#5c6c82] mt-4">Loading received orders...</p>}
+        {error && <p className="error-message mt-4">{error}</p>}
+
+        {!loading && !error && orders.length === 0 && (
+          <div className="flex flex-col items-center justify-center p-12 border border-dashed rounded-xl border-[var(--line)] text-center bg-[var(--surface-soft)] mt-4">
+            <span className="text-4xl mb-4 opacity-60">🛍️</span>
+            <strong className="block text-lg text-[#1a2035] mb-2">No orders received yet</strong>
+            <p className="text-sm text-[#5c6c82] m-0 mb-4 max-w-sm">When collectors purchase your artifacts, their orders will appear here for you to fulfill.</p>
+            <Link className="solid-button px-4 py-2 text-sm rounded-md" to="/seller/products">Promote your products</Link>
+          </div>
+        )}
+
+        {orders.length > 0 && (
+          <div className="panel-card p-6 mt-2 border border-[var(--line)] shadow-sm" style={{ borderRadius: '1rem' }}>
+            <h3 className="text-lg font-semibold text-[#1a2035] mb-4">Order history</h3>
+            <div className="flex flex-col gap-3">
               {orders.map((order) => (
-                <tr key={order.id}>
-                  <td>#{order.id}</td>
-                  <td>
-                    {order.buyer_first_name || order.buyer_last_name
-                      ? `${order.buyer_first_name} ${order.buyer_last_name}`.trim()
-                      : order.buyer_email}
-                  </td>
-                  <td>{order.items.map((item) => item.artifact_title).slice(0, 2).join(', ')}</td>
-                  <td>{formatPrice(order.seller_revenue)}</td>
-                  <td>
-                    <span className={`status-pill status-${order.status}`}>{order.status}</span>
-                  </td>
-                  <td>{formatDate(order.created_at)}</td>
-                  <td>
-                    <Link className="text-link" to={`/seller/orders/${order.id}`}>
-                      View details
-                    </Link>
-                  </td>
-                </tr>
+                <article className="flex flex-col md:flex-row md:items-center gap-4 p-4 border border-[var(--line)] rounded-xl hover:shadow-md transition-all hover:bg-white bg-[#f8fafc]" key={order.id}>
+                  <div className="flex items-center gap-4 flex-1">
+                    <div className="w-12 h-12 rounded-full flex items-center justify-center bg-[rgba(95,112,255,0.06)] border border-[rgba(95,112,255,0.12)] text-[#4658c6] text-xl flex-shrink-0 bg-white">
+                      📦
+                    </div>
+                    <div>
+                      <div className="flex items-center gap-2 mb-1">
+                        <strong className="text-[#1a2035] text-base">Order #{order.id}</strong>
+                        <span className="info-chip" style={{ padding: '0.15rem 0.5rem', fontSize: '0.65rem' }}>{order.status}</span>
+                      </div>
+                      <p className="text-sm text-[#5c6c82] m-0">
+                        {order.buyer_first_name || order.buyer_last_name
+                          ? `${order.buyer_first_name} ${order.buyer_last_name}`.trim()
+                          : order.buyer_email}
+                      </p>
+                      <p className="text-xs text-[#8fa0b8] mt-1">{formatDate(order.created_at)}</p>
+                    </div>
+                  </div>
+
+                  <div className="flex-1 text-sm text-[#5c6c82] px-4 md:border-l md:border-[var(--line)]">
+                    <strong className="block text-[#1a2035] mb-1">Items</strong>
+                    {order.items.map((item) => item.artifact_title).slice(0, 2).join(', ')}
+                    {order.items.length > 2 && ` +${order.items.length - 2} more`}
+                  </div>
+
+                  <div className="flex items-center gap-6 justify-between md:justify-end flex-1 mt-4 md:mt-0">
+                    <div className="text-right">
+                      <span className="block text-xs text-[#5c6c82] mb-0.5">Your payout</span>
+                      <strong className="block text-[#4658c6] text-lg leading-none">{formatPrice(order.seller_revenue)}</strong>
+                    </div>
+                    <Link className="ghost-button px-4 py-2 min-h-0 text-sm rounded-md border border-[var(--line)] bg-white" to={`/seller/orders/${order.id}`}>View details</Link>
+                  </div>
+                </article>
               ))}
-            </tbody>
-          </table>
-        </div>
+            </div>
+          </div>
+        )}
       </div>
     </SellerLayout>
   )
@@ -426,259 +516,235 @@ function SellerOrderDetailPageBody() {
 function SellerDashboardBody() {
   const { data, loading, error, refresh } = useSellerData(getSellerDashboardSummary)
 
-  async function handleDelete(id: number) {
-    await deleteSellerArtifact(id)
-    await refresh()
-  }
+
 
   return (
     <SellerLayout
       description="Add product photos, edit listing information, delete products, and track what you sell."
-      title="Seller dashboard"
+      title="Seller Dashboard"
     >
-      <div className="panel-card">
-        <div className="panel-head">
-          <div>
-            <p className="eyebrow">Your products</p>
-            <h2>Inventory overview</h2>
-            <p>See your product totals here. Use the product workspace to add a picture, edit information, or delete a listing.</p>
-          </div>
-          <div className="editor-actions">
-            <Link className="solid-button" to="/seller/products">
-              Add product picture
-            </Link>
-            <button className="ghost-button" onClick={() => void refresh()} type="button">
-              Refresh
-            </button>
-          </div>
+      <div className="flex justify-between items-end mb-1">
+        <div>
+          <h2 className="text-xl font-semibold text-[var(--ink)] m-0">Inventory overview</h2>
+          <p className="text-sm text-[#5c6c82] mt-1 m-0">See your product totals here. Manage listings, conversations, and orders.</p>
         </div>
-        {loading && <p>Loading seller dashboard...</p>}
-        {error && <p className="error-message">{error}</p>}
-        {data && (
-          <>
-            <div className="metric-row">
-              <article>
-                <strong>{data.stats.total_listings}</strong>
-                <span>Products you have</span>
-              </article>
-              <article>
-                <strong>{data.stats.sold_artifacts}</strong>
-                <span>Products sold</span>
-              </article>
-              <article>
-                <strong>{data.stats.total_sales}</strong>
-                <span>Sales / orders</span>
-              </article>
-              <article>
-                <strong>{formatPrice(data.stats.revenue)}</strong>
-                <span>Revenue</span>
-              </article>
-            </div>
+        <div className="flex gap-2">
+          <Link className="solid-button" style={{ minHeight: '2rem', padding: '0 0.8rem', fontSize: '0.85rem' }} to="/seller/products">
+            Add Product
+          </Link>
+          <button className="ghost-button" style={{ minHeight: '2rem', padding: '0 0.8rem', fontSize: '0.85rem' }} onClick={() => void refresh()} type="button">
+            Refresh Data
+          </button>
+        </div>
+      </div>
 
-            <div className="metric-row compact-metrics">
-              <article>
-                <strong>{data.stats.published_listings}</strong>
-                <span>Published</span>
-              </article>
-              <article>
-                <strong>{data.stats.pending_listings}</strong>
-                <span>Waiting approval</span>
-              </article>
-              <article>
-                <strong>{data.stats.sold_listings}</strong>
-                <span>Marked sold</span>
-              </article>
-              
-              <article>
-                <strong>{data.stats.unread_conversations}</strong>
-                <span>Unread messages</span>
-              </article>
-            </div>
+      {loading && <p className="text-sm text-[#5c6c82]">Loading seller dashboard...</p>}
+      {error && <p className="error-message">{error}</p>}
 
-            <div className="dashboard-grid">
-              <section className="panel-card simple-dashboard-panel">
-                <div className="panel-head">
-                  <div>
-                    <p className="eyebrow">Product pictures and information</p>
-                    <h3>Your latest products</h3>
-                  </div>
-                  <Link className="text-link" to="/seller/products">
-                    Add or edit products
-                  </Link>
-                </div>
-                {data.recent_artifacts.length === 0 ? (
-                  <div className="empty-card">
-                    <h3>No products yet</h3>
-                    <p>Add your first product picture and information from the product workspace.</p>
-                    <Link className="solid-button" to="/seller/products">
-                      Add product
-                    </Link>
-                  </div>
-                ) : (
-                <div className="table-shell">
-                  <table className="management-table">
-                    <thead>
-                      <tr>
-                        <th>Image</th>
-                        <th>Product</th>
-                        <th>Category</th>
-                        <th>Price</th>
-                        <th>Status</th>
-                        <th>Created</th>
-                        <th>Actions</th>
-                      </tr>
-                    </thead>
-                    <tbody>
-                      {data.recent_artifacts.map((artifact) => (
-                        <tr key={artifact.id}>
-                          <td>
-                            <MarketplaceImage
-                              alt={artifact.title}
-                              className="table-thumb"
-                              src={resolveMarketplaceImage(artifact)}
-                            />
-                          </td>
-                          <td>
-                            <strong>{artifact.title}</strong>
-                            <span>{artifact.seller_email || 'Seller listing'}</span>
-                          </td>
-                          <td>{artifact.category_name ?? 'Uncategorized'}</td>
-                          <td>{formatPrice(artifact.price)}</td>
-                          <td>
-                            <span className={`status-pill status-${artifact.status}`}>{artifact.status}</span>
-                          </td>
-                          <td>{artifact.created_at ? formatDate(artifact.created_at) : '—'}</td>
-                          <td>
-                            <div className="table-actions">
-                              <Link className="text-link" to={`/artifacts/${artifact.id}`}>
-                                Preview
-                              </Link>
-                              <Link className="text-link" state={{ editArtifactId: artifact.id }} to="/seller/products">
-                                Edit
-                              </Link>
-                              <button className="text-link" onClick={() => void handleDelete(artifact.id)} type="button">
-                                Delete
-                              </button>
-                            </div>
-                          </td>
-                        </tr>
-                      ))}
-                    </tbody>
-                  </table>
-                </div>
-                )}
-              </section>
+      {data && (
+        <div className="flex flex-col gap-6 animate-fade-in" style={{ animation: 'fadeIn 0.5s ease-out' }}>
+          <style>{`
+            @keyframes fadeIn {
+              from { opacity: 0; transform: translateY(10px); }
+              to { opacity: 1; transform: translateY(0); }
+            }
+          `}</style>
 
-              
-            </div>
-
-            <section className="panel-card">
-              <div className="panel-head">
-                <div>
-                  <p className="eyebrow">Seller inbox</p>
-                  <h3>Latest buyer conversations</h3>
-                </div>
-                <Link className="text-link" to="/seller/messages">
-                  Open inbox
-                </Link>
+          {/* Stat Cards - Row 1 */}
+          <div className="grid grid-cols-1 md:grid-cols-4 gap-4 mt-3">
+            <div className="panel-card flex flex-col p-5 hover:shadow-lg transition-all duration-300 transform hover:-translate-y-1 bg-white cursor-default">
+              <div className="flex justify-between items-center mb-3">
+                <div className="w-10 h-10 rounded-full flex items-center justify-center bg-[rgba(95,112,255,0.1)] text-[#4658c6] text-xl">🏛️</div>
+                <span className="text-2xl font-bold text-[#1a2035]">{data.stats.total_listings}</span>
               </div>
-              {data.recent_conversations.length === 0 ? (
-                <div className="empty-card">
-                  <h3>No buyer messages yet</h3>
-                  <p>When a collector asks about an artifact, the thread will appear here with the item attached.</p>
+              <strong className="text-[#1a2035] text-sm">Products you have</strong>
+              <span className="text-xs text-[#5c6c82] mt-0.5">Total catalogue</span>
+            </div>
+            <div className="panel-card flex flex-col p-5 hover:shadow-lg transition-all duration-300 transform hover:-translate-y-1 bg-white cursor-default">
+              <div className="flex justify-between items-center mb-3">
+                <div className="w-10 h-10 rounded-full flex items-center justify-center bg-[rgba(95,112,255,0.1)] text-[#4658c6] text-xl">✅</div>
+                <span className="text-2xl font-bold text-[#1a2035]">{data.stats.sold_artifacts}</span>
+              </div>
+              <strong className="text-[#1a2035] text-sm">Products sold</strong>
+              <span className="text-xs text-[#5c6c82] mt-0.5">Successfully transferred</span>
+            </div>
+            <div className="panel-card flex flex-col p-5 hover:shadow-lg transition-all duration-300 transform hover:-translate-y-1 bg-white cursor-default">
+              <div className="flex justify-between items-center mb-3">
+                <div className="w-10 h-10 rounded-full flex items-center justify-center bg-[rgba(95,112,255,0.1)] text-[#4658c6] text-xl">📦</div>
+                <span className="text-2xl font-bold text-[#1a2035]">{data.stats.total_sales}</span>
+              </div>
+              <strong className="text-[#1a2035] text-sm">Total sales</strong>
+              <span className="text-xs text-[#5c6c82] mt-0.5">Orders fulfilled</span>
+            </div>
+            <div className="panel-card flex flex-col p-5 hover:shadow-lg transition-all duration-300 transform hover:-translate-y-1 bg-white cursor-default">
+              <div className="flex justify-between items-center mb-3">
+                <div className="w-10 h-10 rounded-full flex items-center justify-center bg-[rgba(95,112,255,0.1)] text-[#4658c6] text-xl">💳</div>
+                <span className="text-2xl font-bold text-[#1a2035]">{formatPrice(data.stats.revenue)}</span>
+              </div>
+              <strong className="text-[#1a2035] text-sm">Revenue</strong>
+              <span className="text-xs text-[#5c6c82] mt-0.5">All time earnings</span>
+            </div>
+          </div>
+
+          {/* Stat Cards - Row 2 (Compact) */}
+          <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
+            <div className="panel-card flex justify-between items-center p-4 bg-white hover:shadow-md transition-shadow">
+              <span className="text-sm font-medium text-[#1a2035]">Published</span>
+              <span className="font-bold text-[#4658c6]">{data.stats.published_listings}</span>
+            </div>
+            <div className="panel-card flex justify-between items-center p-4 bg-white hover:shadow-md transition-shadow">
+              <span className="text-sm font-medium text-[#1a2035]">Pending approval</span>
+              <span className="font-bold text-[#d68539]">{data.stats.pending_listings}</span>
+            </div>
+            <div className="panel-card flex justify-between items-center p-4 bg-white hover:shadow-md transition-shadow">
+              <span className="text-sm font-medium text-[#1a2035]">Marked sold</span>
+              <span className="font-bold text-[#1a2035]">{data.stats.sold_listings}</span>
+            </div>
+            <div className="panel-card flex justify-between items-center p-4 bg-white hover:shadow-md transition-shadow">
+              <span className="text-sm font-medium text-[#1a2035]">Unread messages</span>
+              <span className="font-bold text-[#d63939]">{data.stats.unread_conversations}</span>
+            </div>
+          </div>
+
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-6 items-stretch">
+            {/* Latest Products */}
+            <section className="panel-card p-6" style={{ display: 'flex', flexDirection: 'column', height: 'auto', alignSelf: 'flex-start', justifyContent: 'flex-start', gap: '0.75rem' }}>
+              <div className="flex justify-between items-start">
+                <div>
+                  <p className="eyebrow mb-1">Product portfolio</p>
+                  <h3 className="text-lg m-0">Your latest products</h3>
                 </div>
+                <Link className="text-link text-sm font-medium" to="/seller/products">Manage all</Link>
+              </div>
+
+              <div className="flex flex-col gap-3">
+                {data.recent_artifacts.length > 0 ? (
+                  data.recent_artifacts.map((artifact) => (
+                    <article className="flex items-center gap-4 p-3 border border-[var(--line)] rounded-xl hover:shadow-md transition-all hover:bg-white bg-[var(--surface-soft)]" key={artifact.id}>
+                      <div className="w-16 h-16 rounded-lg overflow-hidden flex-shrink-0 border border-[var(--line)]">
+                        <MarketplaceImage alt={artifact.title} src={resolveMarketplaceImage(artifact)} />
+                      </div>
+                      <div className="flex-1 min-w-0">
+                        <strong className="block truncate text-[#1a2035] text-sm mb-0.5">{artifact.title}</strong>
+                        <div className="flex items-center justify-between">
+                          <span className="block text-xs text-[#5c6c82]">{artifact.category_name ?? 'Uncategorized'}</span>
+                          <span className="info-chip" style={{ padding: '0.15rem 0.5rem', fontSize: '0.65rem' }}>{artifact.status}</span>
+                        </div>
+                        <div className="flex items-center justify-between mt-1">
+                          <p className="text-sm font-semibold text-[#4658c6] m-0">{formatPrice(artifact.price)}</p>
+                          <div className="flex gap-2">
+                            <Link className="text-link text-xs" state={{ editArtifactId: artifact.id }} to="/seller/products">Edit</Link>
+                          </div>
+                        </div>
+                      </div>
+                    </article>
+                  ))
+                ) : (
+                  <div className="flex flex-col items-center justify-center p-6 border border-dashed rounded-xl border-[var(--line)] text-center bg-[var(--surface-soft)] w-full">
+                    <span className="text-2xl mb-2 opacity-60">🏛️</span>
+                    <strong className="block text-sm text-[#1a2035] mb-1">No products yet</strong>
+                    <p className="text-xs text-[#5c6c82] m-0 mb-3">Add your first product to the marketplace.</p>
+                    <Link className="ghost-button text-xs px-3 py-1.5 min-h-0 rounded-md border border-[var(--line)]" to="/seller/products">Add product</Link>
+                  </div>
+                )}
+              </div>
+            </section>
+
+            {/* Seller Inbox */}
+            <section className="panel-card flex flex-col h-full p-6">
+              <div className="flex justify-between items-start mb-4">
+                <div>
+                  <p className="eyebrow mb-1">Seller inbox</p>
+                  <h3 className="text-lg m-0">Latest messages</h3>
+                </div>
+                <Link className="text-link text-sm font-medium" to="/seller/messages">Open inbox</Link>
+              </div>
+
+              <div className="flex flex-col gap-3 flex-1">
+                {data.recent_conversations.length > 0 ? (
+                  data.recent_conversations.map((conversation) => {
+                    const buyerIdentity = getConversationBuyerIdentity(conversation)
+                    return (
+                      <article className="flex flex-col gap-2 p-3 border border-[var(--line)] rounded-xl hover:shadow-md transition-all hover:bg-white bg-[var(--surface-soft)]" key={conversation.id}>
+                        <div className="flex items-center justify-between">
+                          <div className="flex items-center gap-2">
+                            <div className="w-8 h-8 rounded-full bg-[rgba(95,112,255,0.1)] text-[#4658c6] flex items-center justify-center text-xs font-bold uppercase">
+                              {buyerIdentity.label.substring(0, 2)}
+                            </div>
+                            <div>
+                              <strong className="block text-sm text-[#1a2035] leading-none">{buyerIdentity.label}</strong>
+                              <span className="text-[10px] text-[#5c6c82] uppercase tracking-wide">{conversation.artifact_detail.title}</span>
+                            </div>
+                          </div>
+                          {conversation.unread_count > 0 && (
+                            <span className="bg-[#d63939] text-white text-[10px] font-bold px-1.5 py-0.5 rounded-full leading-none">{conversation.unread_count} new</span>
+                          )}
+                        </div>
+                        <div className="flex items-center justify-between mt-1">
+                          <p className="text-xs text-[#5c6c82] m-0 truncate pr-4">{conversation.last_message_preview || 'Thread created'}</p>
+                          <Link className="text-link text-xs shrink-0" to={`/seller/messages/${conversation.id}`}>Reply</Link>
+                        </div>
+                      </article>
+                    )
+                  })
+                ) : (
+                  <div className="flex-1 flex flex-col items-center justify-center p-6 border border-dashed rounded-xl border-[var(--line)] text-center bg-[var(--surface-soft)]">
+                    <span className="text-2xl mb-2 opacity-60">💬</span>
+                    <strong className="block text-sm text-[#1a2035] mb-1">No messages yet</strong>
+                    <p className="text-xs text-[#5c6c82] m-0 mb-3">Buyer inquiries will appear here.</p>
+                  </div>
+                )}
+              </div>
+            </section>
+          </div>
+
+          {/* Orders Received */}
+          <section className="panel-card p-6 mt-2">
+            <div className="flex justify-between items-end mb-4 sticky top-0 bg-[var(--surface)] z-10 pt-6 pb-4 -mt-6 -mx-6 px-6 border-b border-[var(--line)] shadow-sm">
+              <div>
+                <p className="eyebrow mb-1">Orders received</p>
+                <h3 className="text-lg m-0">Recent seller orders</h3>
+              </div>
+              <Link className="text-link text-sm font-medium" to="/seller/orders">View all orders</Link>
+            </div>
+
+            <div className="flex flex-col gap-3">
+              {data.recent_orders.length > 0 ? (
+                data.recent_orders.map((order) => (
+                  <article className="flex justify-between items-center p-4 border border-[var(--line)] rounded-xl hover:shadow-md transition-all hover:bg-white bg-[var(--surface-soft)]" key={order.id}>
+                    <div className="flex items-center gap-4">
+                      <div className="w-10 h-10 rounded-full flex items-center justify-center bg-[rgba(95,112,255,0.06)] border border-[rgba(95,112,255,0.12)] text-[#4658c6] text-lg flex-shrink-0">
+                        📦
+                      </div>
+                      <div>
+                        <strong className="block text-[#1a2035] text-sm mb-0.5">
+                          Order #{order.id} &middot; {order.buyer_first_name || order.buyer_last_name ? `${order.buyer_first_name} ${order.buyer_last_name}`.trim() : order.buyer_email}
+                        </strong>
+                        <p className="text-xs text-[#5c6c82] m-0">{order.items.map((item) => item.artifact_title).slice(0, 2).join(', ')}</p>
+                      </div>
+                    </div>
+                    <div className="flex items-center gap-6">
+                      <div className="text-right">
+                        <strong className="block text-[#4658c6] text-sm mb-1">{formatPrice(order.seller_revenue)}</strong>
+                        <span className="info-chip" style={{ padding: '0.15rem 0.5rem', fontSize: '0.65rem' }}>{order.status}</span>
+                      </div>
+                      <Link className="ghost-button" style={{ minHeight: '1.8rem', padding: '0 0.6rem', fontSize: '0.75rem', borderRadius: '0.4rem' }} to={`/seller/orders/${order.id}`}>View</Link>
+                    </div>
+                  </article>
+                ))
               ) : (
-                <div className="table-shell">
-                  <table className="management-table">
-                    <thead>
-                      <tr>
-                        <th>Buyer</th>
-                        <th>Artifact</th>
-                        <th>Last message</th>
-                        <th>Unread</th>
-                        <th>Updated</th>
-                        <th>Actions</th>
-                      </tr>
-                    </thead>
-                    <tbody>
-                      {data.recent_conversations.map((conversation) => {
-                        const buyerIdentity = getConversationBuyerIdentity(conversation)
-                        return (
-                        <tr key={conversation.id}>
-                          <td>
-                            <strong>{buyerIdentity.label}</strong>
-                            <span>Collector account</span>
-                          </td>
-                          <td>{conversation.artifact_detail.title}</td>
-                          <td>{conversation.last_message_preview || 'Thread created'}</td>
-                          <td>{conversation.unread_count}</td>
-                          <td>{conversation.last_message_at ? formatConversationTimestamp(conversation.last_message_at) : '—'}</td>
-                          <td>
-                            <Link className="text-link" to={`/seller/messages/${conversation.id}`}>
-                              Reply
-                            </Link>
-                          </td>
-                        </tr>
-                        )
-                      })}
-                    </tbody>
-                  </table>
+                <div className="text-center p-8 border border-dashed rounded-xl border-[var(--line)] bg-[var(--surface-soft)]">
+                  <span className="text-3xl mb-3 block opacity-60">🛍️</span>
+                  <h4 className="text-base mb-1 text-[#1a2035]">No orders yet</h4>
+                  <p className="text-[#5c6c82] text-sm m-0 mb-3">When collectors purchase your artifacts, they will appear here.</p>
+                  <Link className="ghost-button text-xs px-3 py-1.5 min-h-0 rounded-md border border-[var(--line)]" to="/seller/products">Ensure products are listed</Link>
                 </div>
               )}
-            </section>
+            </div>
+          </section>
 
-            <section className="panel-card">
-              <div className="panel-head">
-                <div>
-                  <p className="eyebrow">Orders received</p>
-                  <h3>Recent seller orders</h3>
-                </div>
-                <Link className="text-link" to="/seller/orders">
-                  View all orders
-                </Link>
-              </div>
-              <div className="table-shell">
-                <table className="management-table">
-                  <thead>
-                    <tr>
-                      <th>Order ID</th>
-                      <th>Buyer</th>
-                      <th>Products</th>
-                      <th>Total</th>
-                      <th>Status</th>
-                      <th>Date</th>
-                      <th>Actions</th>
-                    </tr>
-                  </thead>
-                  <tbody>
-                    {data.recent_orders.map((order) => (
-                      <tr key={order.id}>
-                        <td>#{order.id}</td>
-                        <td>
-                          {order.buyer_first_name || order.buyer_last_name
-                            ? `${order.buyer_first_name} ${order.buyer_last_name}`.trim()
-                            : order.buyer_email}
-                        </td>
-                        <td>{order.items.map((item) => item.artifact_title).slice(0, 2).join(', ')}</td>
-                        <td>{formatPrice(order.seller_revenue)}</td>
-                        <td>
-                          <span className={`status-pill status-${order.status}`}>{order.status}</span>
-                        </td>
-                        <td>{formatDate(order.created_at)}</td>
-                        <td>
-                          <Link className="text-link" to={`/seller/orders/${order.id}`}>
-                            View
-                          </Link>
-                        </td>
-                      </tr>
-                    ))}
-                  </tbody>
-                </table>
-              </div>
-            </section>
-          </>
-        )}
-      </div>
+        </div>
+      )}
     </SellerLayout>
   )
 }
@@ -770,13 +836,13 @@ function SellerProductsBody() {
       setMediaItems(
         selectedArtifact.image
           ? [
-              {
-                id: `existing-${selectedArtifact.id}`,
-                source: 'existing',
-                url: selectedArtifact.image,
-                name: selectedArtifact.title,
-              },
-            ]
+            {
+              id: `existing-${selectedArtifact.id}`,
+              source: 'existing',
+              url: selectedArtifact.image,
+              name: selectedArtifact.title,
+            },
+          ]
           : [],
       )
       return
@@ -882,19 +948,7 @@ function SellerProductsBody() {
     })
   }
 
-  function moveMediaItem(index: number, direction: -1 | 1) {
-    setMediaItems((current) => {
-      const nextIndex = index + direction
-      if (index < 0 || index >= current.length || nextIndex < 0 || nextIndex >= current.length) {
-        return current
-      }
 
-      const next = [...current]
-      const [selected] = next.splice(index, 1)
-      next.splice(nextIndex, 0, selected)
-      return next
-    })
-  }
 
   function clearMedia() {
     mediaItems.forEach((item) => {
@@ -934,6 +988,10 @@ function SellerProductsBody() {
 
     try {
       const payload = new FormData()
+      const primaryImage = mediaItems[0]
+      if (primaryImage?.source === 'local' && primaryImage.file) {
+        payload.append('image', primaryImage.file)
+      }
       payload.append('category', form.category)
       payload.append('title', form.title)
       payload.append('description', form.description)
@@ -941,10 +999,6 @@ function SellerProductsBody() {
       payload.append('provenance', form.provenance)
       payload.append('condition', form.condition)
       payload.append('price', form.price)
-      const primaryImage = mediaItems[0]
-      if (primaryImage?.source === 'local' && primaryImage.file) {
-        payload.append('image', primaryImage.file)
-      }
 
       if (editingArtifactId) {
         await updateSellerArtifact(editingArtifactId, payload)
@@ -975,28 +1029,32 @@ function SellerProductsBody() {
     <SellerLayout
       description="Create, edit, and preview antique listings with a workspace workflow built for premium objects."
       title="Products"
+      compactHeader={true}
     >
-      <div className="panel-card seller-studio">
-        <div className="panel-head">
+      <div className="panel-card seller-studio animate-fade-in border border-[var(--line)] shadow-sm" style={{ animation: 'fadeIn 0.5s ease-out', borderRadius: '1rem' }}>
+        <style>{`
+          @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(10px); }
+            to { opacity: 1; transform: translateY(0); }
+          }
+        `}</style>
+        <div className="flex justify-between items-end p-6 border-b border-[var(--line)] bg-[var(--surface-soft)]">
           <div>
-            <p className="eyebrow">Listing workspace</p>
-            <h2>{editingArtifactId ? 'Edit listing' : 'Create listing'}</h2>
-            <p className="studio-intro">
-              Multi-image drafting, drag and drop upload, step-by-step sections, and a live preview before
-              publish.
+            <p className="eyebrow mb-1">Listing workspace</p>
+            <h2 className="text-xl font-semibold text-[var(--ink)] m-0">{editingArtifactId ? 'Edit listing' : 'Create listing'}</h2>
+            <p className="text-sm text-[#5c6c82] mt-1 m-0">
+              Multi-image drafting, drag and drop upload, step-by-step sections, and a live preview before publish.
             </p>
           </div>
-          <div className="editor-actions">
-            <button className="ghost-button" onClick={resetForm} type="button">
+          <div className="flex gap-2">
+            <button className="solid-button" style={{ minHeight: '2rem', padding: '0 0.8rem', fontSize: '0.85rem', borderRadius: '0.5rem' }} onClick={resetForm} type="button">
               New listing
             </button>
-            <button className="ghost-button" onClick={clearMedia} type="button">
-              Clear media
-            </button>
+
           </div>
         </div>
 
-        <div className="studio-grid">
+        <div className="studio-grid p-6">
           <form className="editor-card studio-form" onSubmit={handleSubmit}>
             <section className="form-section">
               <div className="form-section-head">
@@ -1051,19 +1109,19 @@ function SellerProductsBody() {
                   />
                   {errors.title && <span className="field-note">{errors.title}</span>}
                 </label>
-              <label className={errors.description ? 'field-error full-field' : 'full-field'}>
-                Description
-                <textarea
-                  required
-                  rows={4}
-                  value={form.description}
-                  onChange={(event) => {
-                    setForm((current) => ({ ...current, description: event.target.value }))
-                    setErrors((current) => ({ ...current, description: undefined }))
-                  }}
-                />
-                {errors.description && <span className="field-note">{errors.description}</span>}
-              </label>
+                <label className={errors.description ? 'field-error full-field' : 'full-field'}>
+                  Description
+                  <textarea
+                    required
+                    rows={4}
+                    value={form.description}
+                    onChange={(event) => {
+                      setForm((current) => ({ ...current, description: event.target.value }))
+                      setErrors((current) => ({ ...current, description: undefined }))
+                    }}
+                  />
+                  {errors.description && <span className="field-note">{errors.description}</span>}
+                </label>
               </div>
             </section>
 
@@ -1071,14 +1129,14 @@ function SellerProductsBody() {
               <div className="form-section-head">
                 <div>
                   <p className="eyebrow">Step 2</p>
-                  <h3>Media</h3>
+                  <h3>Product pictures</h3>
                 </div>
                 <button className="text-link" onClick={clearMedia} type="button">
                   Clear section
                 </button>
               </div>
               <div
-                className={dragActive ? 'media-dropzone active' : 'media-dropzone'}
+                className={dragActive ? 'media-dropzone active !py-6' : 'media-dropzone !py-6'}
                 onDragLeave={() => setDragActive(false)}
                 onDragOver={(event) => {
                   event.preventDefault()
@@ -1100,17 +1158,14 @@ function SellerProductsBody() {
               >
                 <div>
                   <p className="eyebrow">Drag and drop</p>
-                  <h4>Drop image files or browse from your device</h4>
-                  <p>
-                    Use the first image as the hero image. Reorder the gallery, replace images, and
-                    keep additional uploads as live previews until the backend supports them.
-                  </p>
+                  <h4 className="text-base mt-1 mb-1 text-[#1a2035]">Drop image files or browse from your device</h4>
+                  <p className="text-sm m-0 text-[#8c9bab]">Use the first image as the hero image.</p>
                 </div>
-                <div className="media-dropzone-actions">
-                  <button className="solid-button" onClick={() => imageInputRef.current?.click()} type="button">
+                <div className="media-dropzone-actions mt-4 flex items-center justify-center gap-3">
+                  <button className="solid-button text-sm px-4 py-2 min-h-0" onClick={() => imageInputRef.current?.click()} type="button">
                     Browse images
                   </button>
-                  <button className="ghost-button" onClick={clearMedia} type="button">
+                  <button className="ghost-button text-sm px-4 py-2 min-h-0 text-[#d63939] hover:bg-[#fff0f0] border-[#ffcccc]" onClick={clearMedia} type="button">
                     Remove all
                   </button>
                 </div>
@@ -1133,62 +1188,35 @@ function SellerProductsBody() {
               />
               {errors.media && <span className="field-note">{errors.media}</span>}
 
-              <div className="media-stage">
-                {mediaItems.length > 0 ? (
-                  <MarketplaceImage alt="Listing preview" className="media-stage-image" src={mediaItems[0].url} />
-                ) : (
-                  <div className="media-stage-placeholder">
-                    <span>No hero image selected yet.</span>
-                  </div>
-                )}
-                <div className="media-stage-meta">
-                  <strong>{mediaItems[0]?.name || 'Preview before publish'}</strong>
-                  <p>{mediaItems.length > 0 ? `${mediaItems.length} image(s) prepared` : 'Add a hero image first.'}</p>
-                </div>
-              </div>
-
-              <div className="media-grid">
-                {mediaItems.map((item, index) => (
-                  <article className="media-card" key={item.id}>
-                    <MarketplaceImage alt={item.name} src={item.url} />
-                    <div className="media-card-body">
-                      <strong>{index === 0 ? 'Hero image' : `Gallery image ${index + 1}`}</strong>
-                      <span>{item.name}</span>
-                      <div className="manage-actions">
-                        {index !== 0 && (
-                          <button className="ghost-button" onClick={() => moveMediaToFront(index)} type="button">
-                            Set hero
+              {mediaItems.length > 0 && (
+                <div className="media-grid mt-4">
+                  {mediaItems.map((item, index) => (
+                    <article className="media-card" key={item.id}>
+                      <MarketplaceImage alt={item.name} src={item.url} />
+                      <div className="media-card-body">
+                        <strong>{index === 0 ? 'Hero image' : `Gallery image ${index + 1}`}</strong>
+                        <span className="truncate">{item.name}</span>
+                        <div className="manage-actions mt-2">
+                          {index !== 0 && (
+                            <button className="ghost-button text-xs py-1" onClick={() => moveMediaToFront(index)} type="button">Set hero</button>
+                          )}
+                          <button
+                            className="ghost-button text-xs py-1"
+                            onClick={() => {
+                              setReplaceIndex(index)
+                              imageInputRef.current?.click()
+                            }}
+                            type="button"
+                          >
+                            Replace
                           </button>
-                        )}
-                        {index > 0 && (
-                          <button className="ghost-button" onClick={() => moveMediaItem(index, -1)} type="button">
-                            Move up
-                          </button>
-                        )}
-                        {index < mediaItems.length - 1 && (
-                          <button className="ghost-button" onClick={() => moveMediaItem(index, 1)} type="button">
-                            Move down
-                          </button>
-                        )}
-                        <button
-                          className="ghost-button"
-                          onClick={() => {
-                            setReplaceIndex(index)
-                            imageInputRef.current?.click()
-                          }}
-                          type="button"
-                        >
-                          Replace
-                        </button>
-                        <button className="ghost-button" onClick={() => removeMediaItem(index)} type="button">
-                          Remove
-                        </button>
+                          <button className="ghost-button text-xs py-1 text-[#d63939]" onClick={() => removeMediaItem(index)} type="button">Remove</button>
+                        </div>
                       </div>
-                    </div>
-                  </article>
-                ))}
-              </div>
-
+                    </article>
+                  ))}
+                </div>
+              )}
             </section>
 
             <section className="form-section">
@@ -1353,17 +1381,17 @@ function SellerProductsBody() {
             </div>
           </form>
 
-          <aside className="preview-panel">
-            <div className="preview-panel-head">
-              <p className="eyebrow">Preview before publish</p>
-              <h3>Object dossier</h3>
+          <aside className="preview-panel sticky top-6 self-start bg-white rounded-xl shadow-[0_8px_30px_rgb(0,0,0,0.04)] border border-[var(--line)] overflow-hidden">
+            <div className="p-5 border-b border-[var(--line)] bg-[#f8fafc]">
+              <p className="eyebrow mb-1">Preview before publish</p>
+              <h3 className="text-lg m-0 text-[#1a2035]">Object dossier</h3>
             </div>
             <div className="preview-hero">
               {mediaItems[0] ? (
                 <MarketplaceImage alt="Primary listing preview" src={mediaItems[0].url} />
               ) : (
-                <div className="media-stage-placeholder">
-                  <span>Your hero image will appear here.</span>
+                <div className="media-stage-placeholder bg-[var(--surface-soft)] text-[#8c9bab] flex items-center justify-center p-12 text-sm text-center">
+                  <span>No image available.</span>
                 </div>
               )}
             </div>
@@ -1398,18 +1426,20 @@ function SellerProductsBody() {
                 <strong>{draft.country || 'Not set'}</strong>
               </article>
             </div>
-            <div className="preview-thumbs">
-              {mediaItems.slice(0, 4).map((item, index) => (
-                <button
-                  className={index === 0 ? 'preview-thumb active' : 'preview-thumb'}
-                  key={item.id}
-                  onClick={() => moveMediaToFront(index)}
-                  type="button"
-                >
-                  <MarketplaceImage alt="" src={item.url} />
-                </button>
-              ))}
-            </div>
+            {mediaItems.length > 0 && (
+              <div className="preview-thumbs flex gap-2 px-5 py-4 border-b border-[var(--line)] overflow-x-auto">
+                {mediaItems.slice(0, 4).map((item, index) => (
+                  <button
+                    className={`preview-thumb w-12 h-12 rounded-md overflow-hidden border shrink-0 ${index === 0 ? 'border-[#4658c6]' : 'border-[var(--line)] opacity-70'}`}
+                    key={item.id}
+                    onClick={() => moveMediaToFront(index)}
+                    type="button"
+                  >
+                    <MarketplaceImage alt="" src={item.url} className="w-full h-full object-cover" />
+                  </button>
+                ))}
+              </div>
+            )}
             <div className="preview-meta">
               <article>
                 <span>Materials</span>
@@ -1434,64 +1464,55 @@ function SellerProductsBody() {
           <p className={status === 'error' ? 'error-message' : 'success-message'}>{message}</p>
         )}
 
-        {loading && <p>Loading listings...</p>}
-        {error && <p className="error-message">{error}</p>}
+        {loading && <p className="text-sm text-[#5c6c82] mt-6 px-6">Loading listings...</p>}
+        {error && <p className="error-message mx-6 mt-6">{error}</p>}
         {!loading && !error && artifacts && artifacts.length === 0 && (
-          <div className="empty-card">
-            <h3>No listings yet</h3>
-            <p>Create your first product from the form above.</p>
+          <div className="flex flex-col items-center justify-center p-12 border border-dashed rounded-xl border-[var(--line)] text-center bg-[var(--surface-soft)] m-6 mt-0">
+            <span className="text-4xl mb-4 opacity-60">🏛️</span>
+            <strong className="block text-lg text-[#1a2035] mb-2">No listings yet</strong>
+            <p className="text-sm text-[#5c6c82] m-0 max-w-sm">Create your first product from the form above.</p>
           </div>
         )}
 
-        <div className="table-shell">
-          <table className="management-table">
-            <thead>
-              <tr>
-                <th>Image</th>
-                <th>Product name</th>
-                <th>Category</th>
-                <th>Price</th>
-                <th>Status</th>
-                <th>Created date</th>
-                <th>Actions</th>
-              </tr>
-            </thead>
-            <tbody>
-              {artifacts?.map((artifact) => (
-                <tr key={artifact.id}>
-                  <td>
-                    <MarketplaceImage
-                      alt={artifact.title}
-                      className="table-thumb"
-                      loading="eager"
-                      src={resolveMarketplaceImage(artifact)}
-                    />
-                  </td>
-                  <td>{artifact.title}</td>
-                  <td>{artifact.category_name ?? 'Uncategorized'}</td>
-                  <td>{formatPrice(artifact.price)}</td>
-                  <td>
-                    <span className={`status-pill status-${artifact.status}`}>{artifact.status}</span>
-                  </td>
-                  <td>{artifact.created_at ? formatDate(artifact.created_at) : '—'}</td>
-                  <td>
-                    <div className="table-actions">
-                      <Link className="text-link" to={`/artifacts/${artifact.id}`}>
-                        Preview
-                      </Link>
-                      <button className="text-link" onClick={() => setEditingArtifactId(artifact.id)} type="button">
-                        Edit
-                      </button>
-                      <button className="text-link" onClick={() => void handleDelete(artifact.id)} type="button">
-                        Delete
-                      </button>
-                    </div>
-                  </td>
-                </tr>
-              ))}
-            </tbody>
-          </table>
-        </div>
+        {artifacts && artifacts.length > 0 && (
+          <div className="flex flex-col gap-3 m-6 mt-0 border-t border-[var(--line)] pt-6">
+            <h3 className="text-lg font-semibold text-[#1a2035] mb-2">Your catalogue</h3>
+            {artifacts.map((artifact) => (
+              <article className="flex flex-col md:flex-row items-start md:items-center gap-4 p-4 border border-[var(--line)] rounded-xl hover:shadow-md transition-all hover:bg-white bg-[#f8fafc]" key={artifact.id}>
+                <div className="w-20 h-20 rounded-lg overflow-hidden flex-shrink-0 border border-[var(--line)] bg-white">
+                  <MarketplaceImage
+                    alt={artifact.title}
+                    className="w-full h-full object-cover"
+                    loading="eager"
+                    src={resolveMarketplaceImage(artifact)}
+                  />
+                </div>
+                <div className="flex-1 min-w-0 w-full">
+                  <strong className="block truncate text-[#1a2035] text-base mb-1">{artifact.title}</strong>
+                  <div className="flex flex-wrap items-center gap-4 mb-2">
+                    <span className="text-sm text-[#5c6c82]">{artifact.category_name ?? 'Uncategorized'}</span>
+                    <span className="text-sm font-semibold text-[#4658c6]">{formatPrice(artifact.price)}</span>
+                    <span className="info-chip" style={{ padding: '0.15rem 0.5rem', fontSize: '0.7rem' }}>{artifact.status}</span>
+                  </div>
+                  <div className="text-xs text-[#8c9bab]">
+                    Created: {artifact.created_at ? formatDate(artifact.created_at) : '—'}
+                  </div>
+                </div>
+                <div className="flex items-center gap-2 w-full md:w-auto justify-end mt-2 md:mt-0">
+                  <Link className="ghost-button text-xs px-4 py-2 min-h-0 rounded-md border border-[var(--line)] bg-white" to={`/artifacts/${artifact.id}`}>
+                    Preview
+                  </Link>
+                  <button className="solid-button text-xs px-4 py-2 min-h-0 rounded-md" onClick={() => { setEditingArtifactId(artifact.id); window.scrollTo({ top: 0, behavior: 'smooth' }) }} type="button">
+                    Edit
+                  </button>
+                  <button className="ghost-button text-xs px-4 py-2 min-h-0 rounded-md border border-[#ffcccc] text-[#d63939] hover:bg-[#fff0f0] bg-white" onClick={() => void handleDelete(artifact.id)} type="button">
+                    Delete
+                  </button>
+                </div>
+              </article>
+            ))}
+          </div>
+        )}
       </div>
     </SellerLayout>
   )
@@ -1963,11 +1984,10 @@ function SellerMessagesBody() {
                   const buyerIdentity = getConversationBuyerIdentity(conversation)
                   return (
                     <Link
-                      className={`block rounded-[1.5rem] border px-4 py-4 transition ${
-                        isActive
+                      className={`block rounded-[1.5rem] border px-4 py-4 transition ${isActive
                           ? 'border-[#3b5ba9] bg-[#eef4ff] shadow-[0_14px_40px_rgba(53,91,183,0.12)]'
                           : 'border-[#e3ebf6] bg-white hover:border-[#c8d6eb] hover:bg-[#fbfdff]'
-                      }`}
+                        }`}
                       key={conversation.id}
                       to={`/seller/messages/${conversation.id}`}
                     >
@@ -2056,11 +2076,11 @@ function SellerMessagesBody() {
                         </div>
                         <p className="mt-1 text-xs text-[#6f7f9b]">
                           {activeConversation?.last_message_at &&
-                          Date.now() - new Date(activeConversation.last_message_at).getTime() < 2 * 60 * 1000
+                            Date.now() - new Date(activeConversation.last_message_at).getTime() < 2 * 60 * 1000
                             ? 'Online'
                             : activeConversation?.last_message_at
-                            ? `Last seen ${formatConversationTimestamp(activeConversation.last_message_at)}`
-                            : 'Offline'}
+                              ? `Last seen ${formatConversationTimestamp(activeConversation.last_message_at)}`
+                              : 'Offline'}
                         </p>
                       </div>
                     </div>
@@ -2148,7 +2168,7 @@ function SellerMessagesBody() {
                       title="Attach a file"
                       onClick={() => alert('Attachment picker not implemented')}
                     >
-                      <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#6f7f9b" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M21.44 11.05L12.37 20.12a5 5 0 0 1-7.07 0 5 5 0 0 1 0-7.07L11.3 7.15a3 3 0 0 1 4.24 4.24L11.3 15.63"/></svg>
+                      <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#6f7f9b" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M21.44 11.05L12.37 20.12a5 5 0 0 1-7.07 0 5 5 0 0 1 0-7.07L11.3 7.15a3 3 0 0 1 4.24 4.24L11.3 15.63" /></svg>
                     </button>
                     <input
                       aria-label="Type a message"
@@ -2226,5 +2246,72 @@ export function SellerMessagesPage() {
     <SellerGate>
       <SellerMessagesBody />
     </SellerGate>
+  )
+}
+export function SellerProfilePage() {
+  const { user } = useAuth()
+  const currentUserName = currentUserDisplayName(user, 'Seller')
+  const currentUserAvatar = currentUserAvatarPath(user)
+
+  return (
+    <SellerLayout
+      description="View your public seller profile as it appears to collectors."
+      title="Seller Profile"
+    >
+      <div className="flex flex-col md:flex-row gap-6 max-w-5xl">
+        <div className="panel-card flex-1 flex flex-col gap-6 animate-fade-in shadow-sm border border-[var(--line)] p-8" style={{ borderRadius: '1.25rem' }}>
+          <div className="flex flex-col sm:flex-row items-center sm:items-start gap-6">
+            <UserAvatar
+              avatarPath={currentUserAvatar}
+              className="w-24 h-24 rounded-full border border-[var(--line)] shadow-sm shrink-0"
+              initialsClassName="bg-[rgba(95,112,255,0.08)] text-[#4658c6]"
+              label={currentUserName}
+            />
+            <div className="flex flex-col gap-2 items-center sm:items-start text-center sm:text-left mt-2">
+              <h2 className="text-[1.65rem] font-medium text-[var(--ink)] m-0">{currentUserName}</h2>
+              <span className="info-chip bg-[rgba(95,112,255,0.08)] text-[#4658c6] border border-[#d2dff6] px-3 py-1 rounded-full text-[0.7rem] font-medium uppercase tracking-widest inline-block mt-1">
+                Verified Seller
+              </span>
+              <p className="text-[var(--muted)] text-sm m-0 mt-1">{user?.email}</p>
+            </div>
+          </div>
+
+          <div className="border-t border-[var(--line)] pt-6 mt-2">
+            <h3 className="text-[1.1rem] font-medium mb-3 text-[var(--ink)]">About the Seller</h3>
+            <p className="text-[#5c6c82] leading-7 text-[0.95rem]">
+              This seller hasn't added a biography yet. They specialize in curated antique acquisitions. Contact them directly for more provenance information on any of their active listings.
+            </p>
+          </div>
+
+          <div className="border-t border-[var(--line)] pt-6 mt-2 flex flex-col sm:flex-row gap-8">
+            <div>
+              <p className="text-[0.7rem] uppercase tracking-[0.15em] text-[#8c9bab] mb-1.5 font-medium">Member Since</p>
+              <p className="font-medium text-[var(--ink)] text-[0.95rem]">
+                2024
+              </p>
+            </div>
+            <div>
+              <p className="text-[0.7rem] uppercase tracking-[0.15em] text-[#8c9bab] mb-1.5 font-medium">Marketplace Status</p>
+              <div className="flex items-center gap-2">
+                <span className="w-2 h-2 rounded-full bg-emerald-500 block"></span>
+                <p className="font-medium text-[var(--ink)] text-[0.95rem]">Active & Listing</p>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div className="w-full md:w-80 flex flex-col gap-4">
+          <div className="panel-card shadow-sm border border-[var(--line)] p-6 bg-[var(--surface-soft)]" style={{ borderRadius: '1.25rem' }}>
+            <h3 className="text-[1.05rem] font-medium mb-2 text-[var(--ink)]">Account Settings</h3>
+            <p className="text-sm text-[#5c6c82] mb-6 leading-relaxed">
+              Need to update your password, email, or profile picture?
+            </p>
+            <Link to="/account" className="solid-button w-full justify-center !py-2.5 shadow-sm text-sm" style={{ borderRadius: '0.85rem' }}>
+              Edit Account Settings
+            </Link>
+          </div>
+        </div>
+      </div>
+    </SellerLayout>
   )
 }

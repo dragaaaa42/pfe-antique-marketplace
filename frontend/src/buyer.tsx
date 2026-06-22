@@ -87,15 +87,17 @@ function BuyerGate({ children }: { children: ReactNode }) {
 }
 
 function BuyerLayout({
+  children,
   title,
   description,
-  shellBodyClassName = '',
-  children,
+  shellBodyClassName,
+  fullWidth,
 }: {
+  children: ReactNode
   title: string
   description: string
   shellBodyClassName?: string
-  children: ReactNode
+  fullWidth?: boolean
 }) {
   const { user, logout } = useAuth()
   const currentUserName = currentUserDisplayName(user, 'Collector')
@@ -133,20 +135,22 @@ function BuyerLayout({
   }, [])
 
   return (
-    <main className="dashboard-page dashboard-page--workspace">
+    <main className={`dashboard-page dashboard-page--workspace ${fullWidth ? 'dashboard-page--full' : ''}`}>
       <aside className="dashboard-rail dashboard-rail--workspace">
-        <div className="dashboard-user dashboard-user--workspace">
-          <UserAvatar
-            avatarPath={currentUserAvatar}
-            className="dashboard-avatar-frame"
-            initialsClassName="text-lg font-semibold uppercase tracking-[0.16em] text-white"
-            label={currentUserName}
-          />
-          <div>
-            <strong>{currentUserName}</strong>
-            <span className="dashboard-role-chip">{user?.role}</span>
+        <div className="dashboard-user dashboard-user--workspace flex flex-col gap-3 p-4" style={{ padding: '1.25rem' }}>
+          <div className="flex items-center gap-3">
+            <UserAvatar
+              avatarPath={currentUserAvatar}
+              className="w-12 h-12 rounded-xl overflow-hidden shrink-0 shadow-md"
+              initialsClassName="text-base font-semibold uppercase tracking-[0.16em] text-white"
+              label={currentUserName}
+            />
+            <div className="flex flex-col items-start min-w-0">
+              <strong className="text-white text-base truncate w-full leading-tight m-0">{currentUserName}</strong>
+              <span className="inline-flex mt-1 items-center rounded-full bg-[rgba(255,255,255,0.12)] px-2 py-0.5 text-[0.65rem] uppercase tracking-wider text-[rgba(236,241,255,0.94)]">{user?.role}</span>
+            </div>
           </div>
-          <p>{description}</p>
+          <p className="text-[0.8rem] text-[rgba(226,233,255,0.72)] leading-relaxed m-0 mt-1">{description}</p>
         </div>
         <nav className="dashboard-nav dashboard-nav--workspace" aria-label="Buyer navigation">
           <NavLink end to="/collector">
@@ -161,28 +165,49 @@ function BuyerLayout({
           </NavLink>
           <NavLink to="/orders">Orders</NavLink>
           <NavLink to="/account">Profile</NavLink>
-          <NavLink end to="/">Catalogue</NavLink>
         </nav>
         <div className="dashboard-rail-footer">
-          <Link className="dashboard-cta-button" to="/collector/messages">
-            Open inbox
+          <Link className="dashboard-cta-button" to="/">
+            Continue browsing
           </Link>
         </div>
       </aside>
       <section className="dashboard-content dashboard-content--workspace">
-        <div className="dashboard-header dashboard-header--workspace flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
-          <div>
-            <p className="eyebrow">Buyer workspace</p>
-            <h1>{title}</h1>
-            <p className="dashboard-header-copy">Track collection activity, seller replies, saved pieces, and checkout flow from one polished collector room.</p>
-          </div>
-          <div className="dashboard-header-actions flex flex-wrap items-center gap-3">
-            <Link className="ghost-button" to="/">
-              Back to catalogue
-            </Link>
-            <button className="ghost-button" onClick={logout} type="button">
+        <div className="dashboard-header dashboard-header--workspace flex flex-col gap-4 p-5 rounded-2xl bg-white shadow-[0_4px_20px_rgba(20,30,54,0.03)] border border-[rgba(214,226,242,0.92)] mb-2 relative">
+          <div className="flex items-start justify-between gap-4 pr-[80px]">
+            <div className="flex flex-col gap-1.5">
+              <div className="flex items-center gap-3">
+                <h1 className="text-2xl font-bold text-[#1a2035] m-0">{title}</h1>
+                <span className="inline-flex items-center bg-[rgba(95,112,255,0.08)] text-[#4658c6] border border-[rgba(95,112,255,0.15)] px-2 py-0.5 rounded-full text-xs font-medium capitalize">
+                  {user?.role} Account
+                </span>
+              </div>
+              <p className="text-sm text-[#5c6c82] max-w-xl m-0 leading-relaxed">
+                {description || "Track collection activity, seller replies, saved pieces, and checkout flow from one polished collector room."}
+              </p>
+            </div>
+            
+            <button className="ghost-button" style={{ position: 'absolute', right: '1.25rem', top: '1.25rem', minHeight: '2.2rem', padding: '0 0.8rem', fontSize: '0.85rem', color: '#d63939', borderRadius: '0.5rem' }} onClick={logout} type="button">
               Log out
             </button>
+          </div>
+          
+          <div className="flex flex-wrap items-center gap-2 pt-3 border-t border-[rgba(0,0,0,0.04)] mt-1">
+            <Link to="/wishlist" className="flex items-center gap-2 px-3 py-1.5 rounded-lg bg-[var(--surface-soft)] border border-[var(--line)] hover:bg-white hover:shadow-md hover:-translate-y-0.5 transition-all text-sm text-[#1a2035] font-medium group">
+              <span className="opacity-70 group-hover:opacity-100 transition-opacity">⭐</span> Wishlist
+            </Link>
+            <Link to="/cart" className="flex items-center gap-2 px-3 py-1.5 rounded-lg bg-[var(--surface-soft)] border border-[var(--line)] hover:bg-white hover:shadow-md hover:-translate-y-0.5 transition-all text-sm text-[#1a2035] font-medium group">
+              <span className="opacity-70 group-hover:opacity-100 transition-opacity">🛒</span> Cart
+            </Link>
+            <Link to="/orders" className="flex items-center gap-2 px-3 py-1.5 rounded-lg bg-[var(--surface-soft)] border border-[var(--line)] hover:bg-white hover:shadow-md hover:-translate-y-0.5 transition-all text-sm text-[#1a2035] font-medium group">
+              <span className="opacity-70 group-hover:opacity-100 transition-opacity">📦</span> Orders
+            </Link>
+            <Link to="/collector/messages" className="flex items-center gap-2 px-3 py-1.5 rounded-lg bg-[var(--surface-soft)] border border-[var(--line)] hover:bg-white hover:shadow-md hover:-translate-y-0.5 transition-all text-sm text-[#1a2035] font-medium group">
+              <span className="opacity-70 group-hover:opacity-100 transition-opacity">💬</span> Messages
+              {conversationStats.unread > 0 && (
+                <span className="bg-[#d63939] text-white text-[10px] font-bold px-1.5 py-0.5 rounded-full ml-1 leading-none">{conversationStats.unread}</span>
+              )}
+            </Link>
           </div>
         </div>
         <div className={`dashboard-shell-body ${shellBodyClassName}`.trim()}>{children}</div>
@@ -257,153 +282,196 @@ function CollectorDashboardPageBody() {
 
   return (
     <BuyerLayout
-      description="Track your saved objects, orders, and profile from one collector workspace."
-      title="Dashboard"
+      description="Track your saved objects, orders, and profile from one elegant collector workspace."
+      title="Collector Dashboard"
     >
-      <div className="panel-card">
-        <div className="panel-head">
-          <div>
-            <p className="eyebrow">Collector summary</p>
-            <h2>Workspace home</h2>
+      {loading && <p className="text-sm text-[#5c6c82]">Loading collector dashboard...</p>}
+      {error && <p className="error-message">{error}</p>}
+
+      {data && (
+        <div className="flex flex-col gap-6 animate-fade-in" style={{ animation: 'fadeIn 0.5s ease-out' }}>
+          <style>{`
+            @keyframes fadeIn {
+              from { opacity: 0; transform: translateY(10px); }
+              to { opacity: 1; transform: translateY(0); }
+            }
+          `}</style>
+
+          <div className="flex justify-between items-end mb-1">
+            <div>
+              <h2 className="text-xl font-semibold text-[var(--ink)] m-0">Workspace overview</h2>
+              <p className="text-sm text-[#5c6c82] mt-1 m-0">Welcome back, {user?.first_name || 'Collector'}. Here is your latest activity.</p>
+            </div>
+            <button className="ghost-button" style={{ minHeight: '2rem', padding: '0 0.8rem', fontSize: '0.85rem' }} onClick={() => void refresh()} type="button">
+              Refresh Data
+            </button>
           </div>
-          <button className="ghost-button" onClick={() => void refresh()} type="button">
-            Refresh
-          </button>
-        </div>
 
-        {loading && <p>Loading collector dashboard...</p>}
-        {error && <p className="error-message">{error}</p>}
-
-        {data && (
-          <>
-            <div className="metric-row">
-              <article>
-                <strong>{data.stats.wishlist_count}</strong>
-                <span>Wishlist items</span>
-              </article>
-              <article>
-                <strong>{data.stats.order_count}</strong>
-                <span>Orders</span>
-              </article>
-              <article>
-                <strong>{data.stats.paid_orders}</strong>
-                <span>Paid orders</span>
-              </article>
-              <article>
-                <strong>{data.stats.cart_count}</strong>
-                <span>Cart items</span>
-              </article>
+          {/* Stat Cards */}
+          <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
+            <div className="panel-card flex flex-col p-5 hover:shadow-lg transition-all duration-300 transform hover:-translate-y-1 bg-white cursor-default">
+              <div className="flex justify-between items-center mb-3">
+                <div className="w-10 h-10 rounded-full flex items-center justify-center bg-[rgba(95,112,255,0.1)] text-[#4658c6] text-xl">⭐</div>
+                <span className="text-2xl font-bold text-[#1a2035]">{data.stats.wishlist_count}</span>
+              </div>
+              <strong className="text-[#1a2035] text-sm">Wishlist items</strong>
+              <span className="text-xs text-[#5c6c82] mt-0.5">Saved for later</span>
             </div>
-
-            <div className="dashboard-grid">
-              <section className="panel-card dashboard-panel-span">
-                <div className="panel-head">
-                  <div>
-                    <p className="eyebrow">Recent activity</p>
-                    <h3>Saved and purchased</h3>
-                  </div>
-                  <Link className="text-link" to="/orders">
-                    View orders
-                  </Link>
-                </div>
-                <div className="order-list">
-                  {data.recent_activity.map((item, index) => (
-                    <article className="order-card" key={`${item.kind}-${item.label}-${index}`}>
-                      <div>
-                        <strong>{item.label}</strong>
-                        <p>{item.detail}</p>
-                      </div>
-                      <span>{item.kind}</span>
-                    </article>
-                  ))}
-                </div>
-              </section>
+            <div className="panel-card flex flex-col p-5 hover:shadow-lg transition-all duration-300 transform hover:-translate-y-1 bg-white cursor-default">
+              <div className="flex justify-between items-center mb-3">
+                <div className="w-10 h-10 rounded-full flex items-center justify-center bg-[rgba(95,112,255,0.1)] text-[#4658c6] text-xl">📦</div>
+                <span className="text-2xl font-bold text-[#1a2035]">{data.stats.order_count}</span>
+              </div>
+              <strong className="text-[#1a2035] text-sm">Total Orders</strong>
+              <span className="text-xs text-[#5c6c82] mt-0.5">All time purchases</span>
             </div>
-
-            <div className="dashboard-grid">
-              <section className="panel-card">
-                <div className="panel-head">
-                  <div>
-                    <p className="eyebrow">Wishlist summary</p>
-                    <h3>Recent saved pieces</h3>
-                  </div>
-                  <Link className="text-link" to="/wishlist">
-                    Open wishlist
-                  </Link>
-                </div>
-                <div className="manage-list">
-                  {data.wishlist_items.map((item) => (
-                    <article className="manage-card" key={item.id}>
-                      <MarketplaceImage
-                        alt={item.artifact_detail.title}
-                        src={resolveMarketplaceImage(item.artifact_detail)}
-                      />
-                      <div>
-                        <strong>{item.artifact_detail.title}</strong>
-                        <span>{item.artifact_detail.category_name ?? 'Uncategorized'}</span>
-                        <p>{formatPrice(item.artifact_detail.price)}</p>
-                      </div>
-                    </article>
-                  ))}
-                </div>
-              </section>
-
-              <section className="panel-card">
-                <div className="panel-head">
-                  <div>
-                    <p className="eyebrow">Orders summary</p>
-                    <h3>Recent purchases</h3>
-                  </div>
-                  <Link className="text-link" to="/orders">
-                    Open order history
-                  </Link>
-                </div>
-                <div className="order-list">
-                  {data.recent_orders.map((order) => (
-                    <article className="order-card" key={order.id}>
-                      <div>
-                        <strong>Order #{order.id}</strong>
-                        <p>{order.status}</p>
-                      </div>
-                      <div>
-                        <strong>{formatPrice(order.total_amount)}</strong>
-                        <span>{new Date(order.created_at).toLocaleDateString()}</span>
-                      </div>
-                    </article>
-                  ))}
-                </div>
-              </section>
+            <div className="panel-card flex flex-col p-5 hover:shadow-lg transition-all duration-300 transform hover:-translate-y-1 bg-white cursor-default">
+              <div className="flex justify-between items-center mb-3">
+                <div className="w-10 h-10 rounded-full flex items-center justify-center bg-[rgba(95,112,255,0.1)] text-[#4658c6] text-xl">💳</div>
+                <span className="text-2xl font-bold text-[#1a2035]">{data.stats.paid_orders}</span>
+              </div>
+              <strong className="text-[#1a2035] text-sm">Paid Orders</strong>
+              <span className="text-xs text-[#5c6c82] mt-0.5">Successfully completed</span>
             </div>
+            <div className="panel-card flex flex-col p-5 hover:shadow-lg transition-all duration-300 transform hover:-translate-y-1 bg-white cursor-default">
+              <div className="flex justify-between items-center mb-3">
+                <div className="w-10 h-10 rounded-full flex items-center justify-center bg-[rgba(95,112,255,0.1)] text-[#4658c6] text-xl">🛒</div>
+                <span className="text-2xl font-bold text-[#1a2035]">{data.stats.cart_count}</span>
+              </div>
+              <strong className="text-[#1a2035] text-sm">Cart items</strong>
+              <span className="text-xs text-[#5c6c82] mt-0.5">Pending checkout</span>
+            </div>
+          </div>
 
-            <div className="panel-card">
-              <div className="panel-head">
+          {/* Recent Activity */}
+          <section className="panel-card p-6">
+            <div className="flex justify-between items-end mb-4">
+              <div>
+                <p className="eyebrow mb-1">Recent Activity</p>
+                <h3 className="text-lg m-0">Your timeline</h3>
+              </div>
+            </div>
+            <div className="flex flex-col gap-3">
+              {data.recent_activity.length > 0 ? (
+                data.recent_activity.map((item, index) => (
+                  <article className="flex items-center justify-between p-4 border border-[var(--line)] rounded-xl hover:bg-[var(--surface-soft)] transition-colors" key={`${item.kind}-${item.label}-${index}`}>
+                    <div className="flex items-center gap-4">
+                      <div className="w-10 h-10 rounded-full flex items-center justify-center bg-[rgba(95,112,255,0.06)] border border-[rgba(95,112,255,0.12)] text-[#4658c6] text-lg flex-shrink-0">
+                        {item.kind === 'wishlist' ? '⭐' : item.kind === 'order' ? '📦' : '🛒'}
+                      </div>
+                      <div>
+                        <strong className="block text-[#1a2035] text-sm mb-0.5">{item.label}</strong>
+                        <p className="text-xs text-[#5c6c82] m-0">{item.detail}</p>
+                      </div>
+                    </div>
+                    <span className="text-[11px] font-medium px-3 py-1 bg-white rounded-full text-[#5c6c82] border border-[var(--line)] capitalize shadow-sm tracking-wider">{item.kind}</span>
+                  </article>
+                ))
+              ) : (
+                <div className="text-center p-8 border border-dashed rounded-xl border-[var(--line)] bg-[var(--surface-soft)]">
+                  <span className="text-3xl mb-3 block opacity-60">⏳</span>
+                  <h4 className="text-base mb-1 text-[#1a2035]">No recent activity</h4>
+                  <p className="text-[#5c6c82] text-sm m-0">Your latest saves and purchases will appear here.</p>
+                </div>
+              )}
+            </div>
+          </section>
+
+          {/* Grid for Wishlist and Orders Summary */}
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-6 items-stretch">
+            <section className="panel-card flex flex-col h-full p-6">
+              <div className="flex justify-between items-end mb-4">
                 <div>
-                  <p className="eyebrow">Quick links</p>
-                  <h3>Continue exploring</h3>
+                  <p className="eyebrow mb-1">Wishlist summary</p>
+                  <h3 className="text-lg m-0">Recent saved pieces</h3>
                 </div>
-                <span>{user?.role}</span>
+                <Link className="text-link text-sm font-medium" to="/wishlist">Open wishlist</Link>
               </div>
-              <div className="editor-actions">
-                <Link className="ghost-button" to="/wishlist">
-                  Wishlist
-                </Link>
-                <Link className="ghost-button" to="/collector/collections">
-                  Collections
-                </Link>
-                <Link className="ghost-button" to="/cart">
-                  Cart
-                </Link>
-                <Link className="ghost-button" to="/orders">
-                  Orders
-                </Link>
-                <Link className="solid-button" to="/account">
-                  Profile
-                </Link>
+              <div className="flex flex-col gap-3 flex-1">
+                {data.wishlist_items.length > 0 ? (
+                  data.wishlist_items.map((item) => (
+                    <article className="flex items-center gap-4 p-3 border border-[var(--line)] rounded-xl hover:shadow-md transition-all hover:bg-white bg-[var(--surface-soft)]" key={item.id}>
+                      <div className="w-16 h-16 rounded-lg overflow-hidden flex-shrink-0 border border-[var(--line)]">
+                        <MarketplaceImage alt={item.artifact_detail.title} src={resolveMarketplaceImage(item.artifact_detail)} />
+                      </div>
+                      <div className="flex-1 min-w-0">
+                        <strong className="block truncate text-[#1a2035] text-sm mb-0.5">{item.artifact_detail.title}</strong>
+                        <span className="block text-xs text-[#5c6c82] mb-1">{item.artifact_detail.category_name ?? 'Uncategorized'}</span>
+                        <p className="text-sm font-semibold text-[#4658c6] m-0">{formatPrice(item.artifact_detail.price)}</p>
+                      </div>
+                    </article>
+                  ))
+                ) : (
+                  <div className="flex-1 flex flex-col items-center justify-center p-6 border border-dashed rounded-xl border-[var(--line)] text-center bg-[var(--surface-soft)]">
+                     <span className="text-2xl mb-2 opacity-60">⭐</span>
+                     <strong className="block text-sm text-[#1a2035] mb-1">Empty Wishlist</strong>
+                     <p className="text-xs text-[#5c6c82] m-0 mb-3">No objects saved yet.</p>
+                     <Link className="ghost-button text-xs px-3 py-1.5 min-h-0 rounded-md border border-[var(--line)]" to="/">Browse catalogue</Link>
+                  </div>
+                )}
               </div>
+            </section>
+
+            <section className="panel-card flex flex-col h-full p-6">
+              <div className="flex justify-between items-end mb-4">
+                <div>
+                  <p className="eyebrow mb-1">Orders summary</p>
+                  <h3 className="text-lg m-0">Recent purchases</h3>
+                </div>
+                <Link className="text-link text-sm font-medium" to="/orders">Open order history</Link>
+              </div>
+              <div className="flex flex-col gap-3 flex-1">
+                {data.recent_orders.length > 0 ? (
+                  data.recent_orders.map((order) => (
+                    <article className="flex justify-between items-center p-4 border border-[var(--line)] rounded-xl hover:shadow-md transition-all hover:bg-white bg-[var(--surface-soft)]" key={order.id}>
+                      <div>
+                        <strong className="block text-[#1a2035] text-sm mb-1.5">Order #{order.id}</strong>
+                        <span className="info-chip" style={{ padding: '0.15rem 0.5rem', fontSize: '0.65rem' }}>{order.status}</span>
+                      </div>
+                      <div className="text-right">
+                        <strong className="block text-[#4658c6] text-sm mb-1">{formatPrice(order.total_amount)}</strong>
+                        <span className="text-xs text-[#5c6c82]">{new Date(order.created_at).toLocaleDateString()}</span>
+                      </div>
+                    </article>
+                  ))
+                ) : (
+                  <div className="flex-1 flex flex-col items-center justify-center p-6 border border-dashed rounded-xl border-[var(--line)] text-center bg-[var(--surface-soft)]">
+                    <span className="text-2xl mb-2 opacity-60">🛍️</span>
+                    <strong className="block text-sm text-[#1a2035] mb-1">No orders yet</strong>
+                    <p className="text-xs text-[#5c6c82] m-0 mb-3">You haven't made any purchases.</p>
+                    <Link className="ghost-button text-xs px-3 py-1.5 min-h-0 rounded-md border border-[var(--line)]" to="/">Find your first piece</Link>
+                  </div>
+                )}
+              </div>
+            </section>
+          </div>
+
+          {/* Continue collecting */}
+          <div className="panel-card p-6 mt-2">
+            <div className="mb-5">
+              <p className="eyebrow mb-1">Recommendations</p>
+              <h3 className="text-lg m-0">Continue collecting</h3>
             </div>
-          </>
-        )}
-      </div>
+            <div className="grid grid-cols-1 md:grid-cols-3 gap-5">
+              <Link className="flex flex-col items-center justify-center py-8 px-6 border border-[var(--line)] bg-[var(--surface-soft)] rounded-2xl hover:shadow-lg transition-all hover:-translate-y-1 hover:bg-white group" to="/wishlist">
+                <div className="w-14 h-14 rounded-full bg-blue-50 text-blue-600 flex items-center justify-center text-2xl mb-4 shadow-sm border border-blue-100 group-hover:scale-110 transition-transform">⭐</div>
+                <strong className="text-[#1a2035] text-base mb-1">View Wishlist</strong>
+                <span className="text-xs text-[#5c6c82] text-center">Review and manage your saved artifacts</span>
+              </Link>
+              <Link className="flex flex-col items-center justify-center py-8 px-6 border border-[var(--line)] bg-[var(--surface-soft)] rounded-2xl hover:shadow-lg transition-all hover:-translate-y-1 hover:bg-white group" to="/">
+                <div className="w-14 h-14 rounded-full bg-indigo-50 text-indigo-600 flex items-center justify-center text-2xl mb-4 shadow-sm border border-indigo-100 group-hover:scale-110 transition-transform">🏛️</div>
+                <strong className="text-[#1a2035] text-base mb-1">Browse Catalogue</strong>
+                <span className="text-xs text-[#5c6c82] text-center">Discover new rare objects and collections</span>
+              </Link>
+              <Link className="flex flex-col items-center justify-center py-8 px-6 border border-[var(--line)] bg-[var(--surface-soft)] rounded-2xl hover:shadow-lg transition-all hover:-translate-y-1 hover:bg-white group" to="/collector/messages">
+                <div className="w-14 h-14 rounded-full bg-purple-50 text-purple-600 flex items-center justify-center text-2xl mb-4 shadow-sm border border-purple-100 group-hover:scale-110 transition-transform">💬</div>
+                <strong className="text-[#1a2035] text-base mb-1">Your Messages</strong>
+                <span className="text-xs text-[#5c6c82] text-center">Follow up with sellers and negotiate</span>
+              </Link>
+            </div>
+          </div>
+        </div>
+      )}
     </BuyerLayout>
   )
 }
@@ -1007,6 +1075,7 @@ function CollectorMessagesPageBody() {
       description="Track seller replies in one collector inbox, with every conversation pinned to the exact artifact you asked about."
       shellBodyClassName="dashboard-shell-body--messages"
       title="Collector messages"
+      fullWidth={true}
     >
       <div className="flex h-full min-h-0 flex-col rounded-[2rem] border border-[#d9e4f2] bg-[linear-gradient(180deg,#ffffff_0%,#f7faff_100%)] p-4 shadow-[0_24px_70px_rgba(15,23,42,0.05)] sm:p-5">
         <div className="mb-5 flex flex-col gap-4 rounded-[1.8rem] border border-[#e4ecf6] bg-white px-5 py-5 lg:flex-row lg:items-center lg:justify-between">
