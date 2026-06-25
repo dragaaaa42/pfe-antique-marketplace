@@ -124,12 +124,36 @@ export type OrderRecord = {
   buyer: number
   buyer_email: string
   total_amount: string
-  status: 'pending' | 'paid' | 'failed' | 'cancelled'
+  status: 'pending' | 'paid' | 'failed' | 'cancelled' | 'pending_confirmation' | 'accepted' | 'rejected' | 'completed'
   created_at: string
   items: OrderItem[]
+  seller?: number
+  seller_email?: string
+  payment_method: 'card' | 'cod'
+  shipping_name?: string
+  shipping_phone?: string
+  shipping_city?: string
+  shipping_address?: string
+  shipping_notes?: string
 }
 
-export type AdminUserUpdatePayload = Partial<Pick<AdminUser, 'email' | 'first_name' | 'last_name' | 'is_active'>> & {
+export type CheckoutPayload = {
+  payment_method: 'card' | 'cod'
+  shipping_name: string
+  shipping_phone: string
+  shipping_city: string
+  shipping_address: string
+  shipping_notes?: string
+}
+
+export type DirectCheckoutPayload = CheckoutPayload & {
+  product_id: number
+  quantity: number
+}
+
+export type AdminUserUpdatePayload = Partial<
+  Pick<AdminUser, 'email' | 'first_name' | 'last_name' | 'is_active' | 'is_suspended' | 'is_verified' | 'is_deleted'>
+> & {
   role?: AdminUser['role']
 }
 
@@ -549,6 +573,11 @@ export async function updateAdminUser(id: number | string, payload: AdminUserUpd
   return response.data
 }
 
+export async function deleteAdminUser(id: number | string) {
+  const response = await api.delete(`/admin/users/${id}/`)
+  return response.data
+}
+
 export async function getAdminArtifacts(params?: AdminArtifactListParams) {
   const response = await api.get<Artifact[]>(`/admin/artifacts/${buildQueryString(params)}`)
   return response.data
@@ -675,8 +704,28 @@ export async function removeCartItem(id: number) {
   await api.delete(`/cart/${id}/`)
 }
 
-export async function checkoutCart() {
-  const response = await api.post<OrderRecord>('/orders/checkout/', {})
+export async function checkoutCart(payload?: CheckoutPayload) {
+  const response = await api.post<OrderRecord>('/orders/checkout/', payload)
+  return response.data
+}
+
+export async function directCheckout(payload: DirectCheckoutPayload) {
+  const response = await api.post<OrderRecord>('/orders/direct_checkout/', payload)
+  return response.data
+}
+
+export async function acceptSellerOrder(id: number | string) {
+  const response = await api.post<SellerOrderRecord>(`/seller/orders/${id}/accept/`, {})
+  return response.data
+}
+
+export async function rejectSellerOrder(id: number | string) {
+  const response = await api.post<SellerOrderRecord>(`/seller/orders/${id}/reject/`, {})
+  return response.data
+}
+
+export async function completeSellerOrder(id: number | string) {
+  const response = await api.post<SellerOrderRecord>(`/seller/orders/${id}/complete/`, {})
   return response.data
 }
 

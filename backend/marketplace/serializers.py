@@ -75,6 +75,9 @@ class AdminArtifactSerializer(ArtifactSerializer):
 
 class AdminUserSerializer(serializers.ModelSerializer):
     role = serializers.ChoiceField(source='profile.role', choices=UserProfile.Role.choices)
+    is_suspended = serializers.BooleanField(source='profile.is_suspended', required=False)
+    is_verified = serializers.BooleanField(source='profile.is_verified', required=False)
+    is_deleted = serializers.BooleanField(source='profile.is_deleted', required=False)
     profile_created_at = serializers.DateTimeField(source='profile.created_at', read_only=True)
 
     class Meta:
@@ -88,6 +91,9 @@ class AdminUserSerializer(serializers.ModelSerializer):
             'is_active',
             'date_joined',
             'role',
+            'is_suspended',
+            'is_verified',
+            'is_deleted',
             'profile_created_at',
         )
         read_only_fields = ('id', 'username', 'date_joined', 'profile_created_at')
@@ -101,16 +107,36 @@ class AdminUserSerializer(serializers.ModelSerializer):
     def update(self, instance, validated_data):
         profile_data = validated_data.pop('profile', {})
         role = profile_data.get('role')
+        is_suspended = profile_data.get('is_suspended')
+        is_verified = profile_data.get('is_verified')
+        is_deleted = profile_data.get('is_deleted')
         email = validated_data.get('email')
 
         if email:
             validated_data['username'] = email
 
         user = super().update(instance, validated_data)
+        profile = user.profile
+        save_fields = []
 
-        if role and getattr(user.profile, 'role', None) != role:
-            user.profile.role = role
-            user.profile.save(update_fields=['role'])
+        if role is not None and profile.role != role:
+            profile.role = role
+            save_fields.append('role')
+
+        if is_suspended is not None and profile.is_suspended != is_suspended:
+            profile.is_suspended = is_suspended
+            save_fields.append('is_suspended')
+
+        if is_verified is not None and profile.is_verified != is_verified:
+            profile.is_verified = is_verified
+            save_fields.append('is_verified')
+
+        if is_deleted is not None and profile.is_deleted != is_deleted:
+            profile.is_deleted = is_deleted
+            save_fields.append('is_deleted')
+
+        if save_fields:
+            profile.save(update_fields=save_fields)
 
         return user
 
@@ -211,12 +237,31 @@ class OrderItemSerializer(serializers.ModelSerializer):
 
 class OrderSerializer(serializers.ModelSerializer):
     buyer_email = serializers.EmailField(source='buyer.email', read_only=True)
+    buyer_first_name = serializers.CharField(source='buyer.first_name', read_only=True)
+    buyer_last_name = serializers.CharField(source='buyer.last_name', read_only=True)
     items = OrderItemSerializer(many=True, read_only=True)
 
     class Meta:
         model = Order
-        fields = ('id', 'buyer', 'buyer_email', 'total_amount', 'status', 'created_at', 'items')
-        read_only_fields = ('id', 'buyer', 'buyer_email', 'total_amount', 'status', 'created_at', 'items')
+        fields = (
+            'id',
+            'buyer',
+            'buyer_email',
+            'buyer_first_name',
+            'buyer_last_name',
+            'seller',
+            'total_amount',
+            'status',
+            'payment_method',
+            'shipping_name',
+            'shipping_phone',
+            'shipping_city',
+            'shipping_address',
+            'shipping_notes',
+            'created_at',
+            'items',
+        )
+        read_only_fields = fields
 
 
 class SellerOrderSerializer(serializers.ModelSerializer):
@@ -236,6 +281,12 @@ class SellerOrderSerializer(serializers.ModelSerializer):
             'buyer_last_name',
             'total_amount',
             'status',
+            'payment_method',
+            'shipping_name',
+            'shipping_phone',
+            'shipping_city',
+            'shipping_address',
+            'shipping_notes',
             'created_at',
             'items',
             'seller_revenue',

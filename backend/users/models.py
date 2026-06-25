@@ -19,6 +19,9 @@ class UserProfile(models.Model):
         default=Role.BUYER,
     )
     avatar_3d_path = models.CharField(max_length=255, blank=True)
+    is_suspended = models.BooleanField(default=False)
+    is_verified = models.BooleanField(default=False)
+    is_deleted = models.BooleanField(default=False)
     created_at = models.DateTimeField(auto_now_add=True)
 
     def __str__(self):

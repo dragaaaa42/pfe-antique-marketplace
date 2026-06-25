@@ -11,6 +11,7 @@ import {
   getAdminUsers,
   rejectAdminArtifact,
   updateAdminUser,
+  deleteAdminUser,
   getArtifact,
   updateAdminArtifact,
   getCategories,
@@ -80,7 +81,7 @@ function AdminLayout({
   const currentUserAvatar = currentUserAvatarPath(user)
 
   return (
-    <main className="dashboard-page dashboard-page--workspace">
+    <main className="dashboard-page dashboard-page--workspace admin-dashboard">
       <aside className="dashboard-rail dashboard-rail--workspace">
         <div className="dashboard-user dashboard-user--workspace flex flex-col gap-3 p-4" style={{ padding: '1.25rem' }}>
           <Link to="/account" className="flex items-center gap-3 hover:opacity-85 transition-opacity group">
@@ -109,10 +110,11 @@ function AdminLayout({
           <NavLink to="/admin/artifacts">Artifacts</NavLink>
           <NavLink to="/admin/audit">Audit trail</NavLink>
           <NavLink to="/account">Profile Settings</NavLink>
+          <NavLink end to="/">Back to catalogue</NavLink>
         </nav>
         <div className="dashboard-rail-footer">
-          <Link className="dashboard-cta-button animate-fade-in" style={{ borderRadius: '0.75rem' }} to="/admin/users">
-            Review users
+          <Link className="dashboard-cta-button" to="/admin">
+            Open workspace
           </Link>
         </div>
       </aside>
@@ -617,7 +619,13 @@ function AdminUsersBody() {
   const [active, setActive] = useState<'' | 'true' | 'false'>('')
   const [loading, setLoading] = useState(true)
   const [error, setError] = useState('')
-  const [message, setMessage] = useState('')
+  const [toast, setToast] = useState<{ type: 'success' | 'error'; text: string } | null>(null)
+  const [confirmModal, setConfirmModal] = useState<{
+    isOpen: boolean
+    title: string
+    message: string
+    onConfirm: () => void | Promise<void>
+  } | null>(null)
 
   async function refresh() {
     setLoading(true)
@@ -641,13 +649,82 @@ function AdminUsersBody() {
     void refresh()
   }, [search, role, active])
 
+  useEffect(() => {
+    if (toast) {
+      const timer = setTimeout(() => setToast(null), 3000)
+      return () => clearTimeout(timer)
+    }
+  }, [toast])
+
   async function toggleActive(user: AdminUser) {
     try {
       const updated = await updateAdminUser(user.id, { is_active: !user.is_active })
       setUsers((current) => current.map((item) => (item.id === updated.id ? updated : item)))
-      setMessage(`${updated.email} is now ${updated.is_active ? 'enabled' : 'disabled'}.`)
+      setToast({
+        type: 'success',
+        text: `Account for ${updated.email} is now ${updated.is_active ? 'enabled' : 'disabled'}.`
+      })
     } catch {
-      setMessage('Could not update this account right now.')
+      setToast({ type: 'error', text: 'Could not update active status.' })
+    }
+  }
+
+  async function toggleSuspend(user: AdminUser) {
+    const nextSuspended = !user.is_suspended
+    const perform = async () => {
+      try {
+        const updated = await updateAdminUser(user.id, { is_suspended: nextSuspended })
+        setUsers((current) => current.map((item) => (item.id === updated.id ? updated : item)))
+        setToast({
+          type: 'success',
+          text: `Account for ${updated.email} has been ${nextSuspended ? 'suspended' : 'unsuspended'}.`
+        })
+      } catch {
+        setToast({ type: 'error', text: 'Could not update suspension status.' })
+      }
+      setConfirmModal(null)
+    }
+
+    if (nextSuspended) {
+      setConfirmModal({
+        isOpen: true,
+        title: 'Confirm Suspension',
+        message: `Are you sure you want to suspend user ${user.email}? Suspended users will not be able to log in or access dashboards.`,
+        onConfirm: perform
+      })
+    } else {
+      void perform()
+    }
+  }
+
+  async function handleDelete(user: AdminUser) {
+    setConfirmModal({
+      isOpen: true,
+      title: 'Confirm Account Deactivation & Delete',
+      message: `Are you sure you want to delete ${user.email}? This will soft-delete and permanently deactivate the user account. They will be removed from all active listings.`,
+      onConfirm: async () => {
+        try {
+          await deleteAdminUser(user.id)
+          setUsers((current) => current.filter((item) => item.id !== user.id))
+          setToast({ type: 'success', text: `User ${user.email} has been soft-deleted and deactivated.` })
+        } catch {
+          setToast({ type: 'error', text: 'Could not soft-delete this user account.' })
+        }
+        setConfirmModal(null)
+      }
+    })
+  }
+
+  async function toggleVerify(user: AdminUser) {
+    try {
+      const updated = await updateAdminUser(user.id, { is_verified: !user.is_verified })
+      setUsers((current) => current.map((item) => (item.id === updated.id ? updated : item)))
+      setToast({
+        type: 'success',
+        text: `Seller ${updated.email} verification set to ${updated.is_verified ? 'Verified' : 'Unverified'}.`
+      })
+    } catch {
+      setToast({ type: 'error', text: 'Could not update seller verification status.' })
     }
   }
 
@@ -705,7 +782,6 @@ function AdminUsersBody() {
           </div>
         </form>
 
-        {message && <p className="success-message text-xs py-2 px-3 bg-emerald-50 text-emerald-700 border border-emerald-200 rounded-xl mb-4">{message}</p>}
         {loading && <p className="text-xs text-[#5c6c82] my-4">Loading users...</p>}
         {error && <p className="error-message">{error}</p>}
 
@@ -735,29 +811,63 @@ function AdminUsersBody() {
                     <td className="px-6 py-4 text-sm font-semibold text-[var(--ink)]">
                       {user.first_name || user.last_name
                         ? `${user.first_name} ${user.last_name}`.trim()
-                        : user.email}
+                        : (user.email || user.username || `User #${user.id}`)}
                     </td>
-                    <td className="px-6 py-4 text-sm text-[#5c6c82] font-medium">{user.email}</td>
+                    <td className="px-6 py-4 text-sm text-[#5c6c82] font-medium">{user.email || '—'}</td>
                     <td className="px-6 py-4 text-sm">
                       <span className={`info-chip ${roleColor} text-[10px] px-2.5 py-0.5 rounded-full font-semibold border`} style={{ padding: '0.15rem 0.5rem' }}>{user.role}</span>
                     </td>
                     <td className="px-6 py-4 text-sm">
-                      <span className={`info-chip ${user.is_active ? 'bg-emerald-50 text-emerald-700 border-emerald-200' : 'bg-rose-50 text-rose-700 border-rose-200'} text-[10px] px-2.5 py-0.5 rounded-full font-semibold border`} style={{ padding: '0.15rem 0.5rem' }}>
-                        {user.is_active ? 'Active' : 'Disabled'}
-                      </span>
+                      <div className="flex flex-col gap-1 items-start">
+                        {user.is_suspended ? (
+                          <span className="info-chip bg-amber-50 text-amber-700 border-amber-200 text-[10px] px-2.5 py-0.5 rounded-full font-semibold border">Suspended</span>
+                        ) : user.is_active ? (
+                          <span className="info-chip bg-emerald-50 text-emerald-700 border-emerald-200 text-[10px] px-2.5 py-0.5 rounded-full font-semibold border">Active</span>
+                        ) : (
+                          <span className="info-chip bg-rose-50 text-rose-700 border-rose-200 text-[10px] px-2.5 py-0.5 rounded-full font-semibold border">Disabled</span>
+                        )}
+                        {user.role === 'seller' && (
+                          <span className={`info-chip text-[9px] px-2 py-0.5 rounded-full font-semibold border ${user.is_verified ? 'bg-teal-50 text-teal-700 border-teal-200' : 'bg-slate-50 text-slate-400 border-slate-200'}`}>
+                            {user.is_verified ? 'Verified' : 'Unverified'}
+                          </span>
+                        )}
+                      </div>
                     </td>
                     <td className="px-6 py-4 text-sm text-[#5c6c82] font-medium">{formatDate(user.date_joined)}</td>
                     <td className="px-6 py-4 text-sm text-right">
-                      <div className="flex justify-end items-center gap-2">
-                        <Link className="ghost-button !text-[11px] !py-1 !px-2.5 hover:bg-slate-100 font-semibold" to={`/admin/users/${user.id}`}>
+                      <div className="flex justify-end items-center gap-1.5 flex-wrap max-w-[280px] ml-auto">
+                        <Link className="action-btn action-btn--details" to={`/admin/users/${user.id}`}>
                           Details
                         </Link>
                         <button
-                          className={`ghost-button !text-[11px] !py-1 !px-2.5 font-semibold ${user.is_active ? 'text-rose-600 border-rose-200 hover:bg-rose-50' : 'text-emerald-600 border-emerald-200 hover:bg-emerald-50'}`}
+                          className={`action-btn ${user.is_active ? 'action-btn--danger' : 'action-btn--success'}`}
                           onClick={() => toggleActive(user)}
                           type="button"
                         >
                           {user.is_active ? 'Disable' : 'Enable'}
+                        </button>
+                        <button
+                          className={`action-btn ${user.is_suspended ? 'action-btn--success' : 'action-btn--warning'}`}
+                          onClick={() => toggleSuspend(user)}
+                          type="button"
+                        >
+                          {user.is_suspended ? 'Unsuspend' : 'Suspend'}
+                        </button>
+                        {user.role === 'seller' && (
+                          <button
+                            className={`action-btn ${user.is_verified ? 'action-btn--warning' : 'action-btn--success'}`}
+                            onClick={() => toggleVerify(user)}
+                            type="button"
+                          >
+                            {user.is_verified ? 'Unverify' : 'Verify'}
+                          </button>
+                        )}
+                        <button
+                          className="action-btn action-btn--danger"
+                          onClick={() => handleDelete(user)}
+                          type="button"
+                        >
+                          Delete
                         </button>
                       </div>
                     </td>
@@ -768,6 +878,48 @@ function AdminUsersBody() {
           </table>
         </div>
       </div>
+
+      {/* Confirmation Modal */}
+      {confirmModal && confirmModal.isOpen && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/50 backdrop-blur-sm animate-fade-in">
+          <div className="bg-white border border-[var(--line)] rounded-2xl p-6 max-w-md w-full mx-4 shadow-xl text-left">
+            <h3 className="text-lg font-bold text-[var(--ink)] mb-2">{confirmModal.title}</h3>
+            <p className="text-sm text-[var(--muted)] mb-6">{confirmModal.message}</p>
+            <div className="flex justify-end gap-3">
+              <button
+                className="ghost-button !py-2 !px-4 border border-[var(--line)] hover:bg-slate-50 text-sm font-semibold"
+                style={{ borderRadius: '0.5rem' }}
+                onClick={() => setConfirmModal(null)}
+              >
+                Cancel
+              </button>
+              <button
+                className="solid-button !py-2 !px-4 bg-red-650 hover:bg-red-700 text-white text-sm font-semibold border-none"
+                style={{ borderRadius: '0.5rem' }}
+                onClick={() => {
+                  void confirmModal.onConfirm()
+                }}
+              >
+                Confirm Action
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* Success/Error Toast */}
+      {toast && (
+        <div className="fixed bottom-6 right-6 z-50 animate-fade-in">
+          <div className={`p-4 rounded-xl border shadow-lg flex items-center gap-2 ${
+            toast.type === 'success' 
+              ? 'bg-emerald-50 text-emerald-800 border-emerald-200' 
+              : 'bg-rose-50 text-rose-800 border-rose-200'
+          }`}>
+            <span className="text-lg">{toast.type === 'success' ? '✅' : '❌'}</span>
+            <span className="text-sm font-semibold">{toast.text}</span>
+          </div>
+        </div>
+      )}
     </AdminLayout>
   )
 }
@@ -778,7 +930,14 @@ function AdminUserDetailBody() {
   const [user, setUser] = useState<AdminUser | null>(null)
   const [loading, setLoading] = useState(true)
   const [saving, setSaving] = useState(false)
-  const [message, setMessage] = useState('')
+
+  const [toast, setToast] = useState<{ type: 'success' | 'error'; text: string } | null>(null)
+  const [confirmModal, setConfirmModal] = useState<{
+    isOpen: boolean;
+    title: string;
+    message: string;
+    onConfirm: () => void | Promise<void>;
+  } | null>(null)
 
   useEffect(() => {
     if (!id) return
@@ -810,12 +969,18 @@ function AdminUserDetailBody() {
     }
   }, [id])
 
+  useEffect(() => {
+    if (toast) {
+      const timer = setTimeout(() => setToast(null), 3000)
+      return () => clearTimeout(timer)
+    }
+  }, [toast])
+
   async function handleSubmit(event: FormEvent<HTMLFormElement>) {
     event.preventDefault()
     if (!user) return
 
     setSaving(true)
-    setMessage('')
 
     try {
       const updated = await updateAdminUser(user.id, {
@@ -824,14 +989,35 @@ function AdminUserDetailBody() {
         last_name: user.last_name,
         role: user.role,
         is_active: user.is_active,
+        is_suspended: user.is_suspended,
+        is_verified: user.is_verified,
       })
       setUser(updated)
-      setMessage('User profile updated.')
+      setToast({ type: 'success', text: 'User profile updated successfully.' })
     } catch {
-      setMessage('Unable to update this user right now.')
+      setToast({ type: 'error', text: 'Unable to update this user right now.' })
     } finally {
       setSaving(false)
     }
+  }
+
+  function handleDeleteClick() {
+    if (!user) return
+    setConfirmModal({
+      isOpen: true,
+      title: 'Confirm Account Deactivation & Delete',
+      message: `Are you sure you want to delete ${user.email}? This will soft-delete and permanently deactivate the user account. They will be logged out and cannot log back in.`,
+      onConfirm: async () => {
+        try {
+          await deleteAdminUser(user.id)
+          setToast({ type: 'success', text: `User ${user.email} has been deactivated and soft-deleted.` })
+          setTimeout(() => navigate('/admin/users'), 1500)
+        } catch {
+          setToast({ type: 'error', text: 'Could not delete this account right now.' })
+        }
+        setConfirmModal(null)
+      }
+    })
   }
 
   if (loading) {
@@ -911,7 +1097,7 @@ function AdminUserDetailBody() {
                   <option value="admin">Admin</option>
                 </select>
               </div>
-              <div className="flex flex-col gap-1.5 md:col-span-2">
+              <div className="flex flex-col gap-1.5">
                 <label className="text-xs font-semibold text-[var(--ink)]">Account status</label>
                 <select
                   className="text-sm px-3 py-2.5 border border-[var(--line)] rounded-xl bg-white focus:outline-none focus:ring-1 focus:ring-[#4658c6] transition-all"
@@ -924,21 +1110,54 @@ function AdminUserDetailBody() {
                   <option value="false">Disabled / Inactive</option>
                 </select>
               </div>
+              <div className="flex flex-col gap-1.5">
+                <label className="text-xs font-semibold text-[var(--ink)]">Suspension status</label>
+                <select
+                  className="text-sm px-3 py-2.5 border border-[var(--line)] rounded-xl bg-white focus:outline-none focus:ring-1 focus:ring-[#4658c6] transition-all"
+                  value={String(user.is_suspended ?? false)}
+                  onChange={(event) =>
+                    setUser((current) => (current ? { ...current, is_suspended: event.target.value === 'true' } : current))
+                  }
+                >
+                  <option value="false">Active / Unsuspended</option>
+                  <option value="true">Suspended</option>
+                </select>
+              </div>
+              {user.role === 'seller' && (
+                <div className="flex flex-col gap-1.5 md:col-span-2">
+                  <label className="text-xs font-semibold text-[var(--ink)]">Seller Verification</label>
+                  <select
+                    className="text-sm px-3 py-2.5 border border-[var(--line)] rounded-xl bg-white focus:outline-none focus:ring-1 focus:ring-[#4658c6] transition-all"
+                    value={String(user.is_verified ?? false)}
+                    onChange={(event) =>
+                      setUser((current) => (current ? { ...current, is_verified: event.target.value === 'true' } : current))
+                    }
+                  >
+                    <option value="false">Unverified Seller</option>
+                    <option value="true">Verified Seller</option>
+                  </select>
+                </div>
+              )}
             </div>
 
-            {message && (
-              <div className="text-xs py-2.5 px-3 bg-emerald-50 text-emerald-700 border border-emerald-200 rounded-xl">
-                {message}
-              </div>
-            )}
-
-            <div className="flex justify-end gap-3 mt-2 pt-4 border-t border-[var(--line)]">
-              <Link className="ghost-button !py-2.5 !px-5 shadow-sm text-sm border border-[var(--line)] hover:bg-slate-50" style={{ borderRadius: '0.75rem' }} to="/admin/users">
-                Cancel
-              </Link>
-              <button className="solid-button !py-2.5 !px-5 shadow-sm text-sm" style={{ borderRadius: '0.75rem' }} disabled={saving} type="submit">
-                {saving ? 'Saving...' : 'Save changes'}
+            <div className="flex justify-between items-center mt-2 pt-4 border-t border-[var(--line)]">
+              <button
+                className="ghost-button !py-2.5 !px-5 text-red-600 border-red-200 hover:bg-red-50 font-bold"
+                style={{ borderRadius: '0.75rem' }}
+                onClick={handleDeleteClick}
+                type="button"
+              >
+                Delete Account
               </button>
+
+              <div className="flex gap-3">
+                <Link className="ghost-button !py-2.5 !px-5 shadow-sm text-sm border border-[var(--line)] hover:bg-slate-50" style={{ borderRadius: '0.75rem' }} to="/admin/users">
+                  Cancel
+                </Link>
+                <button className="solid-button !py-2.5 !px-5 shadow-sm text-sm" style={{ borderRadius: '0.75rem' }} disabled={saving} type="submit">
+                  {saving ? 'Saving...' : 'Save changes'}
+                </button>
+              </div>
             </div>
           </form>
         </div>
@@ -966,9 +1185,21 @@ function AdminUserDetailBody() {
             </div>
             <div className="flex justify-between items-center py-1">
               <span className="text-xs text-[#8fa0b8] font-semibold uppercase tracking-wider">Status</span>
-              <span className={`info-chip text-[10px] px-2.5 py-0.5 rounded-full font-semibold border ${user.is_active ? 'bg-emerald-50 text-emerald-700 border-emerald-200' : 'bg-rose-50 text-rose-700 border-rose-200'}`}>
-                {user.is_active ? 'Active' : 'Disabled'}
-              </span>
+              <div className="flex gap-1">
+                {user.is_suspended && (
+                  <span className="info-chip text-[10px] px-2.5 py-0.5 rounded-full font-semibold border bg-amber-50 text-amber-700 border-amber-200">
+                    Suspended
+                  </span>
+                )}
+                <span className={`info-chip text-[10px] px-2.5 py-0.5 rounded-full font-semibold border ${user.is_active ? 'bg-emerald-50 text-emerald-700 border-emerald-200' : 'bg-rose-50 text-rose-700 border-rose-200'}`}>
+                  {user.is_active ? 'Active' : 'Disabled'}
+                </span>
+                {user.role === 'seller' && (
+                  <span className={`info-chip text-[10px] px-2.5 py-0.5 rounded-full font-semibold border ${user.is_verified ? 'bg-teal-50 text-teal-700 border-teal-200' : 'bg-slate-50 text-slate-400 border-slate-200'}`}>
+                    {user.is_verified ? 'Verified' : 'Unverified'}
+                  </span>
+                )}
+              </div>
             </div>
             <div className="flex justify-between items-center py-1">
               <span className="text-xs text-[#8fa0b8] font-semibold uppercase tracking-wider">Member Since</span>
@@ -977,6 +1208,48 @@ function AdminUserDetailBody() {
           </div>
         </div>
       </div>
+
+      {/* Confirmation Modal */}
+      {confirmModal && confirmModal.isOpen && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/50 backdrop-blur-sm animate-fade-in">
+          <div className="bg-white border border-[var(--line)] rounded-2xl p-6 max-w-md w-full mx-4 shadow-xl text-left">
+            <h3 className="text-lg font-bold text-[var(--ink)] mb-2">{confirmModal.title}</h3>
+            <p className="text-sm text-[var(--muted)] mb-6">{confirmModal.message}</p>
+            <div className="flex justify-end gap-3">
+              <button
+                className="ghost-button !py-2 !px-4 border border-[var(--line)] hover:bg-slate-50 text-sm font-semibold"
+                style={{ borderRadius: '0.5rem' }}
+                onClick={() => setConfirmModal(null)}
+              >
+                Cancel
+              </button>
+              <button
+                className="solid-button !py-2 !px-4 bg-red-650 hover:bg-red-700 text-white text-sm font-semibold border-none"
+                style={{ borderRadius: '0.5rem' }}
+                onClick={() => {
+                  void confirmModal.onConfirm()
+                }}
+              >
+                Confirm Action
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* Success/Error Toast */}
+      {toast && (
+        <div className="fixed bottom-6 right-6 z-50 animate-fade-in">
+          <div className={`p-4 rounded-xl border shadow-lg flex items-center gap-2 ${
+            toast.type === 'success' 
+              ? 'bg-emerald-50 text-emerald-800 border-emerald-200' 
+              : 'bg-rose-50 text-rose-800 border-rose-200'
+          }`}>
+            <span className="text-lg">{toast.type === 'success' ? '✅' : '❌'}</span>
+            <span className="text-sm font-semibold">{toast.text}</span>
+          </div>
+        </div>
+      )}
     </AdminLayout>
   )
 }

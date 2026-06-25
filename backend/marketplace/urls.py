@@ -51,6 +51,9 @@ urlpatterns = [
     path('collector/dashboard/', CollectorDashboardView.as_view(), name='collector-dashboard'),
     path('seller/orders/', SellerOrderViewSet.as_view({'get': 'list'}), name='seller-orders'),
     path('seller/orders/<int:pk>/', SellerOrderViewSet.as_view({'get': 'retrieve'}), name='seller-order-detail'),
+    path('seller/orders/<int:pk>/accept/', SellerOrderViewSet.as_view({'post': 'accept'}), name='seller-order-accept'),
+    path('seller/orders/<int:pk>/reject/', SellerOrderViewSet.as_view({'post': 'reject'}), name='seller-order-reject'),
+    path('seller/orders/<int:pk>/complete/', SellerOrderViewSet.as_view({'post': 'complete'}), name='seller-order-complete'),
     path('seller/', include(seller_router.urls)),
     path('artifact-images/<int:pk>/', ArtifactImageDeleteView.as_view(), name='artifact-image-delete'),
 ]

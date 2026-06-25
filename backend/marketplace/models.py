@@ -139,18 +139,43 @@ class Order(models.Model):
         PAID = 'paid', 'Paid'
         FAILED = 'failed', 'Failed'
         CANCELLED = 'cancelled', 'Cancelled'
+        PENDING_CONFIRMATION = 'pending_confirmation', 'Pending Seller Confirmation'
+        ACCEPTED = 'accepted', 'Accepted'
+        REJECTED = 'rejected', 'Rejected'
+        COMPLETED = 'completed', 'Completed'
+
+    class PaymentMethod(models.TextChoices):
+        CARD = 'card', 'Credit/Debit Card'
+        COD = 'cod', 'Cash on Delivery'
 
     buyer = models.ForeignKey(
         settings.AUTH_USER_MODEL,
         on_delete=models.CASCADE,
         related_name='orders',
     )
+    seller = models.ForeignKey(
+        settings.AUTH_USER_MODEL,
+        on_delete=models.SET_NULL,
+        related_name='received_orders',
+        null=True,
+        blank=True,
+    )
     total_amount = models.DecimalField(max_digits=10, decimal_places=2, default=0)
     status = models.CharField(
-        max_length=20,
+        max_length=30,
         choices=Status.choices,
         default=Status.PENDING,
     )
+    payment_method = models.CharField(
+        max_length=20,
+        choices=PaymentMethod.choices,
+        default=PaymentMethod.CARD,
+    )
+    shipping_name = models.CharField(max_length=255, blank=True, null=True)
+    shipping_phone = models.CharField(max_length=50, blank=True, null=True)
+    shipping_city = models.CharField(max_length=100, blank=True, null=True)
+    shipping_address = models.TextField(blank=True, null=True)
+    shipping_notes = models.TextField(blank=True, null=True)
     created_at = models.DateTimeField(auto_now_add=True)
 
     class Meta:
@@ -283,6 +308,10 @@ class ModerationAction(models.Model):
         USER_ROLE_CHANGED = 'user_role_changed', 'User role changed'
         USER_DISABLED = 'user_disabled', 'User disabled'
         USER_ENABLED = 'user_enabled', 'User enabled'
+        USER_SUSPENDED = 'user_suspended', 'User suspended'
+        USER_UNSUSPENDED = 'user_unsuspended', 'User unsuspended'
+        SELLER_VERIFIED = 'seller_verified', 'Seller verified'
+        SELLER_UNVERIFIED = 'seller_unverified', 'Seller unverified'
 
     admin = models.ForeignKey(
         settings.AUTH_USER_MODEL,

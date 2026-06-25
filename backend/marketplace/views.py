@@ -110,7 +110,12 @@ class ArtifactViewSet(viewsets.ModelViewSet):
 
     def _handle_gallery_images(self, artifact):
         from .models import ArtifactImage
-        deleted_ids = self.request.data.getlist('deleted_gallery_images')
+        if hasattr(self.request.data, 'getlist'):
+            deleted_ids = self.request.data.getlist('deleted_gallery_images')
+        else:
+            deleted_ids = self.request.data.get('deleted_gallery_images', [])
+            if not isinstance(deleted_ids, list):
+                deleted_ids = [deleted_ids] if deleted_ids is not None else []
         if deleted_ids:
             ArtifactImage.objects.filter(artifact=artifact, id__in=deleted_ids).delete()
             
@@ -248,7 +253,12 @@ class SellerArtifactViewSet(viewsets.ModelViewSet):
 
     def _handle_gallery_images(self, artifact):
         from .models import ArtifactImage
-        deleted_ids = self.request.data.getlist('deleted_gallery_images')
+        if hasattr(self.request.data, 'getlist'):
+            deleted_ids = self.request.data.getlist('deleted_gallery_images')
+        else:
+            deleted_ids = self.request.data.get('deleted_gallery_images', [])
+            if not isinstance(deleted_ids, list):
+                deleted_ids = [deleted_ids] if deleted_ids is not None else []
         if deleted_ids:
             ArtifactImage.objects.filter(artifact=artifact, id__in=deleted_ids).delete()
             
@@ -289,6 +299,41 @@ class SellerOrderViewSet(viewsets.ReadOnlyModelViewSet):
         context = super().get_serializer_context()
         context['seller_user'] = self.request.user
         return context
+
+    @action(detail=True, methods=['post'])
+    def accept(self, request, pk=None):
+        order = self.get_object()
+        if order.status != Order.Status.PENDING_CONFIRMATION:
+            raise ValidationError({'detail': 'Only orders pending confirmation can be accepted.'})
+        
+        with transaction.atomic():
+            order.status = Order.Status.ACCEPTED
+            order.save(update_fields=['status'])
+            for item in order.items.all():
+                item.artifact.status = Artifact.Status.SOLD
+                item.artifact.save(update_fields=['status'])
+
+        return Response(self.get_serializer(order).data)
+
+    @action(detail=True, methods=['post'])
+    def reject(self, request, pk=None):
+        order = self.get_object()
+        if order.status != Order.Status.PENDING_CONFIRMATION:
+            raise ValidationError({'detail': 'Only orders pending confirmation can be rejected.'})
+        
+        order.status = Order.Status.REJECTED
+        order.save(update_fields=['status'])
+        return Response(self.get_serializer(order).data)
+
+    @action(detail=True, methods=['post'])
+    def complete(self, request, pk=None):
+        order = self.get_object()
+        if order.status not in {Order.Status.ACCEPTED, Order.Status.PENDING_CONFIRMATION}:
+            raise ValidationError({'detail': 'Only accepted or pending orders can be completed.'})
+        
+        order.status = Order.Status.COMPLETED
+        order.save(update_fields=['status'])
+        return Response(self.get_serializer(order).data)
 
 
 class CollectorDashboardView(APIView):
@@ -366,6 +411,9 @@ class AdminDashboardView(APIView):
                     'total_artifacts': Artifact.objects.count(),
                     'total_galleries': Gallery.objects.count(),
                     'total_orders': Order.objects.count(),
+                    'pending_confirmation_orders': Order.objects.filter(status=Order.Status.PENDING_CONFIRMATION).count(),
+                    'accepted_orders': Order.objects.filter(status=Order.Status.ACCEPTED).count(),
+                    'completed_orders': Order.objects.filter(status=Order.Status.COMPLETED).count(),
                     'pending_artifacts': Artifact.objects.filter(status=Artifact.Status.PENDING).count(),
                     'published_artifacts': Artifact.objects.filter(status=Artifact.Status.APPROVED).count(),
                 },
@@ -380,10 +428,11 @@ class AdminDashboardView(APIView):
 class AdminUserViewSet(viewsets.ModelViewSet):
     serializer_class = AdminUserSerializer
     permission_classes = (IsAdminRole,)
-    http_method_names = ['get', 'patch', 'put', 'head', 'options']
+    http_method_names = ['get', 'patch', 'put', 'delete', 'head', 'options']
 
     def get_queryset(self):
-        queryset = User.objects.select_related('profile').order_by('email')
+        # Filter out soft-deleted users
+        queryset = User.objects.select_related('profile').filter(profile__is_deleted=False).order_by('email')
         search = self.request.query_params.get('search', '').strip()
         role = self.request.query_params.get('role', '').strip()
         active = self.request.query_params.get('is_active', '').strip().lower()
@@ -408,6 +457,9 @@ class AdminUserViewSet(viewsets.ModelViewSet):
         instance = serializer.instance
         previous_role = getattr(instance.profile, 'role', None)
         previous_active = instance.is_active
+        previous_suspended = getattr(instance.profile, 'is_suspended', False)
+        previous_verified = getattr(instance.profile, 'is_verified', False)
+
         user = serializer.save()
 
         if getattr(user.profile, 'role', None) != previous_role:
@@ -430,6 +482,48 @@ class AdminUserViewSet(viewsets.ModelViewSet):
                 user,
                 metadata={'from': previous_active, 'to': user.is_active},
             )
+
+        if getattr(user.profile, 'is_suspended', False) != previous_suspended:
+            action_type = (
+                ModerationAction.ActionType.USER_SUSPENDED
+                if user.profile.is_suspended
+                else ModerationAction.ActionType.USER_UNSUSPENDED
+            )
+            record_moderation_action(
+                self.request.user,
+                action_type,
+                user,
+                notes=f"User suspension status set to {user.profile.is_suspended}",
+            )
+
+        if getattr(user.profile, 'is_verified', False) != previous_verified:
+            action_type = (
+                ModerationAction.ActionType.SELLER_VERIFIED
+                if user.profile.is_verified
+                else ModerationAction.ActionType.SELLER_UNVERIFIED
+            )
+            record_moderation_action(
+                self.request.user,
+                action_type,
+                user,
+                notes=f"Seller verification status set to {user.profile.is_verified}",
+            )
+
+    def destroy(self, request, *args, **kwargs):
+        user = self.get_object()
+        # Soft delete: deactivate user and set is_deleted flag on profile
+        user.is_active = False
+        user.save(update_fields=['is_active'])
+        user.profile.is_deleted = True
+        user.profile.save(update_fields=['is_deleted'])
+
+        record_moderation_action(
+            request.user,
+            ModerationAction.ActionType.USER_DISABLED,
+            user,
+            notes='Soft-deleted / deactivated user account.'
+        )
+        return Response({'detail': 'User account has been soft-deleted and deactivated.'}, status=status.HTTP_200_OK)
 
 
 class AdminArtifactViewSet(viewsets.ReadOnlyModelViewSet):
@@ -620,13 +714,28 @@ class OrderViewSet(viewsets.ReadOnlyModelViewSet):
 
         self._validate_cart_items(cart_items)
 
+        payment_method = request.data.get('payment_method', 'card')
+        shipping_name = request.data.get('shipping_name')
+        shipping_phone = request.data.get('shipping_phone')
+        shipping_city = request.data.get('shipping_city')
+        shipping_address = request.data.get('shipping_address')
+        shipping_notes = request.data.get('shipping_notes')
+
         total_amount = Decimal('0.00')
+        first_seller = cart_items[0].artifact.seller if cart_items else None
 
         with transaction.atomic():
             order = Order.objects.create(
                 buyer=request.user,
+                seller=first_seller,
                 total_amount=Decimal('0.00'),
-                status=Order.Status.PENDING,
+                status=Order.Status.PENDING_CONFIRMATION if payment_method == 'cod' else Order.Status.PENDING,
+                payment_method=payment_method,
+                shipping_name=shipping_name,
+                shipping_phone=shipping_phone,
+                shipping_city=shipping_city,
+                shipping_address=shipping_address,
+                shipping_notes=shipping_notes,
             )
 
             for item in cart_items:
@@ -644,6 +753,55 @@ class OrderViewSet(viewsets.ReadOnlyModelViewSet):
             CartItem.objects.filter(user=request.user).delete()
 
         order.refresh_from_db()
+        return Response(self.get_serializer(order).data, status=status.HTTP_201_CREATED)
+
+    @action(detail=False, methods=['post'])
+    def direct_checkout(self, request):
+        product_id = request.data.get('product_id')
+        quantity = int(request.data.get('quantity', 1))
+        payment_method = request.data.get('payment_method', 'cod')
+        
+        shipping_name = request.data.get('shipping_name')
+        shipping_phone = request.data.get('shipping_phone')
+        shipping_city = request.data.get('shipping_city')
+        shipping_address = request.data.get('shipping_address')
+        shipping_notes = request.data.get('shipping_notes')
+
+        if not product_id:
+            raise ValidationError({'product_id': 'Product ID is required.'})
+
+        try:
+            artifact = Artifact.objects.get(pk=product_id)
+        except Artifact.DoesNotExist:
+            raise ValidationError({'product_id': 'Product not found.'})
+
+        if artifact.status != Artifact.Status.APPROVED:
+            raise ValidationError({'detail': 'This product is not available for purchase.'})
+
+        price = Decimal(artifact.price)
+        total_amount = price * quantity
+
+        with transaction.atomic():
+            order = Order.objects.create(
+                buyer=request.user,
+                seller=artifact.seller,
+                total_amount=total_amount,
+                status=Order.Status.PENDING_CONFIRMATION if payment_method == 'cod' else Order.Status.PENDING,
+                payment_method=payment_method,
+                shipping_name=shipping_name,
+                shipping_phone=shipping_phone,
+                shipping_city=shipping_city,
+                shipping_address=shipping_address,
+                shipping_notes=shipping_notes,
+            )
+
+            OrderItem.objects.create(
+                order=order,
+                artifact=artifact,
+                quantity=quantity,
+                price=price,
+            )
+
         return Response(self.get_serializer(order).data, status=status.HTTP_201_CREATED)
 
     @action(detail=True, methods=['post'])

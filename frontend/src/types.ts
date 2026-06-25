@@ -79,9 +79,17 @@ export type OrderRecord = {
   buyer: number
   buyer_email: string
   total_amount: string
-  status: 'pending' | 'paid' | 'failed' | 'cancelled'
+  status: 'pending' | 'paid' | 'failed' | 'cancelled' | 'pending_confirmation' | 'accepted' | 'rejected' | 'completed'
   created_at: string
   items: OrderItem[]
+  seller?: number
+  seller_email?: string
+  payment_method: 'card' | 'cod'
+  shipping_name?: string
+  shipping_phone?: string
+  shipping_city?: string
+  shipping_address?: string
+  shipping_notes?: string
 }
 
 export type UserProfileSummary = {
@@ -103,6 +111,9 @@ export type AdminUser = {
   is_active: boolean
   date_joined: string
   role: 'buyer' | 'seller' | 'admin'
+  is_suspended?: boolean
+  is_verified?: boolean
+  is_deleted?: boolean
   profile_created_at?: string
 }
 
@@ -114,6 +125,10 @@ export type ModerationActionType =
   | 'user_role_changed'
   | 'user_disabled'
   | 'user_enabled'
+  | 'user_suspended'
+  | 'user_unsuspended'
+  | 'seller_verified'
+  | 'seller_unverified'
 
 export type ModerationAction = {
   id: number
@@ -154,10 +169,16 @@ export type SellerOrderRecord = {
   buyer_first_name: string
   buyer_last_name: string
   total_amount: string
-  status: 'pending' | 'paid' | 'failed' | 'cancelled'
+  status: 'pending' | 'paid' | 'failed' | 'cancelled' | 'pending_confirmation' | 'accepted' | 'rejected' | 'completed'
   created_at: string
   items: OrderItem[]
   seller_revenue: string
+  payment_method: 'card' | 'cod'
+  shipping_name?: string
+  shipping_phone?: string
+  shipping_city?: string
+  shipping_address?: string
+  shipping_notes?: string
 }
 
 export type CollectorDashboardSummary = {
@@ -185,6 +206,9 @@ export type AdminDashboardSummary = {
     total_artifacts: number
     total_galleries: number
     total_orders: number
+    pending_confirmation_orders?: number
+    accepted_orders?: number
+    completed_orders?: number
     pending_artifacts: number
     published_artifacts: number
   }

@@ -1,0 +1,29 @@
+# Python bytecode / cache
+__pycache__/
+*.py[cod]
+*$py.class
+
+# Log files
+*.log
+*.err
+backend.log
+backend.err
+frontend.log
+frontend.err
+
+# Environments
+backend/venv/
+.venv/
+env/
+venv/
+ENV/
+
+# Node modules
+node_modules/
+frontend/node_modules/
+frontend/dist/
+frontend/test-results/
+
+# OS files
+.DS_Store
+Thumbs.db

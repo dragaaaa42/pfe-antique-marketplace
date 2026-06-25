@@ -85,7 +85,7 @@ function AccountPageBody() {
       links.unshift({ to: '/admin', label: 'Admin dashboard' })
       links.push({ to: '/admin/users', label: 'Users' })
       links.push({ to: '/admin/artifacts', label: 'Artifacts' })
-      links.push({ to: '/admin/galleries', label: 'Galleries' })
+      links.push({ to: '/admin/audit', label: 'Audit trail' })
     }
 
     links.push({ to: '/', label: 'Back to catalogue' })

@@ -1,13 +1,12 @@
 import { useEffect, useState } from 'react'
 import { Link, useNavigate, useParams } from 'react-router-dom'
-import { ArrowUpRight, Check, ChevronLeft, ChevronRight, Heart, MessageCircle, ShoppingBag, ShoppingCart, Star } from 'lucide-react'
+import { ArrowUpRight, Check, ChevronLeft, ChevronRight, Heart, MessageCircle, ShoppingBag, ShoppingCart, Star, X } from 'lucide-react'
 import { AnimatePresence, motion, useReducedMotion } from 'motion/react'
 import './ArtifactDetailPage.css'
 import {
   addCartItem,
   addWishlistItem,
   createConversation,
-  demoArtifacts,
   getArtifact,
   getArtifacts,
   getCart,
@@ -16,8 +15,10 @@ import {
   removeWishlistItem,
   approveAdminArtifact,
   rejectAdminArtifact,
+  directCheckout,
 } from './api'
 import { useAuth } from './auth'
+import { getDashboardPathForRole, getWorkspaceLabelForRole } from './roleRouting'
 import { MarketplaceImage } from './components/MarketplaceImage'
 import { resolveMarketplaceImage } from './marketplaceImages'
 import type { Artifact } from './types'
@@ -104,10 +105,9 @@ export function ArtifactDetailPage() {
   const { user } = useAuth()
 
   /* ── State ─────────────────────────────────────────────────── */
-  const [artifact, setArtifact] = useState<Artifact | undefined>(() =>
-    demoArtifacts.find((item) => String(item.id) === id),
-  )
-  const [catalogArtifacts, setCatalogArtifacts] = useState<Artifact[]>(demoArtifacts)
+  const [artifact, setArtifact] = useState<Artifact | undefined>(undefined)
+  const [catalogArtifacts, setCatalogArtifacts] = useState<Artifact[]>([])
+  const [loading, setLoading] = useState(true)
   const [selectedImageIndex, setSelectedImageIndex] = useState(0)
   const [wishlistItemId, setWishlistItemId] = useState<number | null>(null)
   const [cartQuantity, setCartQuantity] = useState(0)
@@ -116,22 +116,35 @@ export function ArtifactDetailPage() {
   const [reviewIndex, setReviewIndex] = useState(0)
   const [reviewDir, setReviewDir] = useState(1)
 
-
+  /* ── Checkout State ────────────────────────────────────────── */
+  const [isCheckoutOpen, setIsCheckoutOpen] = useState(false)
+  const [checkoutForm, setCheckoutForm] = useState({
+    fullName: '',
+    phone: '',
+    city: '',
+    address: '',
+    notes: '',
+    quantity: 1,
+  })
+  const [checkoutMessage, setCheckoutMessage] = useState('')
 
   /* ── Data Loading ──────────────────────────────────────────── */
   useEffect(() => {
     if (!id) return
+    setLoading(true)
     getArtifact(id)
-      .then(setArtifact)
+      .then((art) => {
+        setArtifact(art)
+        setLoading(false)
+      })
       .catch(() => {
-        setArtifact(demoArtifacts.find((item) => String(item.id) === id))
+        setArtifact(undefined)
+        setLoading(false)
       })
 
     getArtifacts()
       .then((items) => {
-        if (items.length > 0) {
-          setCatalogArtifacts(items)
-        }
+        setCatalogArtifacts(items)
       })
       .catch(() => undefined)
   }, [id])
@@ -228,6 +241,7 @@ export function ArtifactDetailPage() {
     }
   }
 
+
   async function openSellerThread() {
     if (!artifact) return
     if (!requireBuyer(`/artifacts/${artifact.id}`)) return
@@ -298,6 +312,21 @@ export function ArtifactDetailPage() {
 
 
 
+  /* ── Loading State ─────────────────────────────────────────── */
+  if (loading) {
+    return (
+      <div style={{ display: 'flex', justifyContent: 'center', alignItems: 'center', height: '100vh', background: '#0a0a0a', color: '#fff', fontFamily: 'sans-serif' }}>
+        <div style={{ textAlign: 'center' }}>
+          <div style={{ border: '4px solid rgba(255,255,255,0.1)', width: '36px', height: '36px', borderRadius: '50%', borderLeftColor: '#fff', animation: 'spin 1s linear infinite', margin: '0 auto 15px' }} />
+          <div>Loading details...</div>
+          <style>{`
+            @keyframes spin { 0% { transform: rotate(0deg); } 100% { transform: rotate(360deg); } }
+          `}</style>
+        </div>
+      </div>
+    )
+  }
+
   /* ── Empty State ───────────────────────────────────────────── */
   if (!artifact) {
     return (
@@ -323,6 +352,8 @@ export function ArtifactDetailPage() {
   const galleryImages = [mainImage, ...extraImages].filter(Boolean).slice(0, 4)
   const selectedImage = galleryImages[selectedImageIndex] ?? galleryImages[0]
   const sellerName = artifact.seller_email ? artifact.seller_email.split('@')[0] : 'Verified seller'
+  const dashboardPath = user ? getDashboardPathForRole(user.role) : '/login'
+  const dashboardLabel = user ? getWorkspaceLabelForRole(user.role) : 'Sign in'
 
   /* ── Reviews Carousel Logic ────────────────────────────────── */
   const visibleReviews = [
@@ -587,6 +618,27 @@ export function ArtifactDetailPage() {
                       {cartQuantity > 0 ? `Add one more (${cartQuantity})` : 'Add to Cart'}
                     </motion.button>
 
+                    <motion.button
+                      className="ad-btn ad-btn--checkout ad-btn--full"
+                      onClick={() => {
+                        setCheckoutForm({
+                          fullName: '',
+                          phone: '',
+                          city: '',
+                          address: '',
+                          notes: '',
+                          quantity: 1,
+                        })
+                        setCheckoutMessage('')
+                        setIsCheckoutOpen(true)
+                      }}
+                      type="button"
+                      whileHover={{ scale: 1.01 }}
+                      whileTap={{ scale: 0.98 }}
+                    >
+                      Buy Now / Checkout
+                    </motion.button>
+
                     <div className="ad-cta-row">
                       <motion.button
                         className={`ad-btn ad-btn--secondary ${wishlistItemId ? 'is-active' : ''}`}
@@ -784,6 +836,282 @@ export function ArtifactDetailPage() {
           </div>
         </div>
       </section>
+
+      {/* ═══ Secure Checkout Modal ═══ */}
+      <AnimatePresence>
+        {isCheckoutOpen && (
+          <motion.div
+            className="checkout-modal-backdrop"
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            exit={{ opacity: 0 }}
+            onClick={() => setIsCheckoutOpen(false)}
+          >
+            <motion.div
+              className="checkout-modal-content"
+              initial={{ opacity: 0, y: 30, scale: 0.98 }}
+              animate={{ opacity: 1, y: 0, scale: 1 }}
+              exit={{ opacity: 0, y: 30, scale: 0.98 }}
+              transition={{ duration: 0.35, ease: [0.2, 0.8, 0.2, 1] }}
+              onClick={(e) => e.stopPropagation()}
+            >
+              <div className="checkout-modal-header">
+                <h2>Secure Checkout</h2>
+                <button
+                  className="checkout-modal-close"
+                  onClick={() => setIsCheckoutOpen(false)}
+                  aria-label="Close checkout"
+                >
+                  <X size={20} />
+                </button>
+              </div>
+
+              <div className="checkout-modal-body">
+                <div className="checkout-product-summary">
+                  <MarketplaceImage
+                    alt={artifact.title}
+                    className="checkout-product-img"
+                    src={selectedImage}
+                  />
+                  <div className="checkout-product-info">
+                    <h3 className="checkout-product-title">{artifact.title}</h3>
+                    <p className="checkout-product-price">
+                      {formatPrice(artifact.price)}
+                    </p>
+                  </div>
+                </div>
+
+                <form
+                  className="checkout-form"
+                  onSubmit={async (e) => {
+                    e.preventDefault()
+                    if (!requireBuyer()) return
+                    setCheckoutMessage('Processing your order...')
+                    try {
+                      await directCheckout({
+                        product_id: artifact.id,
+                        quantity: checkoutForm.quantity,
+                        payment_method: 'cod',
+                        shipping_name: checkoutForm.fullName,
+                        shipping_phone: checkoutForm.phone,
+                        shipping_city: checkoutForm.city,
+                        shipping_address: checkoutForm.address,
+                        shipping_notes: checkoutForm.notes,
+                      })
+                      setCheckoutMessage('Order confirmed! Waiting for seller confirmation.')
+                    } catch (error: any) {
+                      let errDetail = 'Checkout failed. Please try again.'
+                      if (error?.response?.data) {
+                        errDetail = JSON.stringify(error.response.data)
+                      }
+                      setCheckoutMessage(errDetail)
+                    }
+                  }}
+                >
+                  <div className="checkout-input-group">
+                    <label htmlFor="checkout-name">Full Name</label>
+                    <input
+                      id="checkout-name"
+                      className="checkout-input"
+                      type="text"
+                      required
+                      placeholder="Jane Doe"
+                      value={checkoutForm.fullName}
+                      onChange={(e) =>
+                        setCheckoutForm({ ...checkoutForm, fullName: e.target.value })
+                      }
+                    />
+                  </div>
+
+                  <div className="checkout-input-group">
+                    <label htmlFor="checkout-phone">Phone Number</label>
+                    <input
+                      id="checkout-phone"
+                      className="checkout-input"
+                      type="tel"
+                      required
+                      placeholder="+212 600-000000"
+                      value={checkoutForm.phone}
+                      onChange={(e) =>
+                        setCheckoutForm({ ...checkoutForm, phone: e.target.value })
+                      }
+                    />
+                  </div>
+
+                  <div className="checkout-form-row">
+                    <div className="checkout-input-group">
+                      <label htmlFor="checkout-city">City</label>
+                      <input
+                        id="checkout-city"
+                        className="checkout-input"
+                        type="text"
+                        required
+                        placeholder="Rabat"
+                        value={checkoutForm.city}
+                        onChange={(e) =>
+                          setCheckoutForm({ ...checkoutForm, city: e.target.value })
+                        }
+                      />
+                    </div>
+
+                    <div className="checkout-input-group">
+                      <label htmlFor="checkout-qty">Quantity</label>
+                      <div className="checkout-quantity-selector">
+                        <button
+                          type="button"
+                          className="checkout-qty-btn"
+                          onClick={() =>
+                            setCheckoutForm({
+                              ...checkoutForm,
+                              quantity: Math.max(1, checkoutForm.quantity - 1),
+                            })
+                          }
+                        >
+                          -
+                        </button>
+                        <span className="checkout-qty-value">
+                          {checkoutForm.quantity}
+                        </span>
+                        <button
+                          type="button"
+                          className="checkout-qty-btn"
+                          onClick={() =>
+                            setCheckoutForm({
+                              ...checkoutForm,
+                              quantity: checkoutForm.quantity + 1,
+                            })
+                          }
+                        >
+                          +
+                        </button>
+                      </div>
+                    </div>
+                  </div>
+
+                  <div className="checkout-input-group">
+                    <label htmlFor="checkout-address">Full Address</label>
+                    <input
+                      id="checkout-address"
+                      className="checkout-input"
+                      type="text"
+                      required
+                      placeholder="123 Avenue Mohammed V"
+                      value={checkoutForm.address}
+                      onChange={(e) =>
+                        setCheckoutForm({ ...checkoutForm, address: e.target.value })
+                      }
+                    />
+                  </div>
+
+                  <div className="checkout-input-group">
+                    <label htmlFor="checkout-notes">Delivery Notes</label>
+                    <textarea
+                      id="checkout-notes"
+                      className="checkout-textarea"
+                      placeholder="Special instructions for white-glove packaging or delivery schedule..."
+                      value={checkoutForm.notes}
+                      onChange={(e) =>
+                        setCheckoutForm({ ...checkoutForm, notes: e.target.value })
+                      }
+                    />
+                  </div>
+
+                  <div className="checkout-payment-method">
+                    <div className="checkout-payment-label">
+                      <span>Payment Method</span>
+                    </div>
+                    <span className="checkout-payment-badge">Cash on Delivery</span>
+                  </div>
+
+                  {checkoutMessage && (
+                    <div className="checkout-message-box">
+                      <p>{checkoutMessage}</p>
+                      {checkoutMessage.includes('Order confirmed') && (
+                        <div className="checkout-success-actions" style={{ marginTop: '1rem', display: 'flex', gap: '0.5rem', flexDirection: 'column' }}>
+                          <Link to="/orders" className="checkout-submit-btn" style={{ textAlign: 'center', textDecoration: 'none' }}>
+                            View My Orders
+                          </Link>
+                          <button
+                            type="button"
+                            className="ad-btn ad-btn--secondary ad-btn--full"
+                            onClick={() => setIsCheckoutOpen(false)}
+                          >
+                            Continue Shopping
+                          </button>
+                        </div>
+                      )}
+                    </div>
+                  )}
+
+                  {!checkoutMessage.includes('Order confirmed') && (
+                    <button type="submit" className="checkout-submit-btn" disabled={checkoutMessage === 'Processing your order...'}>
+                      {checkoutMessage === 'Processing your order...' ? 'Processing...' : 'Confirm Purchase'}
+                    </button>
+                  )}
+                </form>
+              </div>
+            </motion.div>
+          </motion.div>
+        )}
+      </AnimatePresence>
+
+      {/* ═══ Site Footer ═══ */}
+      <footer className="atlas-site-footer" aria-label="Artisan's Echo footer">
+        <div className="atlas-site-footer-inner">
+          <div className="atlas-site-footer-grid">
+            <div className="footer-brand-column">
+              <Link className="footer-brand-logo" to="/" aria-label="Artisan's Echo home">
+                <img src="/favicon.svg" alt="" width="36" height="36" />
+                <span>artisan&apos;s echo</span>
+              </Link>
+              <p className="footer-brand-desc">
+                A refined registry of rare objects, fine antiques, and historical artifacts. Curator-vetted and safely exchanged under premium verification.
+              </p>
+            </div>
+
+            <div className="footer-nav-column">
+              <h4>Catalogue</h4>
+              <ul>
+                <li><a href="/#catalog">Browse catalogue</a></li>
+                <li><a href="/#featured-pieces">Featured pieces</a></li>
+                <li><a href="/#departments">Collections</a></li>
+              </ul>
+            </div>
+
+            <div className="footer-nav-column">
+              <h4>Marketplace</h4>
+              <ul>
+                <li><Link to="/__legacy/catalog">Legacy Archive</Link></li>
+                <li><a href="/#curators">Curators Circle</a></li>
+                <li><a href="/#journal">The Journal</a></li>
+              </ul>
+            </div>
+
+            <div className="footer-nav-column">
+              <h4>Account</h4>
+              <ul>
+                <li><Link to="/login">Sign in</Link></li>
+                <li><Link to="/signup">Create account</Link></li>
+                <li><Link to={dashboardPath}>{dashboardLabel || 'Admin workspace'}</Link></li>
+              </ul>
+            </div>
+
+            <div className="footer-nav-column">
+              <h4>Support</h4>
+              <ul>
+                <li><a href="/#help">Help center</a></li>
+                <li><a href="/#terms">Terms of service</a></li>
+                <li><a href="/#privacy">Privacy policy</a></li>
+              </ul>
+            </div>
+          </div>
+
+          <div className="atlas-site-footer-bottom">
+            <p className="footer-copyright">&copy; {new Date().getFullYear()} Artisan&apos;s Echo. All rights reserved.</p>
+            <p className="footer-tagline">Preserving history, staging authenticity.</p>
+          </div>
+        </div>
+      </footer>
     </main>
   )
 }

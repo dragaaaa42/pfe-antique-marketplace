@@ -179,7 +179,12 @@ class EmailTokenObtainPairSerializer(TokenObtainPairSerializer):
             password=password,
         )
 
-        if self.user is None or not self.user.is_active:
+        if (
+            self.user is None
+            or not self.user.is_active
+            or getattr(self.user.profile, 'is_suspended', False)
+            or getattr(self.user.profile, 'is_deleted', False)
+        ):
             raise serializers.ValidationError('No active account found with the given credentials.')
 
         refresh = self.get_token(self.user)

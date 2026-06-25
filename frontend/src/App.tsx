@@ -19,6 +19,9 @@ import {
   Plus,
   Sparkles,
   Wand2,
+  ShieldCheck,
+  FileText,
+  Lock,
 } from 'lucide-react'
 import { motion, useReducedMotion } from 'motion/react'
 import './App.css'
@@ -252,12 +255,6 @@ function ArtifactCard({
   )
 }
 
-function getArtifactSellerName(artifact: Artifact) {
-  if (artifact.seller_email) {
-    return artifact.seller_email.split('@')[0]
-  }
-  return 'Verified Seller'
-}
 
 
 
@@ -835,7 +832,7 @@ function LegacyCatalogPage() {
 }
 
 function CatalogPage() {
-  const [artifacts, setArtifacts] = useState<Artifact[]>(demoArtifacts)
+  const [artifacts, setArtifacts] = useState<Artifact[]>([])
   const [query, setQuery] = useState('')
   const [activeCategory, setActiveCategory] = useState('All')
   const [sortBy, setSortBy] = useState<'featured' | 'price-asc' | 'price-desc' | 'title'>('featured')
@@ -845,9 +842,7 @@ function CatalogPage() {
   useEffect(() => {
     getArtifacts()
       .then((items) => {
-        if (items.length > 0) {
-          setArtifacts(items)
-        }
+        setArtifacts(items)
       })
       .catch(() => undefined)
   }, [])
@@ -909,10 +904,9 @@ function CatalogPage() {
       window.clearInterval(interval)
     }
   }, [user])
-
-  const marketplaceArtifacts = artifacts.length > 0 ? artifacts : demoArtifacts
+  const marketplaceArtifacts = artifacts
   const publicArtifacts = marketplaceArtifacts.filter((artifact) => artifact.status === 'approved')
-  const catalogSource = publicArtifacts.length >= 4 ? publicArtifacts : marketplaceArtifacts
+  const catalogSource = publicArtifacts
 
   const categories = useMemo(
     () => ['All', ...Array.from(new Set(catalogSource.map((item) => item.category_name ?? 'Uncategorized')))],
@@ -939,7 +933,21 @@ function CatalogPage() {
       default:
         return items
     }
-  }, [sortBy, visibleArtifacts])
+  }, [visibleArtifacts, sortBy])
+
+  if (artifacts.length === 0 || publicArtifacts.length === 0) {
+    return (
+      <div style={{ display: 'flex', justifyContent: 'center', alignItems: 'center', height: '100vh', background: '#0a0a0a', color: '#fff', fontFamily: 'sans-serif' }}>
+        <div style={{ textAlign: 'center' }}>
+          <div style={{ border: '4px solid rgba(255,255,255,0.1)', width: '36px', height: '36px', borderRadius: '50%', borderLeftColor: '#fff', animation: 'spin 1s linear infinite', margin: '0 auto 15px' }} />
+          <div>Loading the exhibition...</div>
+          <style>{`
+            @keyframes spin { 0% { transform: rotate(0deg); } 100% { transform: rotate(360deg); } }
+          `}</style>
+        </div>
+      </div>
+    )
+  }
 
   const homeFeatureCategories = new Set(['Luxury Bags', 'Traditional Clothing', 'Watches', 'Jewelry', 'Vintage Collectibles'])
   const homeArrivalCategories = new Set(['Historical Artifacts', 'Ceramics', 'Rugs and Textiles', 'Furniture', 'Art', 'Lighting', 'Decor'])
@@ -960,7 +968,7 @@ function CatalogPage() {
   }
   const catalogPreviewArtifacts = sortedArtifacts
   const catalogResultCount = catalogPreviewArtifacts.length
-  const heroArtifact = featuredPieces[0] ?? catalogSource[0] ?? demoArtifacts[0]
+  const heroArtifact = featuredPieces[0] ?? catalogSource[0]
   const heroStats = [
     ['Curated lots', String(catalogSource.length).padStart(2, '0')],
     ['Featured pieces', String(featuredPieces.length).padStart(2, '0')],
@@ -1515,58 +1523,116 @@ function CatalogPage() {
         </div>
       </section>
 
+      <motion.section 
+        className="marketplace-command-review" 
+        aria-labelledby="command-review-title"
+        initial={{ opacity: 0, y: 30 }}
+        whileInView={{ opacity: 1, y: 0 }}
+        viewport={{ once: true, margin: "-100px" }}
+        transition={{ duration: 0.8, ease: "easeOut" }}
+      >
+        <div className="command-review-inner">
+          <header className="command-review-header">
+            <span className="eyebrow">Trust & Assurance</span>
+            <h2 id="command-review-title">Marketplace Command Review</h2>
+            <p className="command-review-subtitle">
+              Every transaction, seller profile, and historical object is held to the highest standard of verification. Shop and sell with absolute confidence.
+            </p>
+          </header>
+
+          <div className="command-review-grid">
+            <motion.div 
+              className="command-review-card"
+              whileHover={{ y: -8 }}
+              transition={{ type: "spring", stiffness: 300, damping: 20 }}
+            >
+              <div className="card-icon-wrapper">
+                <ShieldCheck className="card-icon" size={24} />
+              </div>
+              <h3>Verified Sellers</h3>
+              <p>Only vetted dealers, authorized galleries, and credentialed private collectors are permitted to list objects in the catalogue.</p>
+            </motion.div>
+
+            <motion.div 
+              className="command-review-card"
+              whileHover={{ y: -8 }}
+              transition={{ type: "spring", stiffness: 300, damping: 20 }}
+            >
+              <div className="card-icon-wrapper">
+                <FileText className="card-icon" size={24} />
+              </div>
+              <h3>Object Review</h3>
+              <p>Every listed antique is thoroughly inspected for provenance documentation, material authenticity, and detailed condition rating.</p>
+            </motion.div>
+
+            <motion.div 
+              className="command-review-card"
+              whileHover={{ y: -8 }}
+              transition={{ type: "spring", stiffness: 300, damping: 20 }}
+            >
+              <div className="card-icon-wrapper">
+                <Lock className="card-icon" size={24} />
+              </div>
+              <h3>Protected Checkout</h3>
+              <p>Purchases are secured under escrow holding, encrypted checkout pipelines, and comprehensive collector-first dispute resolution.</p>
+            </motion.div>
+          </div>
+        </div>
+      </motion.section>
+
       <footer className="atlas-site-footer" aria-label="Artisan's Echo footer">
         <div className="atlas-site-footer-inner">
-          <div className="atlas-site-footer-top">
-            <Link className="atlas-site-footer-brand" to="/" aria-label="Artisan's Echo home">
-              <img src="/favicon.svg" alt="" width="36" height="36" />
-              <span>artisan&apos;s echo</span>
-            </Link>
-            <nav className="atlas-site-footer-nav" aria-label="Footer navigation">
-              <a href="#catalog">Catalogue</a>
-              <a href="#featured-pieces">Featured</a>
-              <Link to={dashboardPath}>{dashboardLabel}</Link>
-              <Link to="/login">Sign in</Link>
-            </nav>
-          </div>
-
-          <div className="atlas-site-footer-hero">
-            <div className="atlas-site-footer-hero-copy">
-              <p className="eyebrow">Archive room</p>
-              <h2>Objects with history, staged softly.</h2>
+          <div className="atlas-site-footer-grid">
+            <div className="footer-brand-column">
+              <Link className="footer-brand-logo" to="/" aria-label="Artisan's Echo home">
+                <img src="/favicon.svg" alt="" width="36" height="36" />
+                <span>artisan&apos;s echo</span>
+              </Link>
+              <p className="footer-brand-desc">
+                A refined registry of rare objects, fine antiques, and historical artifacts. Curator-vetted and safely exchanged under premium verification.
+              </p>
             </div>
-            <p>
-              The footer closes the page like a final room in the gallery, with the same calm tone,
-              clearer navigation, and a bit more breathing space for the brand.
-            </p>
-          </div>
 
-          <div className="atlas-site-footer-panels">
-            <article>
-              <span>Catalogue</span>
-              <strong>Browse the featured edit, new arrivals, and the full collection atlas.</strong>
-            </article>
-            <article>
-              <span>Curators</span>
-              <strong>Seller stories and provenance notes stay visible.</strong>
-            </article>
-            <article>
-              <span>Collector care</span>
-              <strong>Protected checkout, saved objects, and account routes are ready.</strong>
-            </article>
-          </div>
+            <div className="footer-nav-column">
+              <h4>Catalogue</h4>
+              <ul>
+                <li><a href="#catalog">Browse catalogue</a></li>
+                <li><a href="#featured-pieces">Featured pieces</a></li>
+                <li><a href="#departments">Collections</a></li>
+              </ul>
+            </div>
 
-          <div className="atlas-site-footer-detail" aria-hidden="true">
-            <span className="atlas-site-footer-detail-label">Archive note</span>
-            <span className="atlas-site-footer-detail-rule" />
-            <span className="atlas-site-footer-detail-text">
-              Curated objects and provenance in one calm catalogue.
-            </span>
+            <div className="footer-nav-column">
+              <h4>Marketplace</h4>
+              <ul>
+                <li><Link to="/__legacy/catalog">Legacy Archive</Link></li>
+                <li><a href="#curators">Curators Circle</a></li>
+                <li><a href="#journal">The Journal</a></li>
+              </ul>
+            </div>
+
+            <div className="footer-nav-column">
+              <h4>Account</h4>
+              <ul>
+                <li><Link to="/login">Sign in</Link></li>
+                <li><Link to="/signup">Create account</Link></li>
+                <li><Link to={dashboardPath}>{dashboardLabel || 'Admin workspace'}</Link></li>
+              </ul>
+            </div>
+
+            <div className="footer-nav-column">
+              <h4>Support</h4>
+              <ul>
+                <li><a href="#help">Help center</a></li>
+                <li><a href="#terms">Terms of service</a></li>
+                <li><a href="#privacy">Privacy policy</a></li>
+              </ul>
+            </div>
           </div>
 
           <div className="atlas-site-footer-bottom">
-            <p>Curated for the objects worth remembering.</p>
-            <p>&copy; 2026 Artisan&apos;s Echo</p>
+            <p className="footer-copyright">&copy; {new Date().getFullYear()} Artisan&apos;s Echo. All rights reserved.</p>
+            <p className="footer-tagline">Preserving history, staging authenticity.</p>
           </div>
         </div>
       </footer>
@@ -2912,9 +2978,8 @@ function ProductMessagePage() {
   const location = useLocation()
   const { status, user } = useAuth()
   const locationState = location.state as { artifactTitle?: string; sellerName?: string } | null
-  const [artifact, setArtifact] = useState<Artifact | undefined>(() =>
-    demoArtifacts.find((item) => String(item.id) === id),
-  )
+  const [artifact, setArtifact] = useState<Artifact | undefined>(undefined)
+  const [loading, setLoading] = useState(true)
   const [conversation, setConversation] = useState<ConversationDetail | null>(null)
   const [threadStatus, setThreadStatus] = useState<'idle' | 'loading' | 'error'>('idle')
   const [threadMessage, setThreadMessage] = useState('')
@@ -2927,10 +2992,15 @@ function ProductMessagePage() {
 
   useEffect(() => {
     if (!id) return
+    setLoading(true)
     getArtifact(id)
-      .then(setArtifact)
+      .then((art) => {
+        setArtifact(art)
+        setLoading(false)
+      })
       .catch(() => {
-        setArtifact(demoArtifacts.find((item) => String(item.id) === id))
+        setArtifact(undefined)
+        setLoading(false)
       })
   }, [id])
 
@@ -2990,7 +3060,7 @@ function ProductMessagePage() {
     }
   }, [artifact, status, user?.role])
 
-  if (status === 'loading') {
+  if (loading || status === 'loading') {
     return (
       <main className="flex min-h-screen items-center justify-center bg-[#eef3f9] px-6">
         <div className="rounded-[2rem] border border-[#d7e0ec] bg-white px-8 py-10 text-center shadow-[0_24px_70px_rgba(15,23,42,0.06)]">
