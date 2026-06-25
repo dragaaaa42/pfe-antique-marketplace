@@ -838,13 +838,21 @@ function CatalogPage() {
   const [sortBy, setSortBy] = useState<'featured' | 'price-asc' | 'price-desc' | 'title'>('featured')
   const { user } = useAuth()
   const [conversationBadge, setConversationBadge] = useState(0)
+  const [loading, setLoading] = useState(true)
+  const [connectionError, setConnectionError] = useState(false)
 
   useEffect(() => {
+    setLoading(true)
+    setConnectionError(false)
     getArtifacts()
       .then((items) => {
         setArtifacts(items)
+        setLoading(false)
       })
-      .catch(() => undefined)
+      .catch(() => {
+        setConnectionError(true)
+        setLoading(false)
+      })
   }, [])
 
   useEffect(() => {
@@ -935,7 +943,7 @@ function CatalogPage() {
     }
   }, [visibleArtifacts, sortBy])
 
-  if (artifacts.length === 0 || publicArtifacts.length === 0) {
+  if (loading) {
     return (
       <div style={{ display: 'flex', justifyContent: 'center', alignItems: 'center', height: '100vh', background: '#0a0a0a', color: '#fff', fontFamily: 'sans-serif' }}>
         <div style={{ textAlign: 'center' }}>
@@ -944,6 +952,39 @@ function CatalogPage() {
           <style>{`
             @keyframes spin { 0% { transform: rotate(0deg); } 100% { transform: rotate(360deg); } }
           `}</style>
+        </div>
+      </div>
+    )
+  }
+
+  if (connectionError) {
+    return (
+      <div style={{ display: 'flex', justifyContent: 'center', alignItems: 'center', height: '100vh', background: '#0f0f11', color: '#f3f4f6', fontFamily: 'sans-serif', padding: '20px' }}>
+        <div style={{ textAlign: 'center', maxWidth: '400px', padding: '30px', borderRadius: '12px', background: '#18181b', border: '1px solid #27272a', boxShadow: '0 10px 15px -3px rgba(0, 0, 0, 0.5)' }}>
+          <div style={{ fontSize: '48px', marginBottom: '15px' }}>🔌</div>
+          <h2 style={{ fontSize: '20px', fontWeight: '600', margin: '0 0 10px', color: '#f3f4f6' }}>Cannot Connect to Server</h2>
+          <p style={{ fontSize: '14px', color: '#a1a1aa', lineHeight: '1.5', margin: '0 0 20px' }}>
+            The frontend could not reach the backend server. Please make sure your Django server is running on <code style={{ background: '#27272a', padding: '2px 6px', borderRadius: '4px', color: '#f43f5e' }}>http://127.0.0.1:8000</code>.
+          </p>
+          <button 
+            onClick={() => window.location.reload()}
+            style={{ background: '#3b82f6', color: '#fff', border: 'none', padding: '10px 20px', borderRadius: '6px', fontSize: '14px', fontWeight: '500', cursor: 'pointer', transition: 'background 0.2s' }}
+            onMouseOver={(e) => (e.currentTarget.style.background = '#2563eb')}
+            onMouseOut={(e) => (e.currentTarget.style.background = '#3b82f6')}
+          >
+            Retry Connection
+          </button>
+        </div>
+      </div>
+    )
+  }
+
+  if (artifacts.length === 0 || publicArtifacts.length === 0) {
+    return (
+      <div style={{ display: 'flex', justifyContent: 'center', alignItems: 'center', height: '100vh', background: '#0a0a0a', color: '#fff', fontFamily: 'sans-serif' }}>
+        <div style={{ textAlign: 'center' }}>
+          <div style={{ fontSize: '32px', marginBottom: '10px' }}>🏺</div>
+          <div>No approved artifacts found in the database.</div>
         </div>
       </div>
     )
