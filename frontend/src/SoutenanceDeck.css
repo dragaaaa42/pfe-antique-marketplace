@@ -1,0 +1,141 @@
+/* ═══════════════════════════════════════════════════════════════════
+   SoutenanceDeck.css — Styles specifiques de presentation premium
+   ═══════════════════════════════════════════════════════════════════ */
+
+/* -- Watermark & Background Details -- */
+.deck-watermark {
+  background-image: radial-gradient(circle at 50% 50%, transparent 60%, rgba(11, 14, 26, 0.95) 100%);
+}
+
+.faint-compass {
+  stroke-dasharray: 4;
+  animation: slow-rotate 120s linear infinite;
+}
+
+@keyframes slow-rotate {
+  from { transform: rotate(0deg); }
+  to { transform: rotate(360deg); }
+}
+
+/* -- Metal & Parchment Plaques -- */
+.metal-plaque {
+  background: linear-gradient(135deg, rgba(15, 20, 38, 0.75) 0%, rgba(9, 12, 24, 0.9) 100%);
+  border: 1px solid rgba(200, 215, 239, 0.12);
+  box-shadow: 
+    inset 0 0 30px rgba(95, 112, 255, 0.12),
+    inset 0 1px 1px rgba(255, 255, 255, 0.05),
+    0 10px 30px rgba(0, 0, 0, 0.5);
+  position: relative;
+  transition: all 0.35s cubic-bezier(0.2, 0.8, 0.2, 1);
+}
+
+.metal-plaque:hover {
+  border-color: rgba(95, 112, 255, 0.35);
+  box-shadow: 
+    inset 0 0 40px rgba(95, 112, 255, 0.2),
+    inset 0 1px 2px rgba(255, 255, 255, 0.08),
+    0 20px 45px rgba(0, 0, 0, 0.6),
+    0 0 25px rgba(95, 112, 255, 0.15);
+}
+
+/* -- Cover Frame Details -- */
+.cover-frame {
+  background: linear-gradient(135deg, rgba(23, 29, 54, 0.85) 0%, rgba(7, 10, 20, 0.95) 100%);
+  border: 2px solid rgba(229, 197, 144, 0.2);
+  box-shadow: 
+    inset 0 0 50px rgba(95, 112, 255, 0.15),
+    0 25px 60px rgba(0, 0, 0, 0.7);
+}
+
+/* -- Filigree and Corner Decorators -- */
+.corner-filigree {
+  position: absolute;
+  width: 14px;
+  height: 14px;
+  border: 2px solid transparent;
+  pointer-events: none;
+}
+.corner-tl { top: 6px; left: 6px; border-top-color: inherit; border-left-color: inherit; }
+.corner-tr { top: 6px; right: 6px; border-top-color: inherit; border-right-color: inherit; }
+.corner-bl { bottom: 6px; left: 6px; border-bottom-color: inherit; border-left-color: inherit; }
+.corner-br { bottom: 6px; right: 6px; border-bottom-color: inherit; border-right-color: inherit; }
+
+/* -- Crack/Fractured textures for Problematic Cards -- */
+.plaque-cracked {
+  background: linear-gradient(135deg, rgba(20, 25, 45, 0.75) 0%, rgba(9, 12, 24, 0.9) 100%);
+  border-color: rgba(229, 197, 144, 0.15);
+}
+.plaque-cracked::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  opacity: 0.04;
+  pointer-events: none;
+  background-image: radial-gradient(rgba(255,255,255,0.15) 1px, transparent 1px), 
+                    repeating-linear-gradient(45deg, transparent, transparent 10px, rgba(255,255,255,0.1) 10px, rgba(255,255,255,0.1) 11px);
+}
+
+/* -- Upward Arrow Motif for Objectives -- */
+.plaque-objective::after {
+  content: '↑';
+  position: absolute;
+  top: 14px;
+  right: 18px;
+  font-size: 24px;
+  font-family: sans-serif;
+  color: rgba(95, 112, 255, 0.2);
+  font-weight: bold;
+  transition: transform 0.35s ease;
+}
+.plaque-objective:hover::after {
+  transform: translateY(-4px);
+  color: rgba(95, 112, 255, 0.6);
+}
+
+/* -- Translucent Glass Plate for Diagrams -- */
+.diagram-glass-plate {
+  background: rgba(11, 15, 28, 0.85);
+  border: 1px solid rgba(200, 215, 239, 0.15);
+  box-shadow: 
+    0 20px 50px rgba(0, 0, 0, 0.7),
+    inset 0 0 30px rgba(95, 112, 255, 0.08);
+  position: relative;
+}
+.diagram-glass-plate::after {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(120deg, transparent 30%, rgba(255, 255, 255, 0.02) 40%, rgba(255, 255, 255, 0.05) 50%, rgba(255, 255, 255, 0.02) 60%, transparent 70%);
+  background-size: 200% 100%;
+  animation: shine-glare 8s infinite linear;
+  pointer-events: none;
+}
+
+@keyframes shine-glare {
+  0% { background-position: 200% 0; }
+  100% { background-position: -200% 0; }
+}
+
+/* -- Antique Separator Line -- */
+.antique-separator {
+  position: relative;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin: 20px 0;
+}
+.antique-separator::before,
+.antique-separator::after {
+  content: '';
+  flex: 1;
+  height: 1px;
+  background: linear-gradient(to right, transparent, rgba(229, 197, 144, 0.35), transparent);
+}
+.separator-diamond {
+  width: 8px;
+  height: 8px;
+  transform: rotate(45deg);
+  border: 1px solid rgba(229, 197, 144, 0.6);
+  background: #0b0e1a;
+  margin: 0 10px;
+}

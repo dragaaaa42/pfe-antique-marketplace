@@ -28,6 +28,9 @@ import {
   FolderOpen
 } from 'lucide-react'
 
+// Import custom presentation CSS containing plaques, corners, watermarks, etc.
+import './SoutenanceDeck.css'
+
 // Import project diagrams and screenshots
 import architectureImg from './assets/docs/architecture.png'
 import rbacImg from './assets/docs/rbac.png'
@@ -37,6 +40,18 @@ import adminDashboardImg from './assets/docs/admin_dashboard.png'
 import sellerDashboardImg from './assets/docs/seller_dashboard.png'
 import catalogueImg from './assets/docs/catalogue.png'
 import messagesImg from './assets/docs/messages.png'
+
+// Reusable Filigree Corner Brackets Component
+function FiligreeCorners({ colorClass = "border-[#c8d7ef]/20" }: { colorClass?: string }) {
+  return (
+    <>
+      <div className={`corner-filigree corner-tl ${colorClass}`} />
+      <div className={`corner-filigree corner-tr ${colorClass}`} />
+      <div className={`corner-filigree corner-bl ${colorClass}`} />
+      <div className={`corner-filigree corner-br ${colorClass}`} />
+    </>
+  )
+}
 
 export function SoutenanceDeck() {
   const navigate = useNavigate()
@@ -111,19 +126,22 @@ export function SoutenanceDeck() {
             title: "Marché de Niche Unique",
             description: "Les antiquités exigent une identification précise (époque, provenance, état) et une valorisation qui diffèrent des produits génériques de masse.",
             icon: Sparkles,
-            metric: "Transactions de forte valeur"
+            metric: "Transactions de forte valeur",
+            rotateClass: "rotate-[-1.5deg] -translate-y-1"
           },
           {
             title: "Transition Digitale",
             description: "Les brocantes traditionnelles s'étendent en ligne, exigeant des galeries virtuelles interactives et sécurisées pour rassurer les passionnés.",
             icon: Monitor,
-            metric: "Fiche produit détaillée"
+            metric: "Fiche produit détaillée",
+            rotateClass: "rotate-[0deg] translate-y-0"
           },
           {
             title: "Relation de Confiance",
             description: "L'acheteur doit être assuré de la provenance et de l'authenticité d'un artefact avant d'engager une transaction.",
             icon: ShieldAlert,
-            metric: "Curation & Sécurité"
+            metric: "Curation & Sécurité",
+            rotateClass: "rotate-[1.5deg] translate-y-1.5"
           }
         ]
       }
@@ -201,19 +219,22 @@ export function SoutenanceDeck() {
             name: "Collectionneur / Acheteur",
             role: "Explorateur & Acquéreur",
             desc: "Explore le catalogue public, sauvegarde dans sa wishlist, gère son panier, négocie avec le vendeur et valide ses commandes (Cash on Delivery).",
-            icon: Heart
+            icon: Heart,
+            shapeClass: "rounded-tl-[3.5rem] rounded-br-[3.5rem]"
           },
           {
             name: "Vendeur / Brocanteur",
             role: "Marchand d'Artéfacts",
             desc: "Publie ses créations et antiquités (état brouillon/soumis), suit ses ventes, expédie et change le statut des commandes associées à sa galerie.",
-            icon: TrendingUp
+            icon: TrendingUp,
+            shapeClass: "rounded-tr-[3.5rem] rounded-bl-[3.5rem]"
           },
           {
             name: "Administrateur / Curateur",
             role: "Gestionnaire de la Marketplace",
             desc: "Modère les artefacts soumis (Approuver/Rejeter), active ou désactive les comptes utilisateurs, et consulte le journal d'audit des actions critiques.",
-            icon: Award
+            icon: Award,
+            shapeClass: "rounded-[2rem]"
           }
         ]
       }
@@ -357,40 +378,6 @@ export function SoutenanceDeck() {
     setIsDropdownOpen(false)
   }
 
-  // Keyboard navigation listeners
-  useEffect(() => {
-    const handleKeyDown = (e: KeyboardEvent) => {
-      if (e.key === 'ArrowRight' || e.key === ' ') {
-        e.preventDefault()
-        nextSlide()
-      } else if (e.key === 'ArrowLeft' || e.key === 'Backspace') {
-        e.preventDefault()
-        prevSlide()
-      }
-    }
-    window.addEventListener('keydown', handleKeyDown)
-    return () => window.removeEventListener('keydown', handleKeyDown)
-  }, [currentSlide])
-
-  // Debounced wheel listener for slide change
-  useEffect(() => {
-    let lastScrollTime = 0
-    const handleWheel = (e: WheelEvent) => {
-      const now = Date.now()
-      if (now - lastScrollTime < 1000) return
-      if (Math.abs(e.deltaY) > 30) {
-        lastScrollTime = now
-        if (e.deltaY > 0) {
-          nextSlide()
-        } else {
-          prevSlide()
-        }
-      }
-    }
-    window.addEventListener('wheel', handleWheel, { passive: true })
-    return () => window.removeEventListener('wheel', handleWheel)
-  }, [currentSlide])
-
   const slide = SLIDES[currentSlide]
 
   // Slide content render helpers
@@ -408,30 +395,31 @@ export function SoutenanceDeck() {
               {slide.content.tagline}
             </motion.div>
             
-            <motion.h1
-              initial={{ y: 20, opacity: 0 }}
+            <motion.div
+              initial={{ y: 30, opacity: 0 }}
               animate={{ y: 0, opacity: 1 }}
-              transition={{ delay: 0.1, duration: 0.5 }}
-              className="text-5xl md:text-7xl font-bold tracking-tight mb-4 text-transparent bg-clip-text bg-gradient-to-r from-white via-[#c8d7ef] to-[#e5c590] font-serif"
+              transition={{ delay: 0.1, duration: 0.6 }}
+              className="cover-frame border-2 border-[#e5c590]/35 p-12 rounded-3xl relative overflow-hidden mb-8 w-full shadow-2xl"
             >
-              {slide.content.title}
-            </motion.h1>
+              {/* Bronze/Gold filigree corner markers */}
+              <FiligreeCorners colorClass="border-[#e5c590]/50 w-5 h-5" />
 
-            <motion.p
-              initial={{ y: 20, opacity: 0 }}
-              animate={{ y: 0, opacity: 1 }}
-              transition={{ delay: 0.2, duration: 0.5 }}
-              className="text-lg md:text-2xl text-teal-100/70 font-light max-w-3xl mb-10"
-            >
-              {slide.content.subtitle}
-            </motion.p>
+              <h1 className="text-5xl md:text-7xl font-bold tracking-tight mb-4 text-transparent bg-clip-text bg-gradient-to-r from-white via-[#c8d7ef] to-[#e5c590] font-serif">
+                {slide.content.title}
+              </h1>
+
+              <p className="text-lg md:text-2xl text-teal-100/70 font-light max-w-3xl mx-auto">
+                {slide.content.subtitle}
+              </p>
+            </motion.div>
 
             <motion.div
               initial={{ y: 30, opacity: 0 }}
               animate={{ y: 0, opacity: 1 }}
               transition={{ delay: 0.3, duration: 0.5 }}
-              className="grid grid-cols-1 md:grid-cols-2 gap-8 w-full max-w-3xl bg-[#0f1426]/60 backdrop-blur-md border border-[#c8d7ef]/20 p-8 rounded-3xl mb-8 text-left"
+              className="grid grid-cols-1 md:grid-cols-2 gap-8 w-full max-w-3xl metal-plaque p-8 rounded-3xl mb-8 text-left"
             >
+              <FiligreeCorners colorClass="border-[#c8d7ef]/20" />
               <div>
                 <span className="text-xs uppercase font-mono text-[#7d8bff]/90">Réalisé par :</span>
                 <p className="text-xl font-semibold text-white mt-1 font-serif">{slide.content.author}</p>
@@ -468,18 +456,27 @@ export function SoutenanceDeck() {
               <p className="text-teal-100/60 text-sm mt-3">{slide.content.subtitle}</p>
             </div>
 
-            <div className="bg-[#0f1426]/60 border border-[#c8d7ef]/15 p-10 rounded-3xl backdrop-blur-md space-y-6">
-              {slide.content.paragraphs.map((p, idx) => (
-                <motion.p
-                  key={idx}
-                  initial={{ y: 15, opacity: 0 }}
-                  animate={{ y: 0, opacity: 1 }}
-                  transition={{ delay: idx * 0.1, duration: 0.5 }}
-                  className="text-base md:text-lg text-teal-100/80 leading-relaxed font-light first-letter:text-2xl first-letter:font-bold first-letter:text-[#e5c590] first-letter:font-serif"
-                >
-                  {p}
-                </motion.p>
-              ))}
+            <div className="metal-plaque p-10 rounded-3xl relative overflow-hidden">
+              <FiligreeCorners colorClass="border-[#c8d7ef]/25" />
+              <div className="space-y-4">
+                {slide.content.paragraphs.map((p, idx) => (
+                  <div key={idx}>
+                    <motion.p
+                      initial={{ y: 15, opacity: 0 }}
+                      animate={{ y: 0, opacity: 1 }}
+                      transition={{ delay: idx * 0.1, duration: 0.5 }}
+                      className="text-base md:text-lg text-teal-100/80 leading-relaxed font-light first-letter:text-2xl first-letter:font-bold first-letter:text-[#e5c590] first-letter:font-serif"
+                    >
+                      {p}
+                    </motion.p>
+                    {idx < slide.content.paragraphs.length - 1 && (
+                      <div className="antique-separator">
+                        <div className="separator-diamond" />
+                      </div>
+                    )}
+                  </div>
+                ))}
+              </div>
             </div>
           </div>
         )
@@ -501,14 +498,13 @@ export function SoutenanceDeck() {
                     initial={{ y: 30, opacity: 0 }}
                     animate={{ y: 0, opacity: 1 }}
                     transition={{ delay: idx * 0.1, duration: 0.5 }}
-                    whileHover={{ y: -8, borderColor: '#5f70ff' }}
-                    className="bg-[#0f1426]/60 border border-[#c8d7ef]/20 p-8 rounded-3xl flex flex-col justify-between shadow-2xl relative overflow-hidden group transition-all"
+                    className={`metal-plaque p-8 rounded-3xl flex flex-col justify-between shadow-2xl relative overflow-hidden group ${card.rotateClass}`}
                   >
-                    {/* Glowing effect inside card */}
-                    <div className="absolute top-0 right-0 w-32 h-32 bg-[#5f70ff]/5 rounded-full blur-3xl group-hover:bg-[#5f70ff]/10 transition-colors pointer-events-none" />
-                    
+                    {/* Corner decorators */}
+                    <FiligreeCorners colorClass="border-[#c8d7ef]/20" />
+
                     <div>
-                      <div className="p-4 bg-[#5f70ff]/10 rounded-2xl mb-6 text-[#7d8bff] inline-block">
+                      <div className="p-4 bg-[#5f70ff]/10 rounded-2xl mb-6 text-[#7d8bff] inline-block border border-[#5f70ff]/20">
                         <IconComponent className="h-7 w-7" />
                       </div>
                       <h3 className="text-xl font-bold text-white mb-3 font-serif">{card.title}</h3>
@@ -542,9 +538,12 @@ export function SoutenanceDeck() {
                     initial={{ y: 30, opacity: 0 }}
                     animate={{ y: 0, opacity: 1 }}
                     transition={{ delay: idx * 0.1, duration: 0.5 }}
-                    className={`bg-gradient-to-br ${card.color} backdrop-blur-md border ${card.border} p-8 rounded-3xl flex flex-col items-start hover:border-[#5f70ff]/50 hover:shadow-[0_0_20px_rgba(95,112,255,0.15)] transition-all group`}
+                    className="metal-plaque plaque-cracked p-8 rounded-3xl flex flex-col items-start shadow-2xl relative overflow-hidden group"
                   >
-                    <div className="p-4 bg-[#5f70ff]/10 rounded-2xl mb-6 text-[#7d8bff] group-hover:scale-110 transition-transform">
+                    {/* Muted Blue corner filigrees */}
+                    <FiligreeCorners colorClass="border-blue-400/25" />
+
+                    <div className="p-4 bg-[#5f70ff]/10 rounded-2xl mb-6 text-[#7d8bff] group-hover:scale-110 transition-transform border border-[#5f70ff]/20">
                       <IconComponent className="h-7 w-7" />
                     </div>
                     <h3 className="text-xl font-bold text-white mb-3 font-serif">{card.title}</h3>
@@ -571,8 +570,10 @@ export function SoutenanceDeck() {
                   initial={{ y: 30, opacity: 0 }}
                   animate={{ y: 0, opacity: 1 }}
                   transition={{ delay: idx * 0.15, duration: 0.5 }}
-                  className="bg-[#0f1426]/60 backdrop-blur-md border border-[#c8d7ef]/20 p-8 rounded-3xl flex flex-col"
+                  className="metal-plaque plaque-objective p-8 rounded-3xl flex flex-col relative overflow-hidden"
                 >
+                  <FiligreeCorners colorClass="border-[#c8d7ef]/20" />
+
                   <h3 className="text-xl font-semibold text-[#7d8bff] mb-6 border-b border-[#c8d7ef]/10 pb-3 flex items-center gap-3 font-serif">
                     <CheckCircle2 className="h-6 w-6 text-[#5f70ff]" />
                     {col.title}
@@ -610,9 +611,11 @@ export function SoutenanceDeck() {
                     initial={{ scale: 0.95, opacity: 0 }}
                     animate={{ scale: 1, opacity: 1 }}
                     transition={{ delay: idx * 0.1, duration: 0.5 }}
-                    className="bg-[#0f1426]/60 border border-[#c8d7ef]/20 p-8 rounded-3xl flex flex-col text-center relative overflow-hidden group transition-all"
+                    className={`metal-plaque p-8 flex flex-col text-center relative overflow-hidden group ${actor.shapeClass}`}
                   >
-                    <div className="mx-auto p-4 bg-[#5f70ff]/10 rounded-full mb-6 text-[#7d8bff] group-hover:bg-[#5f70ff]/20 transition-all">
+                    <FiligreeCorners colorClass="border-[#c8d7ef]/20" />
+
+                    <div className="mx-auto p-4 bg-[#5f70ff]/10 rounded-full mb-6 text-[#7d8bff] group-hover:bg-[#5f70ff]/20 transition-all border border-[#5f70ff]/20">
                       <IconComponent className="h-8 w-8" />
                     </div>
                     <h3 className="text-lg font-bold text-white mb-1.5 font-serif">{actor.name}</h3>
@@ -640,8 +643,10 @@ export function SoutenanceDeck() {
                   initial={{ y: 30, opacity: 0 }}
                   animate={{ y: 0, opacity: 1 }}
                   transition={{ delay: idx * 0.15, duration: 0.5 }}
-                  className="bg-[#0f1426]/60 backdrop-blur-md border border-[#c8d7ef]/20 p-8 rounded-3xl flex flex-col"
+                  className="metal-plaque p-8 rounded-3xl flex flex-col relative overflow-hidden"
                 >
+                  <FiligreeCorners colorClass="border-[#c8d7ef]/20" />
+
                   <h3 className="text-lg font-bold text-[#7d8bff] mb-6 border-b border-[#c8d7ef]/10 pb-3 flex items-center gap-3 font-serif">
                     <CheckCircle2 className="h-5 w-5" />
                     {col.title}
@@ -679,8 +684,10 @@ export function SoutenanceDeck() {
                     initial={{ x: -30, opacity: 0 }}
                     animate={{ x: 0, opacity: 1 }}
                     transition={{ delay: idx * 0.1, duration: 0.5 }}
-                    className="bg-[#0f1426]/60 border border-[#c8d7ef]/15 p-5 rounded-2xl hover:bg-[#0f1426]/80 transition-colors"
+                    className="metal-plaque p-5 rounded-2xl relative overflow-hidden"
                   >
+                    <FiligreeCorners colorClass="border-[#c8d7ef]/10" />
+
                     <div className="flex items-center gap-2 mb-1.5">
                       <span className="h-2 w-2 rounded-full bg-[#5f70ff] shadow-[0_0_8px_rgba(95,112,255,1)]" />
                       <h3 className="font-semibold text-white text-base font-serif">{detail.label}</h3>
@@ -691,20 +698,23 @@ export function SoutenanceDeck() {
                 ))}
               </div>
 
-              {/* Right Architecture Diagram */}
+              {/* Right Architecture Diagram Etched on Glass Plate */}
               <motion.div
                 initial={{ scale: 0.95, opacity: 0 }}
                 animate={{ scale: 1, opacity: 1 }}
                 transition={{ delay: 0.2, duration: 0.6 }}
-                className="lg:col-span-7 bg-[#0f1426]/60 backdrop-blur-md border border-[#c8d7ef]/20 p-4 rounded-3xl shadow-xl overflow-hidden group relative"
+                className="lg:col-span-7 diagram-glass-plate p-4 rounded-3xl overflow-hidden group relative"
               >
+                {/* Bronze Corner Accents for Diagram Framing */}
+                <FiligreeCorners colorClass="border-[#e5c590]/40 w-4 h-4" />
+
                 <div className="absolute top-4 left-4 bg-black/60 border border-white/10 px-3 py-1 rounded-lg text-[11px] font-mono text-[#7d8bff] z-10">
                   Client-Server System Design
                 </div>
                 <img
                   src={slide.content.diagram}
                   alt="Architecture Diagram"
-                  className="rounded-2xl w-full max-h-[380px] object-contain group-hover:scale-[1.02] transition-transform duration-500 bg-[#061417]"
+                  className="rounded-2xl w-full max-h-[380px] object-contain group-hover:scale-[1.01] transition-transform duration-500 bg-[#061417] p-2 border border-white/5"
                 />
               </motion.div>
             </div>
@@ -721,7 +731,9 @@ export function SoutenanceDeck() {
 
             <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 items-center">
               <div className="lg:col-span-4 space-y-4">
-                <div className="bg-[#0f1426]/60 border border-[#c8d7ef]/20 p-6 rounded-3xl">
+                <div className="metal-plaque p-6 rounded-3xl relative overflow-hidden">
+                  <FiligreeCorners colorClass="border-[#c8d7ef]/20" />
+
                   <h3 className="text-[#7d8bff] font-bold mb-3 font-serif">Structure BDD Relationnelle</h3>
                   <p className="text-teal-100/70 text-xs md:text-sm leading-relaxed font-light mb-5">
                     {slide.content.text}
@@ -743,19 +755,22 @@ export function SoutenanceDeck() {
                 </div>
               </div>
 
+              {/* Right BDD/ERD Diagram Etched on Glass Plate */}
               <motion.div
                 initial={{ scale: 0.95, opacity: 0 }}
                 animate={{ scale: 1, opacity: 1 }}
                 transition={{ delay: 0.2, duration: 0.6 }}
-                className="lg:col-span-8 bg-[#0f1426]/60 backdrop-blur-md border border-[#c8d7ef]/20 p-4 rounded-3xl shadow-xl overflow-hidden group relative"
+                className="lg:col-span-8 diagram-glass-plate p-4 rounded-3xl overflow-hidden group relative"
               >
+                <FiligreeCorners colorClass="border-[#e5c590]/40 w-4 h-4" />
+
                 <div className="absolute top-4 left-4 bg-black/60 border border-white/10 px-3 py-1 rounded-lg text-[11px] font-mono text-[#7d8bff] z-10">
                   UML Entity Relationship Diagram
                 </div>
                 <img
                   src={slide.content.diagram}
                   alt="Database ER Diagram"
-                  className="rounded-2xl w-full max-h-[380px] object-contain group-hover:scale-[1.02] transition-transform duration-500 bg-[#061417]"
+                  className="rounded-2xl w-full max-h-[380px] object-contain group-hover:scale-[1.01] transition-transform duration-500 bg-[#061417] p-2 border border-white/5"
                 />
               </motion.div>
             </div>
@@ -772,7 +787,9 @@ export function SoutenanceDeck() {
 
             <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 items-center">
               <div className="lg:col-span-4 space-y-4">
-                <div className="bg-[#0f1426]/60 border border-[#c8d7ef]/20 p-6 rounded-3xl">
+                <div className="metal-plaque p-6 rounded-3xl relative overflow-hidden">
+                  <FiligreeCorners colorClass="border-[#c8d7ef]/20" />
+
                   <h3 className="text-[#7d8bff] font-bold mb-3 font-serif">Sécurité Applicative</h3>
                   <p className="text-teal-100/70 text-xs md:text-sm leading-relaxed font-light mb-5">
                     {slide.content.text}
@@ -784,19 +801,22 @@ export function SoutenanceDeck() {
                 </div>
               </div>
 
+              {/* Right RBAC Diagram Etched on Glass Plate */}
               <motion.div
                 initial={{ scale: 0.95, opacity: 0 }}
                 animate={{ scale: 1, opacity: 1 }}
                 transition={{ delay: 0.2, duration: 0.6 }}
-                className="lg:col-span-8 bg-[#0f1426]/60 backdrop-blur-md border border-[#c8d7ef]/20 p-4 rounded-3xl shadow-xl overflow-hidden group relative"
+                className="lg:col-span-8 diagram-glass-plate p-4 rounded-3xl overflow-hidden group relative"
               >
+                <FiligreeCorners colorClass="border-[#e5c590]/40 w-4 h-4" />
+
                 <div className="absolute top-4 left-4 bg-black/60 border border-white/10 px-3 py-1 rounded-lg text-[11px] font-mono text-[#7d8bff] z-10">
                   RBAC Permission Matrix
                 </div>
                 <img
                   src={slide.content.diagram}
                   alt="RBAC Diagram"
-                  className="rounded-2xl w-full max-h-[380px] object-contain group-hover:scale-[1.02] transition-transform duration-500 bg-[#061417]"
+                  className="rounded-2xl w-full max-h-[380px] object-contain group-hover:scale-[1.01] transition-transform duration-500 bg-[#061417] p-2 border border-white/5"
                 />
               </motion.div>
             </div>
@@ -832,8 +852,9 @@ export function SoutenanceDeck() {
                     initial={{ scale: 0.9, opacity: 0 }}
                     animate={{ scale: 1, opacity: 1 }}
                     transition={{ delay: idx * 0.1, duration: 0.4 }}
-                    className="bg-[#0f1426]/60 border border-[#c8d7ef]/20 p-6 rounded-3xl flex flex-col justify-center text-center shadow-xl hover:border-[#5f70ff]/30 transition-colors"
+                    className="metal-plaque p-6 rounded-3xl flex flex-col justify-center text-center shadow-xl relative overflow-hidden"
                   >
+                    <FiligreeCorners colorClass="border-[#c8d7ef]/15" />
                     <span className="text-4xl md:text-5xl font-black text-[#e5c590] mb-2 font-serif">{metric.value}</span>
                     <span className="text-xs text-teal-100/60 leading-tight font-mono">{metric.label}</span>
                   </motion.div>
@@ -845,8 +866,10 @@ export function SoutenanceDeck() {
                 initial={{ x: 30, opacity: 0 }}
                 animate={{ x: 0, opacity: 1 }}
                 transition={{ delay: 0.2, duration: 0.5 }}
-                className="lg:col-span-7 bg-[#0f1426]/60 border border-[#c8d7ef]/20 p-8 rounded-3xl flex flex-col justify-between shadow-xl"
+                className="lg:col-span-7 metal-plaque p-8 rounded-3xl flex flex-col justify-between shadow-xl relative overflow-hidden"
               >
+                <FiligreeCorners colorClass="border-[#c8d7ef]/20" />
+
                 <div>
                   <h3 className="text-lg font-bold text-white mb-6 flex items-center gap-2 font-serif">
                     <Award className="h-5 w-5 text-[#5f70ff]" />
@@ -886,8 +909,26 @@ export function SoutenanceDeck() {
 
   return (
     <div className="bg-[#0b0e1a] text-white min-h-screen relative overflow-hidden font-sans flex flex-col justify-between selection:bg-[#5f70ff]/30 selection:text-[#c8d7ef]">
-      {/* Parallax Background Glowing Circles using your exact blue/navy shades */}
+      {/* Background Celestial Watermark Line Drawing */}
       <div className="absolute inset-0 pointer-events-none z-0">
+        <svg
+          className="absolute top-[10%] left-[10%] w-[80vw] h-[80vw] text-[#5f70ff]/3 opacity-[0.02] faint-compass"
+          viewBox="0 0 200 200"
+          fill="none"
+          stroke="currentColor"
+        >
+          <circle cx="100" cy="100" r="90" strokeWidth="0.5" />
+          <circle cx="100" cy="100" r="70" strokeWidth="0.5" strokeDasharray="2 2" />
+          <circle cx="100" cy="100" r="50" strokeWidth="0.3" />
+          <line x1="100" y1="5" x2="100" y2="195" strokeWidth="0.5" />
+          <line x1="5" y1="100" x2="195" y2="100" strokeWidth="0.5" />
+          <line x1="33" y1="33" x2="167" y2="167" strokeWidth="0.3" strokeDasharray="1 3" />
+          <line x1="33" y1="167" x2="167" y2="33" strokeWidth="0.3" strokeDasharray="1 3" />
+          <polygon points="100,50 106,100 100,150 94,100" strokeWidth="0.4" />
+          <polygon points="50,100 100,106 150,100 100,94" strokeWidth="0.4" />
+        </svg>
+
+        {/* Ambient background blur circles */}
         <motion.div
           animate={{ x: mousePos.x * 1.1, y: mousePos.y * 1.1 }}
           transition={{ type: 'spring', stiffness: 50, damping: 25 }}
@@ -900,8 +941,8 @@ export function SoutenanceDeck() {
         />
         <div className="absolute top-[40%] left-[60%] w-[35vw] h-[35vw] rounded-full bg-[#e5c590]/3 blur-[140px]" />
         
-        {/* Subtle grid lines background overlay */}
-        <div className="absolute inset-0 bg-[linear-gradient(to_right,rgba(255,255,255,0.005)_1px,transparent_1px),linear-gradient(to_bottom,rgba(255,255,255,0.005)_1px,transparent_1px)] bg-[size:4rem_4rem]" />
+        {/* Fine dotted line grid */}
+        <div className="absolute inset-0 bg-[linear-gradient(to_right,rgba(255,255,255,0.004)_1px,transparent_1px),linear-gradient(to_bottom,rgba(255,255,255,0.004)_1px,transparent_1px)] bg-[size:3.5rem_3.5rem]" />
       </div>
 
       {/* TOP HEADER CONTROLS */}
@@ -968,7 +1009,7 @@ export function SoutenanceDeck() {
               center: {
                 x: 0,
                 opacity: 1,
-                transition: { type: 'spring', stiffness: 90, damping: 17 }
+                transition: { type: 'spring', stiffness: 95, damping: 18 }
               },
               exit: (dir: number) => ({
                 x: dir < 0 ? '100vw' : '-100vw',
@@ -1085,8 +1126,11 @@ function ScreenshotShowcase({ screens }: { screens: Array<{ title: string; img: 
         ))}
       </div>
 
-      {/* Right Image Preview Screen */}
-      <div className="lg:col-span-8 flex flex-col bg-[#0f1426]/60 border border-[#c8d7ef]/20 p-5 rounded-3xl shadow-2xl">
+      {/* Right Image Preview Screen on Glass Plate */}
+      <div className="lg:col-span-8 flex flex-col diagram-glass-plate p-5 rounded-3xl shadow-2xl">
+        {/* Golden corner filigrees to tie screenshots with artisan theme */}
+        <FiligreeCorners colorClass="border-[#e5c590]/40 w-4 h-4" />
+
         <div className="relative rounded-2xl overflow-hidden aspect-video bg-[#0b0e1a] border border-white/[0.04]">
           <AnimatePresence mode="wait">
             <motion.img
