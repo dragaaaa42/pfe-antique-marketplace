@@ -139,3 +139,68 @@
   background: #0b0e1a;
   margin: 0 10px;
 }
+
+/* -- Timeline structures for Contexte -- */
+.timeline-dot {
+  position: relative;
+}
+.timeline-dot::before {
+  content: '';
+  position: absolute;
+  left: -20px;
+  top: 10px;
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  background: #5f70ff;
+  box-shadow: 0 0 8px #5f70ff;
+}
+
+/* -- Browser Frame Chrome framing for live screenshots -- */
+.browser-frame {
+  border-radius: 16px;
+  border: 1px solid rgba(200, 215, 239, 0.2);
+  background: #0d1222;
+  box-shadow: 0 25px 60px rgba(0, 0, 0, 0.8);
+  overflow: hidden;
+}
+
+.browser-header {
+  height: 38px;
+  background: #11172b;
+  border-bottom: 1px solid rgba(200, 215, 239, 0.1);
+  display: flex;
+  align-items: center;
+  padding: 0 16px;
+  position: relative;
+}
+
+.browser-dots {
+  display: flex;
+  gap: 6px;
+}
+
+.browser-dot {
+  width: 10px;
+  height: 10px;
+  border-radius: 50%;
+}
+
+.browser-dot.red { background: #ff5f56; }
+.browser-dot.yellow { background: #ffbd2e; }
+.browser-dot.green { background: #27c93f; }
+
+.browser-address {
+  margin: 0 auto;
+  width: 50%;
+  height: 22px;
+  background: rgba(0, 0, 0, 0.3);
+  border-radius: 6px;
+  border: 1px solid rgba(255, 255, 255, 0.05);
+  font-family: monospace;
+  font-size: 11px;
+  color: rgba(200, 215, 239, 0.6);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}

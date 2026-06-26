@@ -127,21 +127,21 @@ export function SoutenanceDeck() {
             description: "Les antiquités exigent une identification précise (époque, provenance, état) et une valorisation qui diffèrent des produits génériques de masse.",
             icon: Sparkles,
             metric: "Transactions de forte valeur",
-            rotateClass: "rotate-[-1.5deg] -translate-y-1"
+            step: "01"
           },
           {
             title: "Transition Digitale",
             description: "Les brocantes traditionnelles s'étendent en ligne, exigeant des galeries virtuelles interactives et sécurisées pour rassurer les passionnés.",
             icon: Monitor,
             metric: "Fiche produit détaillée",
-            rotateClass: "rotate-[0deg] translate-y-0"
+            step: "02"
           },
           {
             title: "Relation de Confiance",
             description: "L'acheteur doit être assuré de la provenance et de l'authenticité d'un artefact avant d'engager une transaction.",
             icon: ShieldAlert,
             metric: "Curation & Sécurité",
-            rotateClass: "rotate-[1.5deg] translate-y-1.5"
+            step: "03"
           }
         ]
       }
@@ -220,21 +220,24 @@ export function SoutenanceDeck() {
             role: "Explorateur & Acquéreur",
             desc: "Explore le catalogue public, sauvegarde dans sa wishlist, gère son panier, négocie avec le vendeur et valide ses commandes (Cash on Delivery).",
             icon: Heart,
-            shapeClass: "rounded-tl-[3.5rem] rounded-br-[3.5rem]"
+            shapeClass: "rounded-tl-[3.5rem] rounded-br-[3.5rem]",
+            align: "left"
           },
           {
             name: "Vendeur / Brocanteur",
             role: "Marchand d'Artéfacts",
             desc: "Publie ses créations et antiquités (état brouillon/soumis), suit ses ventes, expédie et change le statut des commandes associées à sa galerie.",
             icon: TrendingUp,
-            shapeClass: "rounded-tr-[3.5rem] rounded-bl-[3.5rem]"
+            shapeClass: "rounded-tr-[3.5rem] rounded-bl-[3.5rem]",
+            align: "top"
           },
           {
             name: "Administrateur / Curateur",
             role: "Gestionnaire de la Marketplace",
             desc: "Modère les artefacts soumis (Approuver/Rejeter), active ou désactive les comptes utilisateurs, et consulte le journal d'audit des actions critiques.",
             icon: Award,
-            shapeClass: "rounded-[2rem]"
+            shapeClass: "rounded-[2rem]",
+            align: "right"
           }
         ]
       }
@@ -326,7 +329,7 @@ export function SoutenanceDeck() {
         subtitle: "Visualisation de l'application réelle en fonctionnement",
         screens: [
           { title: "Page d'Accueil", img: homeImg, desc: "Design d'art élégant bleu et or accueillant les visiteurs avec des animations soignées." },
-          { title: "Catalogue", img: catalogueImg, desc: "Filtres interactifs par catégorie, prix, et état avec rechargement d'API dynamique." },
+          { title: "Catalogue des objets", img: catalogueImg, desc: "Filtres interactifs par catégorie, prix, et état avec rechargement d'API dynamique." },
           { title: "Tableau de Bord Vendeur", img: sellerDashboardImg, desc: "Suivi des statistiques de vente, de l'état des commandes et de son inventaire." },
           { title: "Espace Administration", img: adminDashboardImg, desc: "Workspace central de modération des artefacts et d'activation de comptes." },
           { title: "Messagerie Interne", img: messagesImg, desc: "Thread de discussion lié directement aux objets pour des négociations simples." }
@@ -378,6 +381,40 @@ export function SoutenanceDeck() {
     setIsDropdownOpen(false)
   }
 
+  // Keyboard navigation listeners
+  useEffect(() => {
+    const handleKeyDown = (e: KeyboardEvent) => {
+      if (e.key === 'ArrowRight' || e.key === ' ') {
+        e.preventDefault()
+        nextSlide()
+      } else if (e.key === 'ArrowLeft' || e.key === 'Backspace') {
+        e.preventDefault()
+        prevSlide()
+      }
+    }
+    window.addEventListener('keydown', handleKeyDown)
+    return () => window.removeEventListener('keydown', handleKeyDown)
+  }, [currentSlide])
+
+  // Debounced wheel listener for slide change
+  useEffect(() => {
+    let lastScrollTime = 0
+    const handleWheel = (e: WheelEvent) => {
+      const now = Date.now()
+      if (now - lastScrollTime < 1000) return
+      if (Math.abs(e.deltaY) > 30) {
+        lastScrollTime = now
+        if (e.deltaY > 0) {
+          nextSlide()
+        } else {
+          prevSlide()
+        }
+      }
+    }
+    window.addEventListener('wheel', handleWheel, { passive: true })
+    return () => window.removeEventListener('wheel', handleWheel)
+  }, [currentSlide])
+
   const slide = SLIDES[currentSlide]
 
   // Slide content render helpers
@@ -385,90 +422,76 @@ export function SoutenanceDeck() {
     switch (slide.type) {
       case 'intro':
         return (
-          <div className="flex flex-col items-center justify-center h-full text-center max-w-5xl mx-auto px-6 py-4">
-            <motion.div
-              initial={{ scale: 0.9, opacity: 0 }}
-              animate={{ scale: 1, opacity: 1 }}
-              transition={{ duration: 0.5 }}
-              className="bg-[#5f70ff]/10 border border-[#5f70ff]/30 px-5 py-2 rounded-full text-xs font-mono tracking-widest text-[#7d8bff] mb-6 uppercase"
-            >
-              {slide.content.tagline}
-            </motion.div>
-            
-            <motion.div
-              initial={{ y: 30, opacity: 0 }}
-              animate={{ y: 0, opacity: 1 }}
-              transition={{ delay: 0.1, duration: 0.6 }}
-              className="cover-frame border-2 border-[#e5c590]/35 p-12 rounded-3xl relative overflow-hidden mb-8 w-full shadow-2xl"
-            >
-              {/* Bronze/Gold filigree corner markers */}
-              <FiligreeCorners colorClass="border-[#e5c590]/50 w-5 h-5" />
+          <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 items-center max-w-7xl mx-auto px-8 w-full">
+            {/* Left Huge Frame Cover */}
+            <div className="lg:col-span-8 flex flex-col justify-center text-left">
+              <div className="bg-[#5f70ff]/10 border border-[#5f70ff]/30 px-5 py-2 rounded-full text-xs font-mono tracking-widest text-[#7d8bff] mb-6 uppercase inline-block w-fit">
+                {slide.content.tagline}
+              </div>
+              
+              <div className="cover-frame border-2 border-[#e5c590]/35 p-12 rounded-3xl relative overflow-hidden shadow-2xl mb-6">
+                <FiligreeCorners colorClass="border-[#e5c590]/50 w-6 h-6" />
 
-              <h1 className="text-5xl md:text-7xl font-bold tracking-tight mb-4 text-transparent bg-clip-text bg-gradient-to-r from-white via-[#c8d7ef] to-[#e5c590] font-serif">
-                {slide.content.title}
-              </h1>
+                <h1 className="text-6xl md:text-7xl font-bold tracking-tight mb-6 text-transparent bg-clip-text bg-gradient-to-r from-white via-[#c8d7ef] to-[#e5c590] font-serif leading-none">
+                  {slide.content.title}
+                </h1>
 
-              <p className="text-lg md:text-2xl text-teal-100/70 font-light max-w-3xl mx-auto">
-                {slide.content.subtitle}
-              </p>
-            </motion.div>
+                <p className="text-xl md:text-2xl text-teal-100/70 font-light leading-relaxed">
+                  {slide.content.subtitle}
+                </p>
+              </div>
+            </div>
 
-            <motion.div
-              initial={{ y: 30, opacity: 0 }}
-              animate={{ y: 0, opacity: 1 }}
-              transition={{ delay: 0.3, duration: 0.5 }}
-              className="grid grid-cols-1 md:grid-cols-2 gap-8 w-full max-w-3xl metal-plaque p-8 rounded-3xl mb-8 text-left"
-            >
-              <FiligreeCorners colorClass="border-[#c8d7ef]/20" />
-              <div>
+            {/* Right side Metadata plaques */}
+            <div className="lg:col-span-4 space-y-6">
+              <div className="metal-plaque p-8 rounded-3xl relative overflow-hidden shadow-xl">
+                <FiligreeCorners colorClass="border-[#c8d7ef]/20" />
                 <span className="text-xs uppercase font-mono text-[#7d8bff]/90">Réalisé par :</span>
-                <p className="text-xl font-semibold text-white mt-1 font-serif">{slide.content.author}</p>
+                <p className="text-2xl font-semibold text-white mt-1 font-serif">{slide.content.author}</p>
                 <p className="text-xs text-teal-100/50 mt-1 font-mono">Filière Développement Informatique</p>
               </div>
-              <div>
+
+              <div className="metal-plaque p-8 rounded-3xl relative overflow-hidden shadow-xl">
+                <FiligreeCorners colorClass="border-[#c8d7ef]/20" />
                 <span className="text-xs uppercase font-mono text-[#7d8bff]/90">Encadré par :</span>
-                <p className="text-xl font-semibold text-white mt-1 font-serif">{slide.content.supervisor}</p>
+                <p className="text-2xl font-semibold text-white mt-1 font-serif">{slide.content.supervisor}</p>
                 <p className="text-xs text-teal-100/50 mt-1 font-mono">{slide.content.institution}</p>
               </div>
-            </motion.div>
 
-            <motion.div
-              initial={{ opacity: 0 }}
-              animate={{ opacity: 1 }}
-              transition={{ delay: 0.5, duration: 0.5 }}
-              className="flex flex-wrap gap-3 justify-center"
-            >
-              {slide.content.highlights.map((h, i) => (
-                <span key={i} className="px-4 py-1.5 bg-[#5f70ff]/10 border border-[#5f70ff]/20 rounded-full text-xs font-mono text-[#c8d7ef]">
-                  #{h}
-                </span>
-              ))}
-            </motion.div>
+              <div className="flex flex-wrap gap-2 justify-start pt-2">
+                {slide.content.highlights.map((h, i) => (
+                  <span key={i} className="px-3.5 py-1.5 bg-[#5f70ff]/10 border border-[#5f70ff]/20 rounded-full text-xs font-mono text-[#c8d7ef]">
+                    #{h}
+                  </span>
+                ))}
+              </div>
+            </div>
           </div>
         )
 
       case 'thanks_intro':
         return (
-          <div className="flex flex-col h-full max-w-5xl mx-auto px-6 justify-center">
-            <div className="text-center mb-8">
-              <h2 className="text-4xl font-bold text-white font-serif mb-2">{slide.content.title}</h2>
-              <div className="h-1 w-24 bg-[#5f70ff] mx-auto mt-2 rounded-full" />
-              <p className="text-teal-100/60 text-sm mt-3">{slide.content.subtitle}</p>
+          <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 items-center max-w-7xl mx-auto px-8 w-full">
+            {/* Left Big Dedication Plaque */}
+            <div className="lg:col-span-4 flex flex-col">
+              <h2 className="text-5xl font-bold text-white font-serif mb-4 leading-tight">{slide.content.title}</h2>
+              <div className="h-1 w-24 bg-[#5f70ff] rounded-full mb-4" />
+              <p className="text-[#c8d7ef] text-sm font-mono leading-relaxed">{slide.content.subtitle}</p>
+              
+              <div className="mt-8 p-6 bg-white/[0.01] border border-white/[0.04] rounded-2xl text-xs font-mono text-teal-100/40 leading-relaxed">
+                ⚖️ "Le savoir et la reconnaissance sont les piliers de toute création durable."
+              </div>
             </div>
 
-            <div className="metal-plaque p-10 rounded-3xl relative overflow-hidden">
+            {/* Right Paragraph flow */}
+            <div className="lg:col-span-8 metal-plaque p-10 rounded-3xl relative overflow-hidden">
               <FiligreeCorners colorClass="border-[#c8d7ef]/25" />
-              <div className="space-y-4">
+              <div className="space-y-6">
                 {slide.content.paragraphs.map((p, idx) => (
                   <div key={idx}>
-                    <motion.p
-                      initial={{ y: 15, opacity: 0 }}
-                      animate={{ y: 0, opacity: 1 }}
-                      transition={{ delay: idx * 0.1, duration: 0.5 }}
-                      className="text-base md:text-lg text-teal-100/80 leading-relaxed font-light first-letter:text-2xl first-letter:font-bold first-letter:text-[#e5c590] first-letter:font-serif"
-                    >
+                    <p className="text-base md:text-lg text-teal-100/80 leading-relaxed font-light first-letter:text-2xl first-letter:font-bold first-letter:text-[#e5c590] first-letter:font-serif">
                       {p}
-                    </motion.p>
+                    </p>
                     {idx < slide.content.paragraphs.length - 1 && (
                       <div className="antique-separator">
                         <div className="separator-diamond" />
@@ -483,36 +506,49 @@ export function SoutenanceDeck() {
 
       case 'creative_cards':
         return (
-          <div className="flex flex-col h-full max-w-6xl mx-auto px-6 justify-center">
-            <div className="text-center mb-8">
-              <h2 className="text-3xl md:text-4xl font-bold text-white font-serif mb-2">{slide.content.title}</h2>
-              <p className="text-teal-100/60 text-sm">{slide.content.subtitle}</p>
+          <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 max-w-7xl mx-auto px-8 w-full">
+            {/* Left Header info */}
+            <div className="lg:col-span-3 flex flex-col justify-center">
+              <h2 className="text-4xl font-bold text-white font-serif mb-4 leading-tight">{slide.content.title}</h2>
+              <div className="h-1 w-16 bg-[#5f70ff] rounded-full mb-4" />
+              <p className="text-teal-100/60 text-sm leading-relaxed">{slide.content.subtitle}</p>
+              
+              <div className="mt-6 border-l-2 border-[#e5c590]/30 pl-4 py-2 font-mono text-xs text-[#e5c590]">
+                Antiquités & Brocante
+              </div>
             </div>
-            
-            <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
+
+            {/* Right Horizontal step timeline (Vertical Stack with side badges) */}
+            <div className="lg:col-span-9 space-y-6 relative pl-8 border-l border-[#5f70ff]/20">
               {slide.content.cards.map((card, idx) => {
                 const IconComponent = card.icon
                 return (
                   <motion.div
                     key={idx}
-                    initial={{ y: 30, opacity: 0 }}
+                    initial={{ y: 20, opacity: 0 }}
                     animate={{ y: 0, opacity: 1 }}
                     transition={{ delay: idx * 0.1, duration: 0.5 }}
-                    className={`metal-plaque p-8 rounded-3xl flex flex-col justify-between shadow-2xl relative overflow-hidden group ${card.rotateClass}`}
+                    className="metal-plaque p-6 rounded-2xl flex items-center justify-between gap-6 shadow-xl relative overflow-hidden group timeline-dot"
                   >
-                    {/* Corner decorators */}
-                    <FiligreeCorners colorClass="border-[#c8d7ef]/20" />
-
-                    <div>
-                      <div className="p-4 bg-[#5f70ff]/10 rounded-2xl mb-6 text-[#7d8bff] inline-block border border-[#5f70ff]/20">
-                        <IconComponent className="h-7 w-7" />
+                    <FiligreeCorners colorClass="border-[#c8d7ef]/15" />
+                    
+                    <div className="flex items-center gap-6">
+                      <div className="p-3 bg-[#5f70ff]/10 rounded-xl text-[#7d8bff] border border-[#5f70ff]/20">
+                        <IconComponent className="h-6 w-6" />
                       </div>
-                      <h3 className="text-xl font-bold text-white mb-3 font-serif">{card.title}</h3>
-                      <p className="text-teal-100/70 text-sm leading-relaxed font-light mb-8">{card.description}</p>
+                      <div>
+                        <h3 className="text-lg font-bold text-white font-serif flex items-center gap-2">
+                          <span className="text-xs font-mono text-[#e5c590]">{card.step}.</span>
+                          {card.title}
+                        </h3>
+                        <p className="text-teal-100/70 text-sm font-light mt-1 max-w-xl">{card.description}</p>
+                      </div>
                     </div>
 
-                    <div className="border-t border-[#c8d7ef]/10 pt-4 mt-auto">
-                      <span className="text-[11px] uppercase font-mono text-[#e5c590] tracking-widest">{card.metric}</span>
+                    <div className="text-right shrink-0">
+                      <span className="text-[10px] uppercase font-mono text-[#e5c590] bg-[#e5c590]/10 px-3 py-1 rounded-full tracking-wider border border-[#e5c590]/20">
+                        {card.metric}
+                      </span>
                     </div>
                   </motion.div>
                 )
@@ -523,30 +559,32 @@ export function SoutenanceDeck() {
 
       case 'bento':
         return (
-          <div className="flex flex-col h-full max-w-6xl mx-auto px-6 justify-center">
+          <div className="flex flex-col max-w-7xl mx-auto px-8 w-full h-full justify-center">
             <div className="text-center mb-8">
               <h2 className="text-3xl md:text-4xl font-bold text-white font-serif mb-2">{slide.content.title}</h2>
               <p className="text-teal-100/60 text-sm">{slide.content.subtitle}</p>
             </div>
             
-            <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
+            {/* Asymmetrical Bento Grid */}
+            <div className="grid grid-cols-1 lg:grid-cols-12 gap-6 items-stretch">
               {slide.content.cards.map((card, idx) => {
                 const IconComponent = card.icon
+                // Custom span rules for asymmetric bento grid layout
+                const gridSpan = idx === 0 ? "lg:col-span-8" : idx === 1 ? "lg:col-span-4" : "lg:col-span-12"
                 return (
                   <motion.div
                     key={idx}
-                    initial={{ y: 30, opacity: 0 }}
+                    initial={{ y: 20, opacity: 0 }}
                     animate={{ y: 0, opacity: 1 }}
                     transition={{ delay: idx * 0.1, duration: 0.5 }}
-                    className="metal-plaque plaque-cracked p-8 rounded-3xl flex flex-col items-start shadow-2xl relative overflow-hidden group"
+                    className={`metal-plaque plaque-cracked p-8 rounded-3xl flex flex-col items-start shadow-2xl relative overflow-hidden group ${gridSpan}`}
                   >
-                    {/* Muted Blue corner filigrees */}
                     <FiligreeCorners colorClass="border-blue-400/25" />
 
-                    <div className="p-4 bg-[#5f70ff]/10 rounded-2xl mb-6 text-[#7d8bff] group-hover:scale-110 transition-transform border border-[#5f70ff]/20">
+                    <div className="p-4 bg-[#5f70ff]/10 rounded-2xl mb-4 text-[#7d8bff] border border-[#5f70ff]/20">
                       <IconComponent className="h-7 w-7" />
                     </div>
-                    <h3 className="text-xl font-bold text-white mb-3 font-serif">{card.title}</h3>
+                    <h3 className="text-xl font-bold text-white mb-2 font-serif">{card.title}</h3>
                     <p className="text-teal-100/70 text-sm leading-relaxed font-light">{card.description}</p>
                   </motion.div>
                 )
@@ -557,37 +595,47 @@ export function SoutenanceDeck() {
 
       case 'features':
         return (
-          <div className="flex flex-col h-full max-w-6xl mx-auto px-6 justify-center">
-            <div className="text-center mb-8">
-              <h2 className="text-3xl md:text-4xl font-bold text-white font-serif mb-2">{slide.content.title}</h2>
-              <p className="text-teal-100/60 text-sm">{slide.content.subtitle}</p>
+          <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 max-w-7xl mx-auto px-8 w-full">
+            {/* Left side Large Objective Highlight Plaque */}
+            <div className="lg:col-span-4 flex flex-col">
+              <div className="metal-plaque plaque-objective p-8 rounded-3xl relative overflow-hidden h-full flex flex-col justify-between">
+                <FiligreeCorners colorClass="border-[#e5c590]/30" />
+                <div>
+                  <h2 className="text-3xl font-bold text-white font-serif mb-4 leading-tight">{slide.content.title}</h2>
+                  <div className="h-1 w-16 bg-[#5f70ff] rounded-full mb-4" />
+                  <p className="text-teal-100/60 text-xs md:text-sm leading-relaxed">{slide.content.subtitle}</p>
+                </div>
+                <div className="mt-8 text-xs font-mono text-[#e5c590] tracking-widest border-t border-white/5 pt-4">
+                  VALEUR AJOUTÉE
+                </div>
+              </div>
             </div>
 
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
+            {/* Right side Detail List checkmarks */}
+            <div className="lg:col-span-8 space-y-6">
               {slide.content.columns.map((col, idx) => (
                 <motion.div
                   key={idx}
-                  initial={{ y: 30, opacity: 0 }}
+                  initial={{ y: 20, opacity: 0 }}
                   animate={{ y: 0, opacity: 1 }}
                   transition={{ delay: idx * 0.15, duration: 0.5 }}
-                  className="metal-plaque plaque-objective p-8 rounded-3xl flex flex-col relative overflow-hidden"
+                  className="metal-plaque p-6 rounded-2xl relative overflow-hidden"
                 >
                   <FiligreeCorners colorClass="border-[#c8d7ef]/20" />
-
-                  <h3 className="text-xl font-semibold text-[#7d8bff] mb-6 border-b border-[#c8d7ef]/10 pb-3 flex items-center gap-3 font-serif">
-                    <CheckCircle2 className="h-6 w-6 text-[#5f70ff]" />
+                  <h3 className="text-lg font-bold text-[#7d8bff] mb-4 flex items-center gap-3 font-serif border-b border-white/[0.04] pb-2">
+                    <CheckCircle2 className="h-5 w-5 text-[#5f70ff]" />
                     {col.title}
                   </h3>
-                  <ul className="space-y-4 flex-1">
+                  <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                     {col.items.map((item, itemIdx) => (
-                      <li key={itemIdx} className="flex items-start gap-3.5 text-sm">
+                      <div key={itemIdx} className="flex items-start gap-3 text-xs md:text-sm">
                         <span className="p-0.5 rounded-full bg-[#5f70ff]/10 text-[#7d8bff] border border-[#5f70ff]/20 mt-0.5 shrink-0">
-                          <Check className="h-4 w-4" />
+                          <Check className="h-3.5 w-3.5" />
                         </span>
                         <span className="text-teal-100/80 leading-relaxed font-light">{item}</span>
-                      </li>
+                      </div>
                     ))}
-                  </ul>
+                  </div>
                 </motion.div>
               ))}
             </div>
@@ -596,7 +644,7 @@ export function SoutenanceDeck() {
 
       case 'actors':
         return (
-          <div className="flex flex-col h-full max-w-6xl mx-auto px-6 justify-center">
+          <div className="flex flex-col max-w-7xl mx-auto px-8 w-full h-full justify-center">
             <div className="text-center mb-8">
               <h2 className="text-3xl md:text-4xl font-bold text-white font-serif mb-2">{slide.content.title}</h2>
               <p className="text-teal-100/60 text-sm">{slide.content.subtitle}</p>
@@ -605,22 +653,33 @@ export function SoutenanceDeck() {
             <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
               {slide.content.actors.map((actor, idx) => {
                 const IconComponent = actor.icon
+                
+                // Design variations for the three actors
+                const cardLayout = 
+                  actor.align === "left" 
+                    ? "items-start text-left" 
+                    : actor.align === "right" 
+                      ? "items-end text-right" 
+                      : "items-center text-center"
+                      
                 return (
                   <motion.div
                     key={idx}
                     initial={{ scale: 0.95, opacity: 0 }}
                     animate={{ scale: 1, opacity: 1 }}
                     transition={{ delay: idx * 0.1, duration: 0.5 }}
-                    className={`metal-plaque p-8 flex flex-col text-center relative overflow-hidden group ${actor.shapeClass}`}
+                    className={`metal-plaque p-8 flex flex-col justify-between relative overflow-hidden group ${actor.shapeClass} ${cardLayout}`}
                   >
                     <FiligreeCorners colorClass="border-[#c8d7ef]/20" />
 
-                    <div className="mx-auto p-4 bg-[#5f70ff]/10 rounded-full mb-6 text-[#7d8bff] group-hover:bg-[#5f70ff]/20 transition-all border border-[#5f70ff]/20">
+                    <div className="p-4 bg-[#5f70ff]/10 rounded-2xl mb-6 text-[#7d8bff] group-hover:bg-[#5f70ff]/20 transition-all border border-[#5f70ff]/20 inline-block w-fit">
                       <IconComponent className="h-8 w-8" />
                     </div>
-                    <h3 className="text-lg font-bold text-white mb-1.5 font-serif">{actor.name}</h3>
-                    <span className="text-[11px] font-mono text-[#e5c590] mb-4 block uppercase tracking-wider">{actor.role}</span>
-                    <p className="text-teal-100/70 text-xs leading-relaxed font-light">{actor.desc}</p>
+                    <div>
+                      <h3 className="text-xl font-bold text-white mb-1.5 font-serif">{actor.name}</h3>
+                      <span className="text-xs font-mono text-[#e5c590] mb-4 block uppercase tracking-wider">{actor.role}</span>
+                      <p className="text-teal-100/70 text-xs md:text-sm leading-relaxed font-light">{actor.desc}</p>
+                    </div>
                   </motion.div>
                 )
               })}
@@ -630,12 +689,13 @@ export function SoutenanceDeck() {
 
       case 'usecase':
         return (
-          <div className="flex flex-col h-full max-w-6xl mx-auto px-6 justify-center">
-            <div className="text-center mb-6">
+          <div className="flex flex-col max-w-7xl mx-auto px-8 w-full h-full justify-center">
+            <div className="text-center mb-8">
               <h2 className="text-3xl md:text-4xl font-bold text-white font-serif mb-2">{slide.content.title}</h2>
               <p className="text-teal-100/60 text-sm">{slide.content.subtitle}</p>
             </div>
 
+            {/* Split Process Flow layout */}
             <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
               {slide.content.columns.map((col, idx) => (
                 <motion.div
@@ -647,17 +707,17 @@ export function SoutenanceDeck() {
                 >
                   <FiligreeCorners colorClass="border-[#c8d7ef]/20" />
 
-                  <h3 className="text-lg font-bold text-[#7d8bff] mb-6 border-b border-[#c8d7ef]/10 pb-3 flex items-center gap-3 font-serif">
+                  <h3 className="text-xl font-bold text-[#7d8bff] mb-6 border-b border-[#c8d7ef]/10 pb-3 flex items-center gap-3 font-serif">
                     <CheckCircle2 className="h-5 w-5" />
                     {col.title}
                   </h3>
                   <ul className="space-y-4 flex-1">
                     {col.items.map((item, itemIdx) => (
-                      <li key={itemIdx} className="flex items-start gap-3.5 text-xs md:text-sm">
-                        <span className="p-0.5 rounded-full bg-[#5f70ff]/10 text-[#7d8bff] border border-[#5f70ff]/20 mt-0.5 shrink-0">
-                          <Check className="h-4 w-4" />
+                      <li key={itemIdx} className="flex items-start gap-4 text-xs md:text-sm">
+                        <span className="flex h-6 w-6 items-center justify-center rounded-lg bg-[#5f70ff]/10 text-xs font-mono font-bold text-[#7d8bff] border border-[#5f70ff]/20 shrink-0">
+                          {String(itemIdx + 1).padStart(2, '0')}
                         </span>
-                        <span className="text-teal-100/80 leading-relaxed font-light">{item}</span>
+                        <span className="text-teal-100/80 leading-relaxed font-light mt-0.5">{item}</span>
                       </li>
                     ))}
                   </ul>
@@ -669,15 +729,15 @@ export function SoutenanceDeck() {
 
       case 'architecture':
         return (
-          <div className="flex flex-col h-full max-w-6xl mx-auto px-6 justify-center">
+          <div className="flex flex-col max-w-7xl mx-auto px-8 w-full h-full justify-center">
             <div className="text-center mb-6">
               <h2 className="text-3xl md:text-4xl font-bold text-white font-serif mb-2">{slide.content.title}</h2>
               <p className="text-teal-100/60 text-sm">{slide.content.subtitle}</p>
             </div>
 
             <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 items-center">
-              {/* Left Details */}
-              <div className="lg:col-span-5 space-y-4">
+              {/* Left Details takes 4 cols */}
+              <div className="lg:col-span-4 space-y-4">
                 {slide.content.details.map((detail, idx) => (
                   <motion.div
                     key={idx}
@@ -688,25 +748,24 @@ export function SoutenanceDeck() {
                   >
                     <FiligreeCorners colorClass="border-[#c8d7ef]/10" />
 
-                    <div className="flex items-center gap-2 mb-1.5">
+                    <div className="flex items-center gap-2 mb-1">
                       <span className="h-2 w-2 rounded-full bg-[#5f70ff] shadow-[0_0_8px_rgba(95,112,255,1)]" />
                       <h3 className="font-semibold text-white text-base font-serif">{detail.label}</h3>
                     </div>
-                    <p className="text-xs font-mono text-[#7d8bff] mb-1.5">{detail.tech}</p>
+                    <p className="text-xs font-mono text-[#7d8bff] mb-1">{detail.tech}</p>
                     <p className="text-xs text-teal-100/70 leading-relaxed font-light">{detail.desc}</p>
                   </motion.div>
                 ))}
               </div>
 
-              {/* Right Architecture Diagram Etched on Glass Plate */}
+              {/* Right Architecture Diagram takes 8 cols (Larger image display) */}
               <motion.div
                 initial={{ scale: 0.95, opacity: 0 }}
                 animate={{ scale: 1, opacity: 1 }}
                 transition={{ delay: 0.2, duration: 0.6 }}
-                className="lg:col-span-7 diagram-glass-plate p-4 rounded-3xl overflow-hidden group relative"
+                className="lg:col-span-8 diagram-glass-plate p-4 rounded-3xl overflow-hidden group relative"
               >
-                {/* Bronze Corner Accents for Diagram Framing */}
-                <FiligreeCorners colorClass="border-[#e5c590]/40 w-4 h-4" />
+                <FiligreeCorners colorClass="border-[#e5c590]/40 w-5 h-5" />
 
                 <div className="absolute top-4 left-4 bg-black/60 border border-white/10 px-3 py-1 rounded-lg text-[11px] font-mono text-[#7d8bff] z-10">
                   Client-Server System Design
@@ -714,7 +773,7 @@ export function SoutenanceDeck() {
                 <img
                   src={slide.content.diagram}
                   alt="Architecture Diagram"
-                  className="rounded-2xl w-full max-h-[380px] object-contain group-hover:scale-[1.01] transition-transform duration-500 bg-[#061417] p-2 border border-white/5"
+                  className="rounded-2xl w-full max-h-[420px] object-contain group-hover:scale-[1.01] transition-transform duration-500 bg-[#061417] p-2 border border-white/5"
                 />
               </motion.div>
             </div>
@@ -723,46 +782,32 @@ export function SoutenanceDeck() {
 
       case 'data_model':
         return (
-          <div className="flex flex-col h-full max-w-6xl mx-auto px-6 justify-center">
+          <div className="flex flex-col max-w-7xl mx-auto px-8 w-full h-full justify-center">
             <div className="text-center mb-6">
               <h2 className="text-3xl md:text-4xl font-bold text-white font-serif mb-2">{slide.content.title}</h2>
               <p className="text-teal-100/60 text-sm">{slide.content.subtitle}</p>
             </div>
 
-            <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 items-center">
-              <div className="lg:col-span-4 space-y-4">
-                <div className="metal-plaque p-6 rounded-3xl relative overflow-hidden">
+            <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 items-stretch">
+              {/* Left Side brief text (3 cols) */}
+              <div className="lg:col-span-3 flex flex-col justify-center">
+                <div className="metal-plaque p-6 rounded-3xl relative overflow-hidden h-full flex flex-col justify-center">
                   <FiligreeCorners colorClass="border-[#c8d7ef]/20" />
-
-                  <h3 className="text-[#7d8bff] font-bold mb-3 font-serif">Structure BDD Relationnelle</h3>
-                  <p className="text-teal-100/70 text-xs md:text-sm leading-relaxed font-light mb-5">
+                  <h3 className="text-[#7d8bff] font-bold mb-3 font-serif">Structure SQL</h3>
+                  <p className="text-teal-100/70 text-xs md:text-sm leading-relaxed font-light">
                     {slide.content.text}
                   </p>
-                  <ul className="space-y-3 text-xs md:text-sm text-teal-100/80">
-                    <li className="flex items-center gap-2">
-                      <span className="h-1.5 w-1.5 rounded-full bg-[#5f70ff]" />
-                      <span>Clés d'intégrités strictes</span>
-                    </li>
-                    <li className="flex items-center gap-2">
-                      <span className="h-1.5 w-1.5 rounded-full bg-[#5f70ff]" />
-                      <span>Cascade & Liaison relationnelle</span>
-                    </li>
-                    <li className="flex items-center gap-2">
-                      <span className="h-1.5 w-1.5 rounded-full bg-[#5f70ff]" />
-                      <span>Stockage images & modération</span>
-                    </li>
-                  </ul>
                 </div>
               </div>
 
-              {/* Right BDD/ERD Diagram Etched on Glass Plate */}
+              {/* Right BDD ERD Diagram (Takes 9 columns - much larger!) */}
               <motion.div
                 initial={{ scale: 0.95, opacity: 0 }}
                 animate={{ scale: 1, opacity: 1 }}
                 transition={{ delay: 0.2, duration: 0.6 }}
-                className="lg:col-span-8 diagram-glass-plate p-4 rounded-3xl overflow-hidden group relative"
+                className="lg:col-span-9 diagram-glass-plate p-4 rounded-3xl overflow-hidden group relative flex items-center justify-center"
               >
-                <FiligreeCorners colorClass="border-[#e5c590]/40 w-4 h-4" />
+                <FiligreeCorners colorClass="border-[#e5c590]/40 w-5 h-5" />
 
                 <div className="absolute top-4 left-4 bg-black/60 border border-white/10 px-3 py-1 rounded-lg text-[11px] font-mono text-[#7d8bff] z-10">
                   UML Entity Relationship Diagram
@@ -770,7 +815,7 @@ export function SoutenanceDeck() {
                 <img
                   src={slide.content.diagram}
                   alt="Database ER Diagram"
-                  className="rounded-2xl w-full max-h-[380px] object-contain group-hover:scale-[1.01] transition-transform duration-500 bg-[#061417] p-2 border border-white/5"
+                  className="rounded-2xl w-full max-h-[440px] object-contain group-hover:scale-[1.01] transition-transform duration-500 bg-[#061417] p-2 border border-white/5"
                 />
               </motion.div>
             </div>
@@ -779,36 +824,36 @@ export function SoutenanceDeck() {
 
       case 'rbac_slide':
         return (
-          <div className="flex flex-col h-full max-w-6xl mx-auto px-6 justify-center">
+          <div className="flex flex-col max-w-7xl mx-auto px-8 w-full h-full justify-center">
             <div className="text-center mb-6">
               <h2 className="text-3xl md:text-4xl font-bold text-white font-serif mb-2">{slide.content.title}</h2>
               <p className="text-teal-100/60 text-sm">{slide.content.subtitle}</p>
             </div>
 
-            <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 items-center">
-              <div className="lg:col-span-4 space-y-4">
-                <div className="metal-plaque p-6 rounded-3xl relative overflow-hidden">
+            <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 items-stretch">
+              {/* Left Side brief text (3 cols) */}
+              <div className="lg:col-span-3 flex flex-col justify-center">
+                <div className="metal-plaque p-6 rounded-3xl relative overflow-hidden h-full flex flex-col justify-center">
                   <FiligreeCorners colorClass="border-[#c8d7ef]/20" />
-
-                  <h3 className="text-[#7d8bff] font-bold mb-3 font-serif">Sécurité Applicative</h3>
-                  <p className="text-teal-100/70 text-xs md:text-sm leading-relaxed font-light mb-5">
+                  <h3 className="text-[#7d8bff] font-bold mb-3 font-serif">Contrôle RBAC</h3>
+                  <p className="text-teal-100/70 text-xs md:text-sm leading-relaxed font-light mb-4">
                     {slide.content.text}
                   </p>
-                  <div className="p-4 bg-red-500/10 border border-red-500/20 rounded-2xl flex gap-3 text-red-400 text-xs leading-relaxed">
-                    <ShieldAlert className="h-5 w-5 shrink-0" />
-                    <span>Endpoints API Django protégés par Token JWT à durée de vie limitée.</span>
+                  <div className="p-3 bg-red-500/10 border border-red-500/20 rounded-xl flex gap-2 text-red-400 text-xs leading-relaxed">
+                    <ShieldAlert className="h-4 w-4 shrink-0 mt-0.5" />
+                    <span>JWT token encryption security.</span>
                   </div>
                 </div>
               </div>
 
-              {/* Right RBAC Diagram Etched on Glass Plate */}
+              {/* Right RBAC matrix (Takes 9 columns - much larger!) */}
               <motion.div
                 initial={{ scale: 0.95, opacity: 0 }}
                 animate={{ scale: 1, opacity: 1 }}
                 transition={{ delay: 0.2, duration: 0.6 }}
-                className="lg:col-span-8 diagram-glass-plate p-4 rounded-3xl overflow-hidden group relative"
+                className="lg:col-span-9 diagram-glass-plate p-4 rounded-3xl overflow-hidden group relative flex items-center justify-center"
               >
-                <FiligreeCorners colorClass="border-[#e5c590]/40 w-4 h-4" />
+                <FiligreeCorners colorClass="border-[#e5c590]/40 w-5 h-5" />
 
                 <div className="absolute top-4 left-4 bg-black/60 border border-white/10 px-3 py-1 rounded-lg text-[11px] font-mono text-[#7d8bff] z-10">
                   RBAC Permission Matrix
@@ -816,7 +861,7 @@ export function SoutenanceDeck() {
                 <img
                   src={slide.content.diagram}
                   alt="RBAC Diagram"
-                  className="rounded-2xl w-full max-h-[380px] object-contain group-hover:scale-[1.01] transition-transform duration-500 bg-[#061417] p-2 border border-white/5"
+                  className="rounded-2xl w-full max-h-[440px] object-contain group-hover:scale-[1.01] transition-transform duration-500 bg-[#061417] p-2 border border-white/5"
                 />
               </motion.div>
             </div>
@@ -825,7 +870,7 @@ export function SoutenanceDeck() {
 
       case 'screenshots':
         return (
-          <div className="flex flex-col h-full max-w-6xl mx-auto px-6 justify-center">
+          <div className="flex flex-col max-w-7xl mx-auto px-8 w-full h-full justify-center">
             <div className="text-center mb-4">
               <h2 className="text-3xl md:text-4xl font-bold text-white font-serif mb-2">{slide.content.title}</h2>
               <p className="text-teal-100/60 text-sm">{slide.content.subtitle}</p>
@@ -837,7 +882,7 @@ export function SoutenanceDeck() {
 
       case 'synthesis':
         return (
-          <div className="flex flex-col h-full max-w-6xl mx-auto px-6 justify-center">
+          <div className="flex flex-col max-w-7xl mx-auto px-8 w-full h-full justify-center">
             <div className="text-center mb-6">
               <h2 className="text-3xl md:text-4xl font-bold text-white font-serif mb-2">{slide.content.title}</h2>
               <p className="text-teal-100/60 text-sm">{slide.content.subtitle}</p>
@@ -997,25 +1042,27 @@ export function SoutenanceDeck() {
 
       {/* MAIN SLIDE CONTAINER */}
       <main className="relative z-10 flex-1 flex items-center justify-center py-6 w-full overflow-hidden">
-        <AnimatePresence mode="wait" custom={direction}>
+        <AnimatePresence mode="wait">
           <motion.div
             key={currentSlide}
-            custom={direction}
             variants={{
-              enter: (dir: number) => ({
-                x: dir > 0 ? '100vw' : '-100vw',
-                opacity: 0
-              }),
-              center: {
-                x: 0,
-                opacity: 1,
-                transition: { type: 'spring', stiffness: 95, damping: 18 }
-              },
-              exit: (dir: number) => ({
-                x: dir < 0 ? '100vw' : '-100vw',
+              enter: {
                 opacity: 0,
-                transition: { duration: 0.25 }
-              })
+                y: 20,
+                scale: 0.98
+              },
+              center: {
+                opacity: 1,
+                y: 0,
+                scale: 1,
+                transition: { type: 'spring', stiffness: 220, damping: 22 }
+              },
+              exit: {
+                opacity: 0,
+                y: -20,
+                scale: 0.98,
+                transition: { duration: 0.2 }
+              }
             }}
             initial="enter"
             animate="center"
@@ -1101,9 +1148,9 @@ function ScreenshotShowcase({ screens }: { screens: Array<{ title: string; img: 
   const [activeIdx, setActiveIdx] = useState(0)
 
   return (
-    <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 items-center mt-2 w-full max-w-6xl mx-auto">
-      {/* Left Menu Selection */}
-      <div className="lg:col-span-4 space-y-3">
+    <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 items-stretch mt-2 w-full max-w-7xl mx-auto px-4">
+      {/* Left Menu Selection (Takes 3 columns) */}
+      <div className="lg:col-span-3 space-y-3 flex flex-col justify-center">
         {screens.map((screen, idx) => (
           <button
             key={idx}
@@ -1126,26 +1173,39 @@ function ScreenshotShowcase({ screens }: { screens: Array<{ title: string; img: 
         ))}
       </div>
 
-      {/* Right Image Preview Screen on Glass Plate */}
-      <div className="lg:col-span-8 flex flex-col diagram-glass-plate p-5 rounded-3xl shadow-2xl">
-        {/* Golden corner filigrees to tie screenshots with artisan theme */}
-        <FiligreeCorners colorClass="border-[#e5c590]/40 w-4 h-4" />
+      {/* Right Browser Chrome replica image view (Takes 9 columns - much larger!) */}
+      <div className="lg:col-span-9 flex flex-col browser-frame">
+        {/* Browser Mock Header */}
+        <div className="browser-header">
+          <div className="browser-dots">
+            <span className="browser-dot red" />
+            <span className="browser-dot yellow" />
+            <span className="browser-dot green" />
+          </div>
+          <div className="browser-address">
+            localhost:5173/artifacts/showcase
+          </div>
+          <div className="w-16" />
+        </div>
 
-        <div className="relative rounded-2xl overflow-hidden aspect-video bg-[#0b0e1a] border border-white/[0.04]">
+        {/* Screenshot Viewport */}
+        <div className="relative overflow-hidden aspect-video bg-[#0b0e1a]">
           <AnimatePresence mode="wait">
             <motion.img
               key={activeIdx}
               src={screens[activeIdx].img}
               alt={screens[activeIdx].title}
-              initial={{ opacity: 0 }}
-              animate={{ opacity: 1 }}
-              exit={{ opacity: 0 }}
+              initial={{ opacity: 0, scale: 0.99 }}
+              animate={{ opacity: 1, scale: 1 }}
+              exit={{ opacity: 0, scale: 0.99 }}
               transition={{ duration: 0.25 }}
-              className="w-full h-full object-cover max-h-[380px]"
+              className="w-full h-full object-cover max-h-[500px]"
             />
           </AnimatePresence>
         </div>
-        <p className="text-xs md:text-sm text-teal-100/70 mt-4 font-mono leading-relaxed bg-[#0b0e1a]/40 p-4 rounded-xl border border-[#c8d7ef]/10">
+
+        {/* Captions */}
+        <p className="text-xs md:text-sm text-teal-100/70 font-mono leading-relaxed bg-[#11172b] p-4 border-t border-white/[0.04]">
           💡 <span className="font-semibold text-[#e5c590] font-serif">{screens[activeIdx].title} :</span> {screens[activeIdx].desc}
         </p>
       </div>
