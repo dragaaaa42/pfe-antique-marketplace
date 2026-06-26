@@ -384,13 +384,25 @@ export function SoutenanceDeck() {
     },
     {
       id: 14,
-      title: "15. Bilan & Perspectives",
+      title: "15. Démo : Espace Administration",
+      type: "screenshots_public",
+      content: {
+        title: "Démonstration : Espace Administration",
+        subtitle: "Workspace d'administration et de curation de la marketplace",
+        screens: [
+          { title: "Dashboard Administration", img: adminDashboardImg, desc: "Espace central pour approuver/rejeter les artefacts et gérer les utilisateurs et rôles." }
+        ]
+      }
+    },
+    {
+      id: 15,
+      title: "16. Bilan & Perspectives",
       type: "synthesis",
       content: {
         title: "Bilan du Projet & Perspectives",
         subtitle: "Synthèse professionnelle pour le jury de soutenance",
         metrics: [
-          { value: "3", label: "Espaces Dashboards distincts" },
+          { value: "4", label: "Espaces Dashboards distincts" },
           { value: "19", label: "Scénarios de tests validés" },
           { value: "08", label: "Entités de base de données" },
           { value: "24+", label: "Fiches produits pré-chargées" }
@@ -919,7 +931,7 @@ export function SoutenanceDeck() {
               <p className="text-teal-100/60 text-base md:text-lg">{slide.content.subtitle}</p>
             </div>
 
-            <ScreenshotShowcase screens={slide.content.screens} />
+            <ScreenshotShowcase screens={slide.content.screens} slideId={slide.id} />
           </div>
         )
 
@@ -931,7 +943,7 @@ export function SoutenanceDeck() {
               <p className="text-teal-100/60 text-base md:text-lg">{slide.content.subtitle}</p>
             </div>
 
-            <ScreenshotShowcase screens={slide.content.screens} />
+            <ScreenshotShowcase screens={slide.content.screens} slideId={slide.id} />
           </div>
         )
 
@@ -1210,12 +1222,12 @@ export function SoutenanceDeck() {
 }
 
 // Subcomponent for screenshot gallery slide to avoid big blocks
-function ScreenshotShowcase({ screens }: { screens: Array<{ title: string; img: string; desc: string }> }) {
+function ScreenshotShowcase({ screens, slideId }: { screens: Array<{ title: string; img: string; desc: string }>; slideId: number }) {
   const [activeIdx, setActiveIdx] = useState(0)
 
   useEffect(() => {
     setActiveIdx(0)
-  }, [screens])
+  }, [slideId])
 
   const hasMultiple = screens.length > 1
 
