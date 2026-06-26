@@ -70,6 +70,7 @@ import { MarketplaceImage } from './components/MarketplaceImage'
 import atlasPoster from './assets/marketplace/silver-tea-service.jpg'
 import {
   SellerDashboardPage,
+  SellerGalleriesPage,
   SellerMessagesPage,
   SellerOrderDetailPage,
   SellerOrdersPage,
@@ -106,6 +107,7 @@ export default function App() {
           <Route path="/seller/messages/:id" element={<SellerMessagesPage />} />
           <Route path="/seller/orders" element={<SellerOrdersPage />} />
           <Route path="/seller/orders/:id" element={<SellerOrderDetailPage />} />
+          <Route path="/seller/galleries" element={<SellerGalleriesPage />} />
           <Route path="/admin" element={<AdminDashboardPage />} />
           <Route path="/admin/users" element={<AdminUsersPage />} />
           <Route path="/admin/users/:id" element={<AdminUserDetailPage />} />
@@ -884,34 +886,6 @@ function CatalogPage() {
     }
   }, [user])
 
-  useEffect(() => {
-    if (!user) {
-      setConversationBadge(0)
-      return
-    }
-
-    let cancelled = false
-
-    const loadBadge = async () => {
-      try {
-        const conversations = await getConversations()
-        if (cancelled) return
-        setConversationBadge(conversations.reduce((total, conversation) => total + conversation.unread_count, 0))
-      } catch {
-        if (cancelled) return
-      }
-    }
-
-    void loadBadge()
-    const interval = window.setInterval(() => {
-      void loadBadge()
-    }, 5000)
-
-    return () => {
-      cancelled = true
-      window.clearInterval(interval)
-    }
-  }, [user])
   const marketplaceArtifacts = artifacts
   const publicArtifacts = marketplaceArtifacts.filter((artifact) => artifact.status === 'approved')
   const catalogSource = publicArtifacts
@@ -1898,10 +1872,11 @@ function LoginPage() {
     setMessage('')
 
     try {
-      await login(form)
+      const session = await login(form)
       setStatus('success')
       setMessage('You are signed in.')
-      navigate(locationState?.redirectTo ?? '/', { replace: true })
+      const targetPath = locationState?.redirectTo || getDashboardPathForRole(session.user?.role)
+      navigate(targetPath, { replace: true })
     } catch {
       setStatus('error')
       setMessage('Login failed. Check your email, password, and backend server.')
