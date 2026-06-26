@@ -41,7 +41,7 @@ import sellerDashboardImg from './assets/docs/seller_dashboard.png'
 import catalogueImg from './assets/docs/catalogue.png'
 import messagesImg from './assets/docs/messages.png'
 
-// Reusable Filigree Corner Brackets Component (thicker border for presentation scale)
+// Reusable Filigree Corner Brackets Component
 function FiligreeCorners({ colorClass = "border-[#c8d7ef]/20" }: { colorClass?: string }) {
   return (
     <>
@@ -60,6 +60,14 @@ export function SoutenanceDeck() {
   const [isDropdownOpen, setIsDropdownOpen] = useState(false)
   const [mousePos, setMousePos] = useState({ x: 0, y: 0 })
   const dropdownRef = useRef<HTMLDivElement>(null)
+
+  // Prevent vertical page scrolling globally during presentation
+  useEffect(() => {
+    document.body.style.overflow = 'hidden'
+    return () => {
+      document.body.style.overflow = ''
+    }
+  }, [])
 
   // Track mouse coordinates for background parallax effect
   useEffect(() => {
@@ -322,23 +330,34 @@ export function SoutenanceDeck() {
     },
     {
       id: 10,
-      title: "11. Captures & Démonstration",
-      type: "screenshots",
+      title: "11. Démo : Espaces Publics",
+      type: "screenshots_public",
       content: {
-        title: "Démonstration des Interfaces",
-        subtitle: "Visualisation de l'application réelle en fonctionnement",
+        title: "Démonstration : Portail Public & Catalogue",
+        subtitle: "Interfaces d'accueil et catalogue interactif d'Artisan's Echo",
         screens: [
-          { title: "Page d'Accueil", img: homeImg, desc: "Design d'art élégant bleu et or accueillant les visiteurs avec des animations soignées." },
-          { title: "Catalogue des objets", img: catalogueImg, desc: "Filtres interactifs par catégorie, prix, et état avec rechargement d'API dynamique." },
-          { title: "Tableau de Bord Vendeur", img: sellerDashboardImg, desc: "Suivi des statistiques de vente, de l'état des commandes et de son inventaire." },
-          { title: "Espace Administration", img: adminDashboardImg, desc: "Workspace central de modération des artefacts et d'activation de comptes." },
-          { title: "Messagerie Interne", img: messagesImg, desc: "Thread de discussion lié directement aux objets pour des négociations simples." }
+          { title: "Page d'Accueil", img: homeImg, desc: "Portail d'accueil avec une hero video immersive, et des rubriques de decouvertes d'objets anciens." },
+          { title: "Catalogue des Objets", img: catalogueImg, desc: "Catalogue interactif avec tris, filtres par categories et indicateurs d'etat de conservation." }
         ]
       }
     },
     {
       id: 11,
-      title: "12. Bilan & Perspectives",
+      title: "12. Démo : Espaces de Gestion",
+      type: "screenshots_pro",
+      content: {
+        title: "Démonstration : Espaces Métiers & Messagerie",
+        subtitle: "Workspace vendeur, outils administratifs et messagerie privee",
+        screens: [
+          { title: "Dashboard Vendeur", img: sellerDashboardImg, desc: "Outils de suivi des gains, d'expedition de commandes et d'inventaire d'artefacts." },
+          { title: "Espace Administration", img: adminDashboardImg, desc: "Workspace central de moderation d'objets soumis et d'activation utilisateur." },
+          { title: "Messagerie Interne", img: messagesImg, desc: "Messagerie filaire securisee reliant directement acheteurs et vendeurs autour d'un objet." }
+        ]
+      }
+    },
+    {
+      id: 12,
+      title: "13. Bilan & Perspectives",
       type: "synthesis",
       content: {
         title: "Bilan du Projet & Perspectives",
@@ -381,6 +400,40 @@ export function SoutenanceDeck() {
     setIsDropdownOpen(false)
   }
 
+  // Keyboard navigation listeners
+  useEffect(() => {
+    const handleKeyDown = (e: KeyboardEvent) => {
+      if (e.key === 'ArrowRight' || e.key === ' ') {
+        e.preventDefault()
+        nextSlide()
+      } else if (e.key === 'ArrowLeft' || e.key === 'Backspace') {
+        e.preventDefault()
+        prevSlide()
+      }
+    }
+    window.addEventListener('keydown', handleKeyDown)
+    return () => window.removeEventListener('keydown', handleKeyDown)
+  }, [currentSlide])
+
+  // Debounced wheel listener for slide change
+  useEffect(() => {
+    let lastScrollTime = 0
+    const handleWheel = (e: WheelEvent) => {
+      const now = Date.now()
+      if (now - lastScrollTime < 1000) return
+      if (Math.abs(e.deltaY) > 30) {
+        lastScrollTime = now
+        if (e.deltaY > 0) {
+          nextSlide()
+        } else {
+          prevSlide()
+        }
+      }
+    }
+    window.addEventListener('wheel', handleWheel, { passive: true })
+    return () => window.removeEventListener('wheel', handleWheel)
+  }, [currentSlide])
+
   const slide = SLIDES[currentSlide]
 
   // Slide content render helpers
@@ -408,7 +461,7 @@ export function SoutenanceDeck() {
               </div>
             </div>
 
-            {/* Right side Metadata plaques (Enlarged) */}
+            {/* Right side Metadata plaques */}
             <div className="lg:col-span-4 space-y-8">
               <div className="metal-plaque p-10 rounded-3xl relative overflow-hidden shadow-xl">
                 <FiligreeCorners colorClass="border-[#c8d7ef]/25" />
@@ -449,7 +502,7 @@ export function SoutenanceDeck() {
               </div>
             </div>
 
-            {/* Right Paragraph flow (Larger font sizes) */}
+            {/* Right Paragraph flow */}
             <div className="lg:col-span-8 metal-plaque p-12 rounded-3xl relative overflow-hidden">
               <FiligreeCorners colorClass="border-[#c8d7ef]/25" />
               <div className="space-y-8">
@@ -484,7 +537,7 @@ export function SoutenanceDeck() {
               </div>
             </div>
 
-            {/* Right horizontal timeline steps (Enlarged Cards) */}
+            {/* Right horizontal timeline steps */}
             <div className="lg:col-span-9 space-y-8 relative pl-10 border-l-2 border-[#5f70ff]/20">
               {slide.content.cards.map((card, idx) => {
                 const IconComponent = card.icon
@@ -531,11 +584,10 @@ export function SoutenanceDeck() {
               <p className="text-teal-100/60 text-lg">{slide.content.subtitle}</p>
             </div>
             
-            {/* Asymmetrical Bento Grid with Enlarged Cards */}
+            {/* Asymmetrical Bento Grid */}
             <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 items-stretch">
               {slide.content.cards.map((card, idx) => {
                 const IconComponent = card.icon
-                // Custom span rules for asymmetric bento grid layout
                 const gridSpan = idx === 0 ? "lg:col-span-8" : idx === 1 ? "lg:col-span-4" : "lg:col-span-12"
                 return (
                   <motion.div
@@ -619,8 +671,6 @@ export function SoutenanceDeck() {
             <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
               {slide.content.actors.map((actor, idx) => {
                 const IconComponent = actor.icon
-                
-                // Design variations for the three actors
                 const cardLayout = 
                   actor.align === "left" 
                     ? "items-start text-left" 
@@ -661,7 +711,7 @@ export function SoutenanceDeck() {
               <p className="text-teal-100/60 text-lg md:text-xl">{slide.content.subtitle}</p>
             </div>
 
-            {/* Split Process Flow layout with enlarged text */}
+            {/* Split Process Flow layout */}
             <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
               {slide.content.columns.map((col, idx) => (
                 <motion.div
@@ -702,7 +752,7 @@ export function SoutenanceDeck() {
             </div>
 
             <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 items-center">
-              {/* Left Details takes 4 cols */}
+              {/* Left Details */}
               <div className="lg:col-span-4 space-y-6">
                 {slide.content.details.map((detail, idx) => (
                   <motion.div
@@ -739,7 +789,7 @@ export function SoutenanceDeck() {
                 <img
                   src={slide.content.diagram}
                   alt="Architecture Diagram"
-                  className="rounded-2xl w-full h-auto max-h-[560px] object-contain group-hover:scale-[1.01] transition-transform duration-500 bg-[#061417] p-2 border border-white/5"
+                  className="rounded-2xl w-full h-[52vh] max-h-[480px] object-contain group-hover:scale-[1.01] transition-transform duration-500 bg-[#061417] p-2 border border-white/5"
                 />
               </motion.div>
             </div>
@@ -755,7 +805,7 @@ export function SoutenanceDeck() {
             </div>
 
             <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 items-stretch">
-              {/* Left Side brief text (3 cols) */}
+              {/* Left Side brief text */}
               <div className="lg:col-span-3 flex flex-col justify-center">
                 <div className="metal-plaque p-8 rounded-3xl relative overflow-hidden h-full flex flex-col justify-center">
                   <FiligreeCorners colorClass="border-[#c8d7ef]/20" />
@@ -766,7 +816,7 @@ export function SoutenanceDeck() {
                 </div>
               </div>
 
-              {/* Right BDD ERD Diagram (Enormous display) */}
+              {/* Right BDD ERD Diagram */}
               <motion.div
                 initial={{ scale: 0.95, opacity: 0 }}
                 animate={{ scale: 1, opacity: 1 }}
@@ -781,7 +831,7 @@ export function SoutenanceDeck() {
                 <img
                   src={slide.content.diagram}
                   alt="Database ER Diagram"
-                  className="rounded-2xl w-full h-auto max-h-[560px] object-contain group-hover:scale-[1.01] transition-transform duration-500 bg-[#061417] p-2 border border-white/5"
+                  className="rounded-2xl w-full h-[52vh] max-h-[480px] object-contain group-hover:scale-[1.01] transition-transform duration-500 bg-[#061417] p-2 border border-white/5"
                 />
               </motion.div>
             </div>
@@ -797,7 +847,7 @@ export function SoutenanceDeck() {
             </div>
 
             <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 items-stretch">
-              {/* Left Side brief text (3 cols) */}
+              {/* Left Side brief text */}
               <div className="lg:col-span-3 flex flex-col justify-center">
                 <div className="metal-plaque p-8 rounded-3xl relative overflow-hidden h-full flex flex-col justify-center">
                   <FiligreeCorners colorClass="border-[#c8d7ef]/20" />
@@ -812,7 +862,7 @@ export function SoutenanceDeck() {
                 </div>
               </div>
 
-              {/* Right RBAC matrix (Enormous display) */}
+              {/* Right RBAC matrix */}
               <motion.div
                 initial={{ scale: 0.95, opacity: 0 }}
                 animate={{ scale: 1, opacity: 1 }}
@@ -827,14 +877,26 @@ export function SoutenanceDeck() {
                 <img
                   src={slide.content.diagram}
                   alt="RBAC Diagram"
-                  className="rounded-2xl w-full h-auto max-h-[560px] object-contain group-hover:scale-[1.01] transition-transform duration-500 bg-[#061417] p-2 border border-white/5"
+                  className="rounded-2xl w-full h-[52vh] max-h-[480px] object-contain group-hover:scale-[1.01] transition-transform duration-500 bg-[#061417] p-2 border border-white/5"
                 />
               </motion.div>
             </div>
           </div>
         )
 
-      case 'screenshots':
+      case 'screenshots_public':
+        return (
+          <div className="flex flex-col max-w-[1400px] mx-auto px-8 w-full h-full justify-center py-6">
+            <div className="text-center mb-6">
+              <h2 className="text-4xl lg:text-5xl font-bold text-white font-serif mb-2">{slide.content.title}</h2>
+              <p className="text-teal-100/60 text-base md:text-lg">{slide.content.subtitle}</p>
+            </div>
+
+            <ScreenshotShowcase screens={slide.content.screens} />
+          </div>
+        )
+
+      case 'screenshots_pro':
         return (
           <div className="flex flex-col max-w-[1400px] mx-auto px-8 w-full h-full justify-center py-6">
             <div className="text-center mb-6">
@@ -900,13 +962,22 @@ export function SoutenanceDeck() {
 
                 <div className="border-t border-[#c8d7ef]/10 pt-8 mt-10 flex flex-col sm:flex-row items-center justify-between gap-6">
                   <span className="text-2xl md:text-3xl font-semibold text-[#e5c590] font-serif">Merci pour votre attention !</span>
-                  <Link
-                    to="/"
-                    className="flex items-center gap-2 px-6 py-3.5 rounded-xl bg-[#5f70ff] hover:bg-[#4255da] text-white font-medium shadow-[0_0_20px_rgba(95,112,255,0.35)] transition-all hover:scale-105 active:scale-95 text-sm font-mono"
-                  >
-                    <Home className="h-4 w-4" />
-                    Retour au Catalogue
-                  </Link>
+                  <div className="flex gap-4">
+                    <button
+                      onClick={() => prevSlide()}
+                      className="flex items-center gap-2 px-5 py-3 rounded-xl bg-white/5 border border-white/10 text-teal-100 font-medium hover:bg-white/10 transition-all hover:scale-105 active:scale-95 text-xs font-mono"
+                    >
+                      <ArrowLeft className="h-4 w-4" />
+                      Précédent
+                    </button>
+                    <Link
+                      to="/"
+                      className="flex items-center gap-2 px-6 py-3.5 rounded-xl bg-[#5f70ff] hover:bg-[#4255da] text-white font-medium shadow-[0_0_20px_rgba(95,112,255,0.35)] transition-all hover:scale-105 active:scale-95 text-sm font-mono"
+                    >
+                      <Home className="h-4 w-4" />
+                      Exit to Shop
+                    </Link>
+                  </div>
                 </div>
               </motion.div>
             </div>
@@ -1006,7 +1077,7 @@ export function SoutenanceDeck() {
         </div>
       </header>
 
-      {/* MAIN SLIDE CONTAINER (Expanded vertical padding to utilize full height) */}
+      {/* MAIN SLIDE CONTAINER */}
       <main className="relative z-10 flex-1 flex items-center justify-center py-10 w-full overflow-hidden">
         <AnimatePresence mode="wait">
           <motion.div
@@ -1040,71 +1111,73 @@ export function SoutenanceDeck() {
         </AnimatePresence>
       </main>
 
-      {/* BOTTOM NAVIGATION CONTROLS */}
-      <footer className="relative z-20 w-full py-5 px-6 flex flex-col md:flex-row items-center justify-between gap-4 border-t border-[#c8d7ef]/10 bg-[#0b0e1a]/85 backdrop-blur-md">
-        {/* Helper keys */}
-        <div className="hidden md:flex items-center gap-4 text-[10px] font-mono text-[#7d8bff]/40">
-          <div className="flex items-center gap-1.5">
-            <span className="px-1.5 py-0.5 rounded bg-white/5 border border-white/10">Space</span> /
-            <span className="px-1.5 py-0.5 rounded bg-white/5 border border-white/10">→</span>
-            <span>Suivant</span>
+      {/* BOTTOM NAVIGATION CONTROLS (Hidden on the final synthesis slide) */}
+      {currentSlide < SLIDES.length - 1 && (
+        <footer className="relative z-20 w-full py-5 px-6 flex flex-col md:flex-row items-center justify-between gap-4 border-t border-[#c8d7ef]/10 bg-[#0b0e1a]/85 backdrop-blur-md">
+          {/* Helper keys */}
+          <div className="hidden md:flex items-center gap-4 text-[10px] font-mono text-[#7d8bff]/40">
+            <div className="flex items-center gap-1.5">
+              <span className="px-1.5 py-0.5 rounded bg-white/5 border border-white/10">Space</span> /
+              <span className="px-1.5 py-0.5 rounded bg-white/5 border border-white/10">→</span>
+              <span>Suivant</span>
+            </div>
+            <div className="flex items-center gap-1.5">
+              <span className="px-1.5 py-0.5 rounded bg-white/5 border border-white/10">←</span> /
+              <span className="px-1.5 py-0.5 rounded bg-white/5 border border-white/10">Backspace</span>
+              <span>Précédent</span>
+            </div>
           </div>
-          <div className="flex items-center gap-1.5">
-            <span className="px-1.5 py-0.5 rounded bg-white/5 border border-white/10">←</span> /
-            <span className="px-1.5 py-0.5 rounded bg-white/5 border border-white/10">Backspace</span>
-            <span>Précédent</span>
-          </div>
-        </div>
 
-        {/* Central controller */}
-        <div className="flex items-center gap-6 bg-[#0f1426]/50 backdrop-blur-lg border border-[#c8d7ef]/20 px-6 py-2.5 rounded-full shadow-lg">
+          {/* Central controller */}
+          <div className="flex items-center gap-6 bg-[#0f1426]/50 backdrop-blur-lg border border-[#c8d7ef]/20 px-6 py-2.5 rounded-full shadow-lg">
+            <button
+              onClick={prevSlide}
+              disabled={currentSlide === 0}
+              className={`p-1.5 rounded-full transition ${
+                currentSlide === 0
+                  ? 'text-teal-100/20 cursor-not-allowed'
+                  : 'text-[#7d8bff] hover:bg-white/5'
+              }`}
+            >
+              <ArrowLeft className="h-5 w-5" />
+            </button>
+
+            {/* Dots Indicator */}
+            <div className="flex items-center gap-2.5">
+              {SLIDES.map((_, idx) => (
+                <button
+                  key={idx}
+                  onClick={() => jumpToSlide(idx)}
+                  className={`h-2.5 rounded-full transition-all ${
+                    currentSlide === idx ? 'w-5 bg-[#5f70ff]' : 'w-2 bg-teal-100/20 hover:bg-teal-100/40'
+                  }`}
+                />
+              ))}
+            </div>
+
+            <button
+              onClick={nextSlide}
+              disabled={currentSlide === SLIDES.length - 1}
+              className={`p-1.5 rounded-full transition ${
+                currentSlide === SLIDES.length - 1
+                  ? 'text-teal-100/20 cursor-not-allowed'
+                  : 'text-[#7d8bff] hover:bg-white/5'
+              }`}
+            >
+              <ArrowRight className="h-5 w-5" />
+            </button>
+          </div>
+
+          {/* Exit & Go Home */}
           <button
-            onClick={prevSlide}
-            disabled={currentSlide === 0}
-            className={`p-1.5 rounded-full transition ${
-              currentSlide === 0
-                ? 'text-teal-100/20 cursor-not-allowed'
-                : 'text-[#7d8bff] hover:bg-white/5'
-            }`}
+            onClick={() => navigate('/')}
+            className="flex items-center gap-2 text-xs font-mono text-[#7d8bff] hover:text-[#5f70ff] bg-[#0f1426]/40 border border-[#c8d7ef]/20 hover:bg-white/5 px-4 py-2 rounded-xl transition"
           >
-            <ArrowLeft className="h-5 w-5" />
+            <Home className="h-3.5 w-3.5" />
+            <span>Exit to Shop</span>
           </button>
-
-          {/* Dots Indicator */}
-          <div className="flex items-center gap-2.5">
-            {SLIDES.map((_, idx) => (
-              <button
-                key={idx}
-                onClick={() => jumpToSlide(idx)}
-                className={`h-2.5 rounded-full transition-all ${
-                  currentSlide === idx ? 'w-5 bg-[#5f70ff]' : 'w-2 bg-teal-100/20 hover:bg-teal-100/40'
-                }`}
-              />
-            ))}
-          </div>
-
-          <button
-            onClick={nextSlide}
-            disabled={currentSlide === SLIDES.length - 1}
-            className={`p-1.5 rounded-full transition ${
-              currentSlide === SLIDES.length - 1
-                ? 'text-teal-100/20 cursor-not-allowed'
-                : 'text-[#7d8bff] hover:bg-white/5'
-            }`}
-          >
-            <ArrowRight className="h-5 w-5" />
-          </button>
-        </div>
-
-        {/* Exit & Go Home */}
-        <button
-          onClick={() => navigate('/')}
-          className="flex items-center gap-2 text-xs font-mono text-[#7d8bff] hover:text-[#5f70ff] bg-[#0f1426]/40 border border-[#c8d7ef]/20 hover:bg-white/5 px-4 py-2 rounded-xl transition"
-        >
-          <Home className="h-3.5 w-3.5" />
-          <span>Exit to Shop</span>
-        </button>
-      </footer>
+        </footer>
+      )}
     </div>
   )
 }
@@ -1139,7 +1212,7 @@ function ScreenshotShowcase({ screens }: { screens: Array<{ title: string; img: 
         ))}
       </div>
 
-      {/* Right Browser Chrome replica image view (Enormous Display viewport) */}
+      {/* Right Browser Chrome replica image view (Takes 9 columns - much larger!) */}
       <div className="lg:col-span-9 flex flex-col browser-frame">
         {/* Browser Mock Header */}
         <div className="browser-header">
@@ -1165,12 +1238,12 @@ function ScreenshotShowcase({ screens }: { screens: Array<{ title: string; img: 
               animate={{ opacity: 1, scale: 1 }}
               exit={{ opacity: 0, scale: 0.995 }}
               transition={{ duration: 0.25 }}
-              className="w-full h-full object-cover max-h-[560px]"
+              className="w-full h-[48vh] max-h-[440px] object-cover"
             />
           </AnimatePresence>
         </div>
 
-        {/* Captions (Enlarged text) */}
+        {/* Captions */}
         <p className="text-sm md:text-base text-teal-100/80 font-mono leading-relaxed bg-[#0e1428] p-5 border-t border-[#c8d7ef]/10">
           💡 <span className="font-semibold text-[#e5c590] font-serif">{screens[activeIdx].title} :</span> {screens[activeIdx].desc}
         </p>

@@ -128,7 +128,7 @@
 .antique-separator::after {
   content: '';
   flex: 1;
-  height: 1px.5;
+  height: 1.5px;
   background: linear-gradient(to right, transparent, rgba(229, 197, 144, 0.45), transparent);
 }
 .separator-diamond {
