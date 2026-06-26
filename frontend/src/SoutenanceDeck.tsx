@@ -42,7 +42,7 @@ import catalogueImg from './assets/docs/catalogue.png'
 import messagesImg from './assets/docs/messages.png'
 import collectorDashboardImg from './assets/docs/collector_dashboard.png'
 import wishlistImg from './assets/docs/wishlist.png'
-import cartImg from './assets/docs/cart.png'
+import collectorMessagesImg from './assets/docs/collector_messages.png'
 import adminUsersImg from './assets/docs/admin_users.png'
 import adminArtifactsImg from './assets/docs/admin_artifacts.png'
 
@@ -376,11 +376,11 @@ export function SoutenanceDeck() {
       type: "screenshots_public",
       content: {
         title: "Démonstration : Espace Collectionneur",
-        subtitle: "Espace personnel du collectionneur, liste de souhaits et panier d'achat",
+        subtitle: "Espace personnel du collectionneur, liste de souhaits et messagerie de négociation",
         screens: [
-          { title: "Dashboard Collectionneur", img: collectorDashboardImg, desc: "Suivi des commandes passées, des articles achetés et de l'état de livraison." },
+          { title: "Dashboard Collectionneur", img: collectorDashboardImg, desc: "Vue d'ensemble de l'activité avec statut des commandes, nombre d'articles en wishlist et panier." },
           { title: "Liste de Souhaits", img: wishlistImg, desc: "Liste de favoris (wishlist) pour conserver et suivre ses coups de cœur." },
-          { title: "Panier d'Achat", img: cartImg, desc: "Panier d'achat réactif pour regrouper ses objets précieux avant la validation de commande." }
+          { title: "Messagerie Collectionneur", img: collectorMessagesImg, desc: "Messagerie de négociation directe reliant le collectionneur aux brocanteurs pour faire des offres." }
         ]
       }
     },
