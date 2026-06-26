@@ -19,93 +19,93 @@
 
 /* -- Metal & Parchment Plaques -- */
 .metal-plaque {
-  background: linear-gradient(135deg, rgba(15, 20, 38, 0.75) 0%, rgba(9, 12, 24, 0.9) 100%);
-  border: 1px solid rgba(200, 215, 239, 0.12);
+  background: linear-gradient(135deg, rgba(16, 22, 44, 0.85) 0%, rgba(8, 11, 22, 0.96) 100%);
+  border: 1.5px solid rgba(200, 215, 239, 0.18);
   box-shadow: 
-    inset 0 0 30px rgba(95, 112, 255, 0.12),
-    inset 0 1px 1px rgba(255, 255, 255, 0.05),
-    0 10px 30px rgba(0, 0, 0, 0.5);
+    inset 0 0 35px rgba(95, 112, 255, 0.18),
+    inset 0 1px 1px rgba(255, 255, 255, 0.08),
+    0 15px 40px rgba(0, 0, 0, 0.6);
   position: relative;
   transition: all 0.35s cubic-bezier(0.2, 0.8, 0.2, 1);
 }
 
 .metal-plaque:hover {
-  border-color: rgba(95, 112, 255, 0.35);
+  border-color: rgba(95, 112, 255, 0.45);
   box-shadow: 
-    inset 0 0 40px rgba(95, 112, 255, 0.2),
-    inset 0 1px 2px rgba(255, 255, 255, 0.08),
-    0 20px 45px rgba(0, 0, 0, 0.6),
-    0 0 25px rgba(95, 112, 255, 0.15);
+    inset 0 0 45px rgba(95, 112, 255, 0.25),
+    inset 0 1px 2px rgba(255, 255, 255, 0.12),
+    0 25px 55px rgba(0, 0, 0, 0.75),
+    0 0 30px rgba(95, 112, 255, 0.25);
 }
 
 /* -- Cover Frame Details -- */
 .cover-frame {
-  background: linear-gradient(135deg, rgba(23, 29, 54, 0.85) 0%, rgba(7, 10, 20, 0.95) 100%);
-  border: 2px solid rgba(229, 197, 144, 0.2);
+  background: linear-gradient(135deg, rgba(24, 32, 60, 0.9) 0%, rgba(6, 9, 18, 0.98) 100%);
+  border: 2px solid rgba(229, 197, 144, 0.35);
   box-shadow: 
-    inset 0 0 50px rgba(95, 112, 255, 0.15),
-    0 25px 60px rgba(0, 0, 0, 0.7);
+    inset 0 0 60px rgba(95, 112, 255, 0.22),
+    0 30px 70px rgba(0, 0, 0, 0.85);
 }
 
 /* -- Filigree and Corner Decorators -- */
 .corner-filigree {
   position: absolute;
-  width: 14px;
-  height: 14px;
-  border: 2px solid transparent;
+  width: 18px;
+  height: 18px;
+  border: 2.5px solid transparent;
   pointer-events: none;
 }
-.corner-tl { top: 6px; left: 6px; border-top-color: inherit; border-left-color: inherit; }
-.corner-tr { top: 6px; right: 6px; border-top-color: inherit; border-right-color: inherit; }
-.corner-bl { bottom: 6px; left: 6px; border-bottom-color: inherit; border-left-color: inherit; }
-.corner-br { bottom: 6px; right: 6px; border-bottom-color: inherit; border-right-color: inherit; }
+.corner-tl { top: 8px; left: 8px; border-top-color: inherit; border-left-color: inherit; }
+.corner-tr { top: 8px; right: 8px; border-top-color: inherit; border-right-color: inherit; }
+.corner-bl { bottom: 8px; left: 8px; border-bottom-color: inherit; border-left-color: inherit; }
+.corner-br { bottom: 8px; right: 8px; border-bottom-color: inherit; border-right-color: inherit; }
 
 /* -- Crack/Fractured textures for Problematic Cards -- */
 .plaque-cracked {
-  background: linear-gradient(135deg, rgba(20, 25, 45, 0.75) 0%, rgba(9, 12, 24, 0.9) 100%);
-  border-color: rgba(229, 197, 144, 0.15);
+  background: linear-gradient(135deg, rgba(22, 28, 50, 0.85) 0%, rgba(8, 11, 22, 0.96) 100%);
+  border-color: rgba(229, 197, 144, 0.22);
 }
 .plaque-cracked::before {
   content: '';
   position: absolute;
   inset: 0;
-  opacity: 0.04;
+  opacity: 0.05;
   pointer-events: none;
-  background-image: radial-gradient(rgba(255,255,255,0.15) 1px, transparent 1px), 
-                    repeating-linear-gradient(45deg, transparent, transparent 10px, rgba(255,255,255,0.1) 10px, rgba(255,255,255,0.1) 11px);
+  background-image: radial-gradient(rgba(255,255,255,0.2) 1px, transparent 1px), 
+                    repeating-linear-gradient(45deg, transparent, transparent 12px, rgba(255,255,255,0.12) 12px, rgba(255,255,255,0.12) 14px);
 }
 
 /* -- Upward Arrow Motif for Objectives -- */
 .plaque-objective::after {
   content: '↑';
   position: absolute;
-  top: 14px;
-  right: 18px;
-  font-size: 24px;
+  top: 18px;
+  right: 24px;
+  font-size: 32px;
   font-family: sans-serif;
-  color: rgba(95, 112, 255, 0.2);
+  color: rgba(95, 112, 255, 0.25);
   font-weight: bold;
   transition: transform 0.35s ease;
 }
 .plaque-objective:hover::after {
-  transform: translateY(-4px);
-  color: rgba(95, 112, 255, 0.6);
+  transform: translateY(-6px);
+  color: rgba(95, 112, 255, 0.7);
 }
 
 /* -- Translucent Glass Plate for Diagrams -- */
 .diagram-glass-plate {
-  background: rgba(11, 15, 28, 0.85);
-  border: 1px solid rgba(200, 215, 239, 0.15);
+  background: rgba(8, 11, 22, 0.92);
+  border: 1.5px solid rgba(200, 215, 239, 0.22);
   box-shadow: 
-    0 20px 50px rgba(0, 0, 0, 0.7),
-    inset 0 0 30px rgba(95, 112, 255, 0.08);
+    0 25px 60px rgba(0, 0, 0, 0.85),
+    inset 0 0 35px rgba(95, 112, 255, 0.15);
   position: relative;
 }
 .diagram-glass-plate::after {
   content: '';
   position: absolute;
   inset: 0;
-  background: linear-gradient(120deg, transparent 30%, rgba(255, 255, 255, 0.02) 40%, rgba(255, 255, 255, 0.05) 50%, rgba(255, 255, 255, 0.02) 60%, transparent 70%);
+  background: linear-gradient(120deg, transparent 35%, rgba(255, 255, 255, 0.03) 45%, rgba(255, 255, 255, 0.06) 50%, rgba(255, 255, 255, 0.03) 55%, transparent 65%);
   background-size: 200% 100%;
   animation: shine-glare 8s infinite linear;
   pointer-events: none;
@@ -122,22 +122,22 @@
   display: flex;
   align-items: center;
   justify-content: center;
-  margin: 20px 0;
+  margin: 25px 0;
 }
 .antique-separator::before,
 .antique-separator::after {
   content: '';
   flex: 1;
-  height: 1px;
-  background: linear-gradient(to right, transparent, rgba(229, 197, 144, 0.35), transparent);
+  height: 1px.5;
+  background: linear-gradient(to right, transparent, rgba(229, 197, 144, 0.45), transparent);
 }
 .separator-diamond {
-  width: 8px;
-  height: 8px;
+  width: 10px;
+  height: 10px;
   transform: rotate(45deg);
-  border: 1px solid rgba(229, 197, 144, 0.6);
+  border: 1.5px solid rgba(229, 197, 144, 0.7);
   background: #0b0e1a;
-  margin: 0 10px;
+  margin: 0 12px;
 }
 
 /* -- Timeline structures for Contexte -- */
@@ -147,42 +147,42 @@
 .timeline-dot::before {
   content: '';
   position: absolute;
-  left: -20px;
-  top: 10px;
-  width: 8px;
-  height: 8px;
+  left: -22px;
+  top: 14px;
+  width: 10px;
+  height: 10px;
   border-radius: 50%;
   background: #5f70ff;
-  box-shadow: 0 0 8px #5f70ff;
+  box-shadow: 0 0 10px #5f70ff;
 }
 
 /* -- Browser Frame Chrome framing for live screenshots -- */
 .browser-frame {
-  border-radius: 16px;
-  border: 1px solid rgba(200, 215, 239, 0.2);
-  background: #0d1222;
-  box-shadow: 0 25px 60px rgba(0, 0, 0, 0.8);
+  border-radius: 20px;
+  border: 1.5px solid rgba(200, 215, 239, 0.25);
+  background: #0b0f1d;
+  box-shadow: 0 30px 75px rgba(0, 0, 0, 0.85);
   overflow: hidden;
 }
 
 .browser-header {
-  height: 38px;
-  background: #11172b;
-  border-bottom: 1px solid rgba(200, 215, 239, 0.1);
+  height: 44px;
+  background: #0e1428;
+  border-bottom: 1px solid rgba(200, 215, 239, 0.15);
   display: flex;
   align-items: center;
-  padding: 0 16px;
+  padding: 0 20px;
   position: relative;
 }
 
 .browser-dots {
   display: flex;
-  gap: 6px;
+  gap: 8px;
 }
 
 .browser-dot {
-  width: 10px;
-  height: 10px;
+  width: 12px;
+  height: 12px;
   border-radius: 50%;
 }
 
@@ -193,13 +193,13 @@
 .browser-address {
   margin: 0 auto;
   width: 50%;
-  height: 22px;
-  background: rgba(0, 0, 0, 0.3);
-  border-radius: 6px;
-  border: 1px solid rgba(255, 255, 255, 0.05);
+  height: 24px;
+  background: rgba(0, 0, 0, 0.4);
+  border-radius: 8px;
+  border: 1px solid rgba(255, 255, 255, 0.08);
   font-family: monospace;
-  font-size: 11px;
-  color: rgba(200, 215, 239, 0.6);
+  font-size: 12px;
+  color: rgba(200, 215, 239, 0.7);
   display: flex;
   align-items: center;
   justify-content: center;

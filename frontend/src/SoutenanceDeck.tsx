@@ -41,7 +41,7 @@ import sellerDashboardImg from './assets/docs/seller_dashboard.png'
 import catalogueImg from './assets/docs/catalogue.png'
 import messagesImg from './assets/docs/messages.png'
 
-// Reusable Filigree Corner Brackets Component
+// Reusable Filigree Corner Brackets Component (thicker border for presentation scale)
 function FiligreeCorners({ colorClass = "border-[#c8d7ef]/20" }: { colorClass?: string }) {
   return (
     <>
@@ -381,40 +381,6 @@ export function SoutenanceDeck() {
     setIsDropdownOpen(false)
   }
 
-  // Keyboard navigation listeners
-  useEffect(() => {
-    const handleKeyDown = (e: KeyboardEvent) => {
-      if (e.key === 'ArrowRight' || e.key === ' ') {
-        e.preventDefault()
-        nextSlide()
-      } else if (e.key === 'ArrowLeft' || e.key === 'Backspace') {
-        e.preventDefault()
-        prevSlide()
-      }
-    }
-    window.addEventListener('keydown', handleKeyDown)
-    return () => window.removeEventListener('keydown', handleKeyDown)
-  }, [currentSlide])
-
-  // Debounced wheel listener for slide change
-  useEffect(() => {
-    let lastScrollTime = 0
-    const handleWheel = (e: WheelEvent) => {
-      const now = Date.now()
-      if (now - lastScrollTime < 1000) return
-      if (Math.abs(e.deltaY) > 30) {
-        lastScrollTime = now
-        if (e.deltaY > 0) {
-          nextSlide()
-        } else {
-          prevSlide()
-        }
-      }
-    }
-    window.addEventListener('wheel', handleWheel, { passive: true })
-    return () => window.removeEventListener('wheel', handleWheel)
-  }, [currentSlide])
-
   const slide = SLIDES[currentSlide]
 
   // Slide content render helpers
@@ -422,45 +388,45 @@ export function SoutenanceDeck() {
     switch (slide.type) {
       case 'intro':
         return (
-          <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 items-center max-w-7xl mx-auto px-8 w-full">
+          <div className="grid grid-cols-1 lg:grid-cols-12 gap-10 items-center max-w-[1400px] mx-auto px-8 w-full py-8">
             {/* Left Huge Frame Cover */}
             <div className="lg:col-span-8 flex flex-col justify-center text-left">
-              <div className="bg-[#5f70ff]/10 border border-[#5f70ff]/30 px-5 py-2 rounded-full text-xs font-mono tracking-widest text-[#7d8bff] mb-6 uppercase inline-block w-fit">
+              <div className="bg-[#5f70ff]/10 border border-[#5f70ff]/30 px-6 py-2.5 rounded-full text-xs font-mono tracking-widest text-[#7d8bff] mb-8 uppercase inline-block w-fit">
                 {slide.content.tagline}
               </div>
               
-              <div className="cover-frame border-2 border-[#e5c590]/35 p-12 rounded-3xl relative overflow-hidden shadow-2xl mb-6">
-                <FiligreeCorners colorClass="border-[#e5c590]/50 w-6 h-6" />
+              <div className="cover-frame border-2 border-[#e5c590]/40 p-14 rounded-3xl relative overflow-hidden shadow-2xl mb-8">
+                <FiligreeCorners colorClass="border-[#e5c590]/65 w-7 h-7" />
 
-                <h1 className="text-6xl md:text-7xl font-bold tracking-tight mb-6 text-transparent bg-clip-text bg-gradient-to-r from-white via-[#c8d7ef] to-[#e5c590] font-serif leading-none">
+                <h1 className="text-6xl md:text-7xl lg:text-8xl font-bold tracking-tight mb-6 text-transparent bg-clip-text bg-gradient-to-r from-white via-[#c8d7ef] to-[#e5c590] font-serif leading-tight">
                   {slide.content.title}
                 </h1>
 
-                <p className="text-xl md:text-2xl text-teal-100/70 font-light leading-relaxed">
+                <p className="text-xl md:text-2xl lg:text-3xl text-teal-100/70 font-light leading-relaxed">
                   {slide.content.subtitle}
                 </p>
               </div>
             </div>
 
-            {/* Right side Metadata plaques */}
-            <div className="lg:col-span-4 space-y-6">
-              <div className="metal-plaque p-8 rounded-3xl relative overflow-hidden shadow-xl">
-                <FiligreeCorners colorClass="border-[#c8d7ef]/20" />
-                <span className="text-xs uppercase font-mono text-[#7d8bff]/90">Réalisé par :</span>
-                <p className="text-2xl font-semibold text-white mt-1 font-serif">{slide.content.author}</p>
-                <p className="text-xs text-teal-100/50 mt-1 font-mono">Filière Développement Informatique</p>
+            {/* Right side Metadata plaques (Enlarged) */}
+            <div className="lg:col-span-4 space-y-8">
+              <div className="metal-plaque p-10 rounded-3xl relative overflow-hidden shadow-xl">
+                <FiligreeCorners colorClass="border-[#c8d7ef]/25" />
+                <span className="text-xs uppercase font-mono text-[#7d8bff] tracking-wider font-semibold">Réalisé par :</span>
+                <p className="text-3xl font-bold text-white mt-2 font-serif">{slide.content.author}</p>
+                <p className="text-sm text-teal-100/60 mt-1 font-mono">Filière Développement Informatique</p>
               </div>
 
-              <div className="metal-plaque p-8 rounded-3xl relative overflow-hidden shadow-xl">
-                <FiligreeCorners colorClass="border-[#c8d7ef]/20" />
-                <span className="text-xs uppercase font-mono text-[#7d8bff]/90">Encadré par :</span>
-                <p className="text-2xl font-semibold text-white mt-1 font-serif">{slide.content.supervisor}</p>
-                <p className="text-xs text-teal-100/50 mt-1 font-mono">{slide.content.institution}</p>
+              <div className="metal-plaque p-10 rounded-3xl relative overflow-hidden shadow-xl">
+                <FiligreeCorners colorClass="border-[#c8d7ef]/25" />
+                <span className="text-xs uppercase font-mono text-[#7d8bff] tracking-wider font-semibold">Encadré par :</span>
+                <p className="text-3xl font-bold text-white mt-2 font-serif">{slide.content.supervisor}</p>
+                <p className="text-sm text-teal-100/60 mt-1 font-mono">{slide.content.institution}</p>
               </div>
 
-              <div className="flex flex-wrap gap-2 justify-start pt-2">
+              <div className="flex flex-wrap gap-3 justify-start pt-2">
                 {slide.content.highlights.map((h, i) => (
-                  <span key={i} className="px-3.5 py-1.5 bg-[#5f70ff]/10 border border-[#5f70ff]/20 rounded-full text-xs font-mono text-[#c8d7ef]">
+                  <span key={i} className="px-4 py-2 bg-[#5f70ff]/10 border border-[#5f70ff]/20 rounded-full text-xs md:text-sm font-mono text-[#c8d7ef]">
                     #{h}
                   </span>
                 ))}
@@ -471,25 +437,25 @@ export function SoutenanceDeck() {
 
       case 'thanks_intro':
         return (
-          <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 items-center max-w-7xl mx-auto px-8 w-full">
+          <div className="grid grid-cols-1 lg:grid-cols-12 gap-10 items-center max-w-[1400px] mx-auto px-8 w-full py-8">
             {/* Left Big Dedication Plaque */}
-            <div className="lg:col-span-4 flex flex-col">
-              <h2 className="text-5xl font-bold text-white font-serif mb-4 leading-tight">{slide.content.title}</h2>
-              <div className="h-1 w-24 bg-[#5f70ff] rounded-full mb-4" />
-              <p className="text-[#c8d7ef] text-sm font-mono leading-relaxed">{slide.content.subtitle}</p>
+            <div className="lg:col-span-4 flex flex-col pr-4">
+              <h2 className="text-5xl lg:text-6xl font-bold text-white font-serif mb-6 leading-tight">{slide.content.title}</h2>
+              <div className="h-1.5 w-28 bg-[#5f70ff] rounded-full mb-6" />
+              <p className="text-[#c8d7ef] text-base md:text-lg font-mono leading-relaxed">{slide.content.subtitle}</p>
               
-              <div className="mt-8 p-6 bg-white/[0.01] border border-white/[0.04] rounded-2xl text-xs font-mono text-teal-100/40 leading-relaxed">
+              <div className="mt-10 p-8 bg-white/[0.01] border border-white/[0.04] rounded-2xl text-xs md:text-sm font-mono text-teal-100/40 leading-relaxed">
                 ⚖️ "Le savoir et la reconnaissance sont les piliers de toute création durable."
               </div>
             </div>
 
-            {/* Right Paragraph flow */}
-            <div className="lg:col-span-8 metal-plaque p-10 rounded-3xl relative overflow-hidden">
+            {/* Right Paragraph flow (Larger font sizes) */}
+            <div className="lg:col-span-8 metal-plaque p-12 rounded-3xl relative overflow-hidden">
               <FiligreeCorners colorClass="border-[#c8d7ef]/25" />
-              <div className="space-y-6">
+              <div className="space-y-8">
                 {slide.content.paragraphs.map((p, idx) => (
                   <div key={idx}>
-                    <p className="text-base md:text-lg text-teal-100/80 leading-relaxed font-light first-letter:text-2xl first-letter:font-bold first-letter:text-[#e5c590] first-letter:font-serif">
+                    <p className="text-lg md:text-xl lg:text-2xl text-teal-100/90 leading-relaxed font-light first-letter:text-3xl first-letter:font-bold first-letter:text-[#e5c590] first-letter:font-serif">
                       {p}
                     </p>
                     {idx < slide.content.paragraphs.length - 1 && (
@@ -506,20 +472,20 @@ export function SoutenanceDeck() {
 
       case 'creative_cards':
         return (
-          <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 max-w-7xl mx-auto px-8 w-full">
+          <div className="grid grid-cols-1 lg:grid-cols-12 gap-10 max-w-[1400px] mx-auto px-8 w-full py-8">
             {/* Left Header info */}
             <div className="lg:col-span-3 flex flex-col justify-center">
-              <h2 className="text-4xl font-bold text-white font-serif mb-4 leading-tight">{slide.content.title}</h2>
-              <div className="h-1 w-16 bg-[#5f70ff] rounded-full mb-4" />
-              <p className="text-teal-100/60 text-sm leading-relaxed">{slide.content.subtitle}</p>
+              <h2 className="text-4xl lg:text-5xl font-bold text-white font-serif mb-6 leading-tight">{slide.content.title}</h2>
+              <div className="h-1.5 w-20 bg-[#5f70ff] rounded-full mb-6" />
+              <p className="text-teal-100/70 text-base lg:text-lg leading-relaxed">{slide.content.subtitle}</p>
               
-              <div className="mt-6 border-l-2 border-[#e5c590]/30 pl-4 py-2 font-mono text-xs text-[#e5c590]">
+              <div className="mt-8 border-l-2 border-[#e5c590]/35 pl-4 py-2 font-mono text-xs md:text-sm text-[#e5c590]">
                 Antiquités & Brocante
               </div>
             </div>
 
-            {/* Right Horizontal step timeline (Vertical Stack with side badges) */}
-            <div className="lg:col-span-9 space-y-6 relative pl-8 border-l border-[#5f70ff]/20">
+            {/* Right horizontal timeline steps (Enlarged Cards) */}
+            <div className="lg:col-span-9 space-y-8 relative pl-10 border-l-2 border-[#5f70ff]/20">
               {slide.content.cards.map((card, idx) => {
                 const IconComponent = card.icon
                 return (
@@ -528,25 +494,25 @@ export function SoutenanceDeck() {
                     initial={{ y: 20, opacity: 0 }}
                     animate={{ y: 0, opacity: 1 }}
                     transition={{ delay: idx * 0.1, duration: 0.5 }}
-                    className="metal-plaque p-6 rounded-2xl flex items-center justify-between gap-6 shadow-xl relative overflow-hidden group timeline-dot"
+                    className="metal-plaque p-8 rounded-3xl flex items-center justify-between gap-8 shadow-xl relative overflow-hidden group timeline-dot"
                   >
-                    <FiligreeCorners colorClass="border-[#c8d7ef]/15" />
+                    <FiligreeCorners colorClass="border-[#c8d7ef]/20" />
                     
-                    <div className="flex items-center gap-6">
-                      <div className="p-3 bg-[#5f70ff]/10 rounded-xl text-[#7d8bff] border border-[#5f70ff]/20">
-                        <IconComponent className="h-6 w-6" />
+                    <div className="flex items-center gap-8">
+                      <div className="p-4 bg-[#5f70ff]/10 rounded-2xl text-[#7d8bff] border border-[#5f70ff]/20 shrink-0">
+                        <IconComponent className="h-7 w-7" />
                       </div>
                       <div>
-                        <h3 className="text-lg font-bold text-white font-serif flex items-center gap-2">
-                          <span className="text-xs font-mono text-[#e5c590]">{card.step}.</span>
+                        <h3 className="text-xl lg:text-2xl font-bold text-white font-serif flex items-center gap-3">
+                          <span className="text-sm font-mono text-[#e5c590]">{card.step}.</span>
                           {card.title}
                         </h3>
-                        <p className="text-teal-100/70 text-sm font-light mt-1 max-w-xl">{card.description}</p>
+                        <p className="text-teal-100/80 text-base font-light mt-2 max-w-2xl">{card.description}</p>
                       </div>
                     </div>
 
-                    <div className="text-right shrink-0">
-                      <span className="text-[10px] uppercase font-mono text-[#e5c590] bg-[#e5c590]/10 px-3 py-1 rounded-full tracking-wider border border-[#e5c590]/20">
+                    <div className="text-right shrink-0 hidden sm:block">
+                      <span className="text-xs font-mono text-[#e5c590] bg-[#e5c590]/10 px-4 py-1.5 rounded-full tracking-wider border border-[#e5c590]/20">
                         {card.metric}
                       </span>
                     </div>
@@ -559,14 +525,14 @@ export function SoutenanceDeck() {
 
       case 'bento':
         return (
-          <div className="flex flex-col max-w-7xl mx-auto px-8 w-full h-full justify-center">
-            <div className="text-center mb-8">
-              <h2 className="text-3xl md:text-4xl font-bold text-white font-serif mb-2">{slide.content.title}</h2>
-              <p className="text-teal-100/60 text-sm">{slide.content.subtitle}</p>
+          <div className="flex flex-col max-w-[1400px] mx-auto px-8 w-full h-full justify-center py-6">
+            <div className="text-center mb-10">
+              <h2 className="text-4xl lg:text-5xl font-bold text-white font-serif mb-4">{slide.content.title}</h2>
+              <p className="text-teal-100/60 text-lg">{slide.content.subtitle}</p>
             </div>
             
-            {/* Asymmetrical Bento Grid */}
-            <div className="grid grid-cols-1 lg:grid-cols-12 gap-6 items-stretch">
+            {/* Asymmetrical Bento Grid with Enlarged Cards */}
+            <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 items-stretch">
               {slide.content.cards.map((card, idx) => {
                 const IconComponent = card.icon
                 // Custom span rules for asymmetric bento grid layout
@@ -577,15 +543,15 @@ export function SoutenanceDeck() {
                     initial={{ y: 20, opacity: 0 }}
                     animate={{ y: 0, opacity: 1 }}
                     transition={{ delay: idx * 0.1, duration: 0.5 }}
-                    className={`metal-plaque plaque-cracked p-8 rounded-3xl flex flex-col items-start shadow-2xl relative overflow-hidden group ${gridSpan}`}
+                    className={`metal-plaque plaque-cracked p-10 rounded-3xl flex flex-col items-start shadow-2xl relative overflow-hidden group ${gridSpan}`}
                   >
                     <FiligreeCorners colorClass="border-blue-400/25" />
 
-                    <div className="p-4 bg-[#5f70ff]/10 rounded-2xl mb-4 text-[#7d8bff] border border-[#5f70ff]/20">
-                      <IconComponent className="h-7 w-7" />
+                    <div className="p-4 bg-[#5f70ff]/10 rounded-2xl mb-6 text-[#7d8bff] border border-[#5f70ff]/20">
+                      <IconComponent className="h-8 w-8" />
                     </div>
-                    <h3 className="text-xl font-bold text-white mb-2 font-serif">{card.title}</h3>
-                    <p className="text-teal-100/70 text-sm leading-relaxed font-light">{card.description}</p>
+                    <h3 className="text-2xl font-bold text-white mb-3 font-serif">{card.title}</h3>
+                    <p className="text-teal-100/75 text-base md:text-lg leading-relaxed font-light">{card.description}</p>
                   </motion.div>
                 )
               })}
@@ -595,42 +561,42 @@ export function SoutenanceDeck() {
 
       case 'features':
         return (
-          <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 max-w-7xl mx-auto px-8 w-full">
+          <div className="grid grid-cols-1 lg:grid-cols-12 gap-10 max-w-[1400px] mx-auto px-8 w-full py-8">
             {/* Left side Large Objective Highlight Plaque */}
             <div className="lg:col-span-4 flex flex-col">
-              <div className="metal-plaque plaque-objective p-8 rounded-3xl relative overflow-hidden h-full flex flex-col justify-between">
-                <FiligreeCorners colorClass="border-[#e5c590]/30" />
+              <div className="metal-plaque plaque-objective p-10 rounded-3xl relative overflow-hidden h-full flex flex-col justify-between">
+                <FiligreeCorners colorClass="border-[#e5c590]/35" />
                 <div>
-                  <h2 className="text-3xl font-bold text-white font-serif mb-4 leading-tight">{slide.content.title}</h2>
-                  <div className="h-1 w-16 bg-[#5f70ff] rounded-full mb-4" />
-                  <p className="text-teal-100/60 text-xs md:text-sm leading-relaxed">{slide.content.subtitle}</p>
+                  <h2 className="text-4xl font-bold text-white font-serif mb-6 leading-tight">{slide.content.title}</h2>
+                  <div className="h-1.5 w-20 bg-[#5f70ff] rounded-full mb-6" />
+                  <p className="text-teal-100/70 text-base md:text-lg leading-relaxed">{slide.content.subtitle}</p>
                 </div>
-                <div className="mt-8 text-xs font-mono text-[#e5c590] tracking-widest border-t border-white/5 pt-4">
+                <div className="mt-10 text-xs md:text-sm font-mono text-[#e5c590] tracking-widest border-t border-white/5 pt-6">
                   VALEUR AJOUTÉE
                 </div>
               </div>
             </div>
 
             {/* Right side Detail List checkmarks */}
-            <div className="lg:col-span-8 space-y-6">
+            <div className="lg:col-span-8 space-y-8">
               {slide.content.columns.map((col, idx) => (
                 <motion.div
                   key={idx}
                   initial={{ y: 20, opacity: 0 }}
                   animate={{ y: 0, opacity: 1 }}
                   transition={{ delay: idx * 0.15, duration: 0.5 }}
-                  className="metal-plaque p-6 rounded-2xl relative overflow-hidden"
+                  className="metal-plaque p-8 rounded-3xl relative overflow-hidden"
                 >
-                  <FiligreeCorners colorClass="border-[#c8d7ef]/20" />
-                  <h3 className="text-lg font-bold text-[#7d8bff] mb-4 flex items-center gap-3 font-serif border-b border-white/[0.04] pb-2">
-                    <CheckCircle2 className="h-5 w-5 text-[#5f70ff]" />
+                  <FiligreeCorners colorClass="border-[#c8d7ef]/25" />
+                  <h3 className="text-xl lg:text-2xl font-bold text-[#7d8bff] mb-6 flex items-center gap-3 font-serif border-b border-white/[0.04] pb-3">
+                    <CheckCircle2 className="h-6 w-6 text-[#5f70ff]" />
                     {col.title}
                   </h3>
-                  <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                  <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                     {col.items.map((item, itemIdx) => (
-                      <div key={itemIdx} className="flex items-start gap-3 text-xs md:text-sm">
+                      <div key={itemIdx} className="flex items-start gap-4 text-sm md:text-base">
                         <span className="p-0.5 rounded-full bg-[#5f70ff]/10 text-[#7d8bff] border border-[#5f70ff]/20 mt-0.5 shrink-0">
-                          <Check className="h-3.5 w-3.5" />
+                          <Check className="h-4 w-4" />
                         </span>
                         <span className="text-teal-100/80 leading-relaxed font-light">{item}</span>
                       </div>
@@ -644,10 +610,10 @@ export function SoutenanceDeck() {
 
       case 'actors':
         return (
-          <div className="flex flex-col max-w-7xl mx-auto px-8 w-full h-full justify-center">
-            <div className="text-center mb-8">
-              <h2 className="text-3xl md:text-4xl font-bold text-white font-serif mb-2">{slide.content.title}</h2>
-              <p className="text-teal-100/60 text-sm">{slide.content.subtitle}</p>
+          <div className="flex flex-col max-w-[1400px] mx-auto px-8 w-full h-full justify-center py-6">
+            <div className="text-center mb-10">
+              <h2 className="text-4xl lg:text-5xl font-bold text-white font-serif mb-4">{slide.content.title}</h2>
+              <p className="text-teal-100/60 text-lg md:text-xl">{slide.content.subtitle}</p>
             </div>
 
             <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
@@ -668,17 +634,17 @@ export function SoutenanceDeck() {
                     initial={{ scale: 0.95, opacity: 0 }}
                     animate={{ scale: 1, opacity: 1 }}
                     transition={{ delay: idx * 0.1, duration: 0.5 }}
-                    className={`metal-plaque p-8 flex flex-col justify-between relative overflow-hidden group ${actor.shapeClass} ${cardLayout}`}
+                    className={`metal-plaque p-10 flex flex-col justify-between min-h-[360px] relative overflow-hidden group ${actor.shapeClass} ${cardLayout}`}
                   >
-                    <FiligreeCorners colorClass="border-[#c8d7ef]/20" />
+                    <FiligreeCorners colorClass="border-[#c8d7ef]/25" />
 
                     <div className="p-4 bg-[#5f70ff]/10 rounded-2xl mb-6 text-[#7d8bff] group-hover:bg-[#5f70ff]/20 transition-all border border-[#5f70ff]/20 inline-block w-fit">
                       <IconComponent className="h-8 w-8" />
                     </div>
                     <div>
-                      <h3 className="text-xl font-bold text-white mb-1.5 font-serif">{actor.name}</h3>
-                      <span className="text-xs font-mono text-[#e5c590] mb-4 block uppercase tracking-wider">{actor.role}</span>
-                      <p className="text-teal-100/70 text-xs md:text-sm leading-relaxed font-light">{actor.desc}</p>
+                      <h3 className="text-2xl font-bold text-white mb-2 font-serif">{actor.name}</h3>
+                      <span className="text-xs md:text-sm font-mono text-[#e5c590] mb-4 block uppercase tracking-wider font-semibold">{actor.role}</span>
+                      <p className="text-teal-100/75 text-sm md:text-base leading-relaxed font-light">{actor.desc}</p>
                     </div>
                   </motion.div>
                 )
@@ -689,13 +655,13 @@ export function SoutenanceDeck() {
 
       case 'usecase':
         return (
-          <div className="flex flex-col max-w-7xl mx-auto px-8 w-full h-full justify-center">
-            <div className="text-center mb-8">
-              <h2 className="text-3xl md:text-4xl font-bold text-white font-serif mb-2">{slide.content.title}</h2>
-              <p className="text-teal-100/60 text-sm">{slide.content.subtitle}</p>
+          <div className="flex flex-col max-w-[1400px] mx-auto px-8 w-full h-full justify-center py-6">
+            <div className="text-center mb-10">
+              <h2 className="text-4xl lg:text-5xl font-bold text-white font-serif mb-4">{slide.content.title}</h2>
+              <p className="text-teal-100/60 text-lg md:text-xl">{slide.content.subtitle}</p>
             </div>
 
-            {/* Split Process Flow layout */}
+            {/* Split Process Flow layout with enlarged text */}
             <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
               {slide.content.columns.map((col, idx) => (
                 <motion.div
@@ -703,18 +669,18 @@ export function SoutenanceDeck() {
                   initial={{ y: 30, opacity: 0 }}
                   animate={{ y: 0, opacity: 1 }}
                   transition={{ delay: idx * 0.15, duration: 0.5 }}
-                  className="metal-plaque p-8 rounded-3xl flex flex-col relative overflow-hidden"
+                  className="metal-plaque p-10 rounded-3xl flex flex-col relative overflow-hidden"
                 >
-                  <FiligreeCorners colorClass="border-[#c8d7ef]/20" />
+                  <FiligreeCorners colorClass="border-[#c8d7ef]/25" />
 
-                  <h3 className="text-xl font-bold text-[#7d8bff] mb-6 border-b border-[#c8d7ef]/10 pb-3 flex items-center gap-3 font-serif">
-                    <CheckCircle2 className="h-5 w-5" />
+                  <h3 className="text-2xl font-bold text-[#7d8bff] mb-8 border-b border-[#c8d7ef]/10 pb-4 flex items-center gap-3 font-serif">
+                    <CheckCircle2 className="h-6 w-6" />
                     {col.title}
                   </h3>
-                  <ul className="space-y-4 flex-1">
+                  <ul className="space-y-5 flex-1">
                     {col.items.map((item, itemIdx) => (
-                      <li key={itemIdx} className="flex items-start gap-4 text-xs md:text-sm">
-                        <span className="flex h-6 w-6 items-center justify-center rounded-lg bg-[#5f70ff]/10 text-xs font-mono font-bold text-[#7d8bff] border border-[#5f70ff]/20 shrink-0">
+                      <li key={itemIdx} className="flex items-start gap-4 text-sm md:text-base">
+                        <span className="flex h-7 w-7 items-center justify-center rounded-xl bg-[#5f70ff]/10 text-sm font-mono font-bold text-[#7d8bff] border border-[#5f70ff]/20 shrink-0">
                           {String(itemIdx + 1).padStart(2, '0')}
                         </span>
                         <span className="text-teal-100/80 leading-relaxed font-light mt-0.5">{item}</span>
@@ -729,43 +695,43 @@ export function SoutenanceDeck() {
 
       case 'architecture':
         return (
-          <div className="flex flex-col max-w-7xl mx-auto px-8 w-full h-full justify-center">
-            <div className="text-center mb-6">
-              <h2 className="text-3xl md:text-4xl font-bold text-white font-serif mb-2">{slide.content.title}</h2>
-              <p className="text-teal-100/60 text-sm">{slide.content.subtitle}</p>
+          <div className="flex flex-col max-w-[1400px] mx-auto px-8 w-full h-full justify-center py-6">
+            <div className="text-center mb-8">
+              <h2 className="text-4xl lg:text-5xl font-bold text-white font-serif mb-2">{slide.content.title}</h2>
+              <p className="text-teal-100/60 text-base md:text-lg">{slide.content.subtitle}</p>
             </div>
 
             <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 items-center">
               {/* Left Details takes 4 cols */}
-              <div className="lg:col-span-4 space-y-4">
+              <div className="lg:col-span-4 space-y-6">
                 {slide.content.details.map((detail, idx) => (
                   <motion.div
                     key={idx}
                     initial={{ x: -30, opacity: 0 }}
                     animate={{ x: 0, opacity: 1 }}
                     transition={{ delay: idx * 0.1, duration: 0.5 }}
-                    className="metal-plaque p-5 rounded-2xl relative overflow-hidden"
+                    className="metal-plaque p-6 rounded-2xl relative overflow-hidden"
                   >
-                    <FiligreeCorners colorClass="border-[#c8d7ef]/10" />
+                    <FiligreeCorners colorClass="border-[#c8d7ef]/15" />
 
-                    <div className="flex items-center gap-2 mb-1">
+                    <div className="flex items-center gap-2 mb-2">
                       <span className="h-2 w-2 rounded-full bg-[#5f70ff] shadow-[0_0_8px_rgba(95,112,255,1)]" />
-                      <h3 className="font-semibold text-white text-base font-serif">{detail.label}</h3>
+                      <h3 className="font-bold text-white text-lg font-serif">{detail.label}</h3>
                     </div>
-                    <p className="text-xs font-mono text-[#7d8bff] mb-1">{detail.tech}</p>
-                    <p className="text-xs text-teal-100/70 leading-relaxed font-light">{detail.desc}</p>
+                    <p className="text-xs md:text-sm font-mono text-[#7d8bff] mb-2">{detail.tech}</p>
+                    <p className="text-xs md:text-sm text-teal-100/70 leading-relaxed font-light">{detail.desc}</p>
                   </motion.div>
                 ))}
               </div>
 
-              {/* Right Architecture Diagram takes 8 cols (Larger image display) */}
+              {/* Right Architecture Diagram (Etched on Glass Plate - Enormous display) */}
               <motion.div
                 initial={{ scale: 0.95, opacity: 0 }}
                 animate={{ scale: 1, opacity: 1 }}
                 transition={{ delay: 0.2, duration: 0.6 }}
-                className="lg:col-span-8 diagram-glass-plate p-4 rounded-3xl overflow-hidden group relative"
+                className="lg:col-span-8 diagram-glass-plate p-5 rounded-3xl overflow-hidden group relative"
               >
-                <FiligreeCorners colorClass="border-[#e5c590]/40 w-5 h-5" />
+                <FiligreeCorners colorClass="border-[#e5c590]/45 w-6 h-6" />
 
                 <div className="absolute top-4 left-4 bg-black/60 border border-white/10 px-3 py-1 rounded-lg text-[11px] font-mono text-[#7d8bff] z-10">
                   Client-Server System Design
@@ -773,7 +739,7 @@ export function SoutenanceDeck() {
                 <img
                   src={slide.content.diagram}
                   alt="Architecture Diagram"
-                  className="rounded-2xl w-full max-h-[420px] object-contain group-hover:scale-[1.01] transition-transform duration-500 bg-[#061417] p-2 border border-white/5"
+                  className="rounded-2xl w-full h-auto max-h-[560px] object-contain group-hover:scale-[1.01] transition-transform duration-500 bg-[#061417] p-2 border border-white/5"
                 />
               </motion.div>
             </div>
@@ -782,32 +748,32 @@ export function SoutenanceDeck() {
 
       case 'data_model':
         return (
-          <div className="flex flex-col max-w-7xl mx-auto px-8 w-full h-full justify-center">
-            <div className="text-center mb-6">
-              <h2 className="text-3xl md:text-4xl font-bold text-white font-serif mb-2">{slide.content.title}</h2>
-              <p className="text-teal-100/60 text-sm">{slide.content.subtitle}</p>
+          <div className="flex flex-col max-w-[1400px] mx-auto px-8 w-full h-full justify-center py-6">
+            <div className="text-center mb-8">
+              <h2 className="text-4xl lg:text-5xl font-bold text-white font-serif mb-2">{slide.content.title}</h2>
+              <p className="text-teal-100/60 text-base md:text-lg">{slide.content.subtitle}</p>
             </div>
 
             <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 items-stretch">
               {/* Left Side brief text (3 cols) */}
               <div className="lg:col-span-3 flex flex-col justify-center">
-                <div className="metal-plaque p-6 rounded-3xl relative overflow-hidden h-full flex flex-col justify-center">
+                <div className="metal-plaque p-8 rounded-3xl relative overflow-hidden h-full flex flex-col justify-center">
                   <FiligreeCorners colorClass="border-[#c8d7ef]/20" />
-                  <h3 className="text-[#7d8bff] font-bold mb-3 font-serif">Structure SQL</h3>
-                  <p className="text-teal-100/70 text-xs md:text-sm leading-relaxed font-light">
+                  <h3 className="text-[#7d8bff] text-xl font-bold mb-4 font-serif">Structure SQL</h3>
+                  <p className="text-teal-100/75 text-sm md:text-base leading-relaxed font-light">
                     {slide.content.text}
                   </p>
                 </div>
               </div>
 
-              {/* Right BDD ERD Diagram (Takes 9 columns - much larger!) */}
+              {/* Right BDD ERD Diagram (Enormous display) */}
               <motion.div
                 initial={{ scale: 0.95, opacity: 0 }}
                 animate={{ scale: 1, opacity: 1 }}
                 transition={{ delay: 0.2, duration: 0.6 }}
-                className="lg:col-span-9 diagram-glass-plate p-4 rounded-3xl overflow-hidden group relative flex items-center justify-center"
+                className="lg:col-span-9 diagram-glass-plate p-5 rounded-3xl overflow-hidden group relative flex items-center justify-center"
               >
-                <FiligreeCorners colorClass="border-[#e5c590]/40 w-5 h-5" />
+                <FiligreeCorners colorClass="border-[#e5c590]/45 w-6 h-6" />
 
                 <div className="absolute top-4 left-4 bg-black/60 border border-white/10 px-3 py-1 rounded-lg text-[11px] font-mono text-[#7d8bff] z-10">
                   UML Entity Relationship Diagram
@@ -815,7 +781,7 @@ export function SoutenanceDeck() {
                 <img
                   src={slide.content.diagram}
                   alt="Database ER Diagram"
-                  className="rounded-2xl w-full max-h-[440px] object-contain group-hover:scale-[1.01] transition-transform duration-500 bg-[#061417] p-2 border border-white/5"
+                  className="rounded-2xl w-full h-auto max-h-[560px] object-contain group-hover:scale-[1.01] transition-transform duration-500 bg-[#061417] p-2 border border-white/5"
                 />
               </motion.div>
             </div>
@@ -824,36 +790,36 @@ export function SoutenanceDeck() {
 
       case 'rbac_slide':
         return (
-          <div className="flex flex-col max-w-7xl mx-auto px-8 w-full h-full justify-center">
-            <div className="text-center mb-6">
-              <h2 className="text-3xl md:text-4xl font-bold text-white font-serif mb-2">{slide.content.title}</h2>
-              <p className="text-teal-100/60 text-sm">{slide.content.subtitle}</p>
+          <div className="flex flex-col max-w-[1400px] mx-auto px-8 w-full h-full justify-center py-6">
+            <div className="text-center mb-8">
+              <h2 className="text-4xl lg:text-5xl font-bold text-white font-serif mb-2">{slide.content.title}</h2>
+              <p className="text-teal-100/60 text-base md:text-lg">{slide.content.subtitle}</p>
             </div>
 
             <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 items-stretch">
               {/* Left Side brief text (3 cols) */}
               <div className="lg:col-span-3 flex flex-col justify-center">
-                <div className="metal-plaque p-6 rounded-3xl relative overflow-hidden h-full flex flex-col justify-center">
+                <div className="metal-plaque p-8 rounded-3xl relative overflow-hidden h-full flex flex-col justify-center">
                   <FiligreeCorners colorClass="border-[#c8d7ef]/20" />
-                  <h3 className="text-[#7d8bff] font-bold mb-3 font-serif">Contrôle RBAC</h3>
-                  <p className="text-teal-100/70 text-xs md:text-sm leading-relaxed font-light mb-4">
+                  <h3 className="text-[#7d8bff] text-xl font-bold mb-4 font-serif">Contrôle RBAC</h3>
+                  <p className="text-teal-100/75 text-sm md:text-base leading-relaxed font-light mb-6">
                     {slide.content.text}
                   </p>
-                  <div className="p-3 bg-red-500/10 border border-red-500/20 rounded-xl flex gap-2 text-red-400 text-xs leading-relaxed">
-                    <ShieldAlert className="h-4 w-4 shrink-0 mt-0.5" />
+                  <div className="p-4 bg-red-500/10 border border-red-500/20 rounded-2xl flex gap-3 text-red-400 text-xs md:text-sm leading-relaxed">
+                    <ShieldAlert className="h-5 w-5 shrink-0 mt-0.5" />
                     <span>JWT token encryption security.</span>
                   </div>
                 </div>
               </div>
 
-              {/* Right RBAC matrix (Takes 9 columns - much larger!) */}
+              {/* Right RBAC matrix (Enormous display) */}
               <motion.div
                 initial={{ scale: 0.95, opacity: 0 }}
                 animate={{ scale: 1, opacity: 1 }}
                 transition={{ delay: 0.2, duration: 0.6 }}
-                className="lg:col-span-9 diagram-glass-plate p-4 rounded-3xl overflow-hidden group relative flex items-center justify-center"
+                className="lg:col-span-9 diagram-glass-plate p-5 rounded-3xl overflow-hidden group relative flex items-center justify-center"
               >
-                <FiligreeCorners colorClass="border-[#e5c590]/40 w-5 h-5" />
+                <FiligreeCorners colorClass="border-[#e5c590]/45 w-6 h-6" />
 
                 <div className="absolute top-4 left-4 bg-black/60 border border-white/10 px-3 py-1 rounded-lg text-[11px] font-mono text-[#7d8bff] z-10">
                   RBAC Permission Matrix
@@ -861,7 +827,7 @@ export function SoutenanceDeck() {
                 <img
                   src={slide.content.diagram}
                   alt="RBAC Diagram"
-                  className="rounded-2xl w-full max-h-[440px] object-contain group-hover:scale-[1.01] transition-transform duration-500 bg-[#061417] p-2 border border-white/5"
+                  className="rounded-2xl w-full h-auto max-h-[560px] object-contain group-hover:scale-[1.01] transition-transform duration-500 bg-[#061417] p-2 border border-white/5"
                 />
               </motion.div>
             </div>
@@ -870,10 +836,10 @@ export function SoutenanceDeck() {
 
       case 'screenshots':
         return (
-          <div className="flex flex-col max-w-7xl mx-auto px-8 w-full h-full justify-center">
-            <div className="text-center mb-4">
-              <h2 className="text-3xl md:text-4xl font-bold text-white font-serif mb-2">{slide.content.title}</h2>
-              <p className="text-teal-100/60 text-sm">{slide.content.subtitle}</p>
+          <div className="flex flex-col max-w-[1400px] mx-auto px-8 w-full h-full justify-center py-6">
+            <div className="text-center mb-6">
+              <h2 className="text-4xl lg:text-5xl font-bold text-white font-serif mb-2">{slide.content.title}</h2>
+              <p className="text-teal-100/60 text-base md:text-lg">{slide.content.subtitle}</p>
             </div>
 
             <ScreenshotShowcase screens={slide.content.screens} />
@@ -882,26 +848,26 @@ export function SoutenanceDeck() {
 
       case 'synthesis':
         return (
-          <div className="flex flex-col max-w-7xl mx-auto px-8 w-full h-full justify-center">
-            <div className="text-center mb-6">
-              <h2 className="text-3xl md:text-4xl font-bold text-white font-serif mb-2">{slide.content.title}</h2>
-              <p className="text-teal-100/60 text-sm">{slide.content.subtitle}</p>
+          <div className="flex flex-col max-w-[1400px] mx-auto px-8 w-full h-full justify-center py-6">
+            <div className="text-center mb-8">
+              <h2 className="text-4xl lg:text-5xl font-bold text-white font-serif mb-2">{slide.content.title}</h2>
+              <p className="text-teal-100/60 text-base md:text-lg">{slide.content.subtitle}</p>
             </div>
 
             <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 items-stretch">
               {/* Left Quantitative Metrics */}
-              <div className="lg:col-span-5 grid grid-cols-2 gap-4">
+              <div className="lg:col-span-5 grid grid-cols-2 gap-6">
                 {slide.content.metrics.map((metric, idx) => (
                   <motion.div
                     key={idx}
                     initial={{ scale: 0.9, opacity: 0 }}
                     animate={{ scale: 1, opacity: 1 }}
                     transition={{ delay: idx * 0.1, duration: 0.4 }}
-                    className="metal-plaque p-6 rounded-3xl flex flex-col justify-center text-center shadow-xl relative overflow-hidden"
+                    className="metal-plaque p-8 rounded-3xl flex flex-col justify-center text-center shadow-xl relative overflow-hidden"
                   >
-                    <FiligreeCorners colorClass="border-[#c8d7ef]/15" />
-                    <span className="text-4xl md:text-5xl font-black text-[#e5c590] mb-2 font-serif">{metric.value}</span>
-                    <span className="text-xs text-teal-100/60 leading-tight font-mono">{metric.label}</span>
+                    <FiligreeCorners colorClass="border-[#c8d7ef]/20" />
+                    <span className="text-5xl md:text-6xl font-black text-[#e5c590] mb-3 font-serif leading-none">{metric.value}</span>
+                    <span className="text-xs md:text-sm text-teal-100/60 leading-tight font-mono font-semibold">{metric.label}</span>
                   </motion.div>
                 ))}
               </div>
@@ -911,32 +877,32 @@ export function SoutenanceDeck() {
                 initial={{ x: 30, opacity: 0 }}
                 animate={{ x: 0, opacity: 1 }}
                 transition={{ delay: 0.2, duration: 0.5 }}
-                className="lg:col-span-7 metal-plaque p-8 rounded-3xl flex flex-col justify-between shadow-xl relative overflow-hidden"
+                className="lg:col-span-7 metal-plaque p-10 rounded-3xl flex flex-col justify-between shadow-xl relative overflow-hidden"
               >
-                <FiligreeCorners colorClass="border-[#c8d7ef]/20" />
+                <FiligreeCorners colorClass="border-[#c8d7ef]/25" />
 
                 <div>
-                  <h3 className="text-lg font-bold text-white mb-6 flex items-center gap-2 font-serif">
-                    <Award className="h-5 w-5 text-[#5f70ff]" />
+                  <h3 className="text-2xl font-bold text-white mb-8 flex items-center gap-3 font-serif">
+                    <Award className="h-6 w-6 text-[#5f70ff]" />
                     Synthèse & Perspectives de Fin d'Études
                   </h3>
-                  <ul className="space-y-4">
+                  <ul className="space-y-5">
                     {slide.content.points.map((pt, pIdx) => (
-                      <li key={pIdx} className="flex items-start gap-3 text-xs md:text-sm">
+                      <li key={pIdx} className="flex items-start gap-4 text-sm md:text-base">
                         <span className="p-0.5 rounded-full bg-[#5f70ff]/15 text-[#7d8bff] border border-[#5f70ff]/20 mt-0.5 shrink-0">
-                          <Check className="h-3.5 w-3.5" />
+                          <Check className="h-4 w-4" />
                         </span>
-                        <span className="text-teal-100/80 leading-relaxed font-light">{pt}</span>
+                        <span className="text-teal-100/85 leading-relaxed font-light">{pt}</span>
                       </li>
                     ))}
                   </ul>
                 </div>
 
-                <div className="border-t border-[#c8d7ef]/10 pt-6 mt-8 flex flex-col sm:flex-row items-center justify-between gap-4">
-                  <span className="text-lg md:text-2xl font-semibold text-[#e5c590] font-serif">Merci pour votre attention !</span>
+                <div className="border-t border-[#c8d7ef]/10 pt-8 mt-10 flex flex-col sm:flex-row items-center justify-between gap-6">
+                  <span className="text-2xl md:text-3xl font-semibold text-[#e5c590] font-serif">Merci pour votre attention !</span>
                   <Link
                     to="/"
-                    className="flex items-center gap-2 px-5 py-2.5 rounded-xl bg-[#5f70ff] hover:bg-[#4255da] text-white font-medium shadow-[0_0_15px_rgba(95,112,255,0.3)] transition-all hover:scale-105 active:scale-95 text-xs font-mono"
+                    className="flex items-center gap-2 px-6 py-3.5 rounded-xl bg-[#5f70ff] hover:bg-[#4255da] text-white font-medium shadow-[0_0_20px_rgba(95,112,255,0.35)] transition-all hover:scale-105 active:scale-95 text-sm font-mono"
                   >
                     <Home className="h-4 w-4" />
                     Retour au Catalogue
@@ -1040,28 +1006,28 @@ export function SoutenanceDeck() {
         </div>
       </header>
 
-      {/* MAIN SLIDE CONTAINER */}
-      <main className="relative z-10 flex-1 flex items-center justify-center py-6 w-full overflow-hidden">
+      {/* MAIN SLIDE CONTAINER (Expanded vertical padding to utilize full height) */}
+      <main className="relative z-10 flex-1 flex items-center justify-center py-10 w-full overflow-hidden">
         <AnimatePresence mode="wait">
           <motion.div
             key={currentSlide}
             variants={{
               enter: {
                 opacity: 0,
-                y: 20,
-                scale: 0.98
+                y: 25,
+                scale: 0.985
               },
               center: {
                 opacity: 1,
                 y: 0,
                 scale: 1,
-                transition: { type: 'spring', stiffness: 220, damping: 22 }
+                transition: { type: 'spring', stiffness: 200, damping: 20 }
               },
               exit: {
                 opacity: 0,
-                y: -20,
-                scale: 0.98,
-                transition: { duration: 0.2 }
+                y: -25,
+                scale: 0.985,
+                transition: { duration: 0.22 }
               }
             }}
             initial="enter"
@@ -1148,32 +1114,32 @@ function ScreenshotShowcase({ screens }: { screens: Array<{ title: string; img: 
   const [activeIdx, setActiveIdx] = useState(0)
 
   return (
-    <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 items-stretch mt-2 w-full max-w-7xl mx-auto px-4">
+    <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 items-stretch mt-2 w-full max-w-[1400px] mx-auto px-8">
       {/* Left Menu Selection (Takes 3 columns) */}
-      <div className="lg:col-span-3 space-y-3 flex flex-col justify-center">
+      <div className="lg:col-span-3 space-y-4 flex flex-col justify-center">
         {screens.map((screen, idx) => (
           <button
             key={idx}
             onClick={() => setActiveIdx(idx)}
-            className={`w-full text-left p-4 rounded-2xl border transition-all flex items-center gap-3.5 ${
+            className={`w-full text-left p-5 rounded-2xl border transition-all flex items-center gap-4 ${
               activeIdx === idx
                 ? 'bg-[#5f70ff]/10 border-[#5f70ff] text-white shadow-[0_0_15px_rgba(95,112,255,0.08)]'
                 : 'bg-[#0f1426]/60 border-[#c8d7ef]/15 text-teal-100/60 hover:bg-white/[0.03]'
             }`}
           >
-            <span className={`h-7 w-7 rounded-xl flex items-center justify-center font-mono text-xs ${
+            <span className={`h-8 w-8 rounded-xl flex items-center justify-center font-mono text-sm ${
               activeIdx === idx ? 'bg-[#5f70ff]/25 text-[#7d8bff]' : 'bg-white/5 text-teal-100/40'
             }`}>
               {idx + 1}
             </span>
             <div className="text-left">
-              <p className="text-base font-semibold leading-tight font-serif">{screen.title}</p>
+              <p className="text-base md:text-lg font-semibold leading-tight font-serif">{screen.title}</p>
             </div>
           </button>
         ))}
       </div>
 
-      {/* Right Browser Chrome replica image view (Takes 9 columns - much larger!) */}
+      {/* Right Browser Chrome replica image view (Enormous Display viewport) */}
       <div className="lg:col-span-9 flex flex-col browser-frame">
         {/* Browser Mock Header */}
         <div className="browser-header">
@@ -1188,24 +1154,24 @@ function ScreenshotShowcase({ screens }: { screens: Array<{ title: string; img: 
           <div className="w-16" />
         </div>
 
-        {/* Screenshot Viewport */}
+        {/* Screenshot Viewport (Enlarged) */}
         <div className="relative overflow-hidden aspect-video bg-[#0b0e1a]">
           <AnimatePresence mode="wait">
             <motion.img
               key={activeIdx}
               src={screens[activeIdx].img}
               alt={screens[activeIdx].title}
-              initial={{ opacity: 0, scale: 0.99 }}
+              initial={{ opacity: 0, scale: 0.995 }}
               animate={{ opacity: 1, scale: 1 }}
-              exit={{ opacity: 0, scale: 0.99 }}
+              exit={{ opacity: 0, scale: 0.995 }}
               transition={{ duration: 0.25 }}
-              className="w-full h-full object-cover max-h-[500px]"
+              className="w-full h-full object-cover max-h-[560px]"
             />
           </AnimatePresence>
         </div>
 
-        {/* Captions */}
-        <p className="text-xs md:text-sm text-teal-100/70 font-mono leading-relaxed bg-[#11172b] p-4 border-t border-white/[0.04]">
+        {/* Captions (Enlarged text) */}
+        <p className="text-sm md:text-base text-teal-100/80 font-mono leading-relaxed bg-[#0e1428] p-5 border-t border-[#c8d7ef]/10">
           💡 <span className="font-semibold text-[#e5c590] font-serif">{screens[activeIdx].title} :</span> {screens[activeIdx].desc}
         </p>
       </div>
