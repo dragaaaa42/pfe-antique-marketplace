@@ -40,6 +40,9 @@ import adminDashboardImg from './assets/docs/admin_dashboard.png'
 import sellerDashboardImg from './assets/docs/seller_dashboard.png'
 import catalogueImg from './assets/docs/catalogue.png'
 import messagesImg from './assets/docs/messages.png'
+import collectorDashboardImg from './assets/docs/collector_dashboard.png'
+import wishlistImg from './assets/docs/wishlist.png'
+import cartImg from './assets/docs/cart.png'
 
 // Reusable Filigree Corner Brackets Component
 function FiligreeCorners({ colorClass = "border-[#c8d7ef]/20" }: { colorClass?: string }) {
@@ -330,7 +333,7 @@ export function SoutenanceDeck() {
     },
     {
       id: 10,
-      title: "11. Démo : Espaces Publics",
+      title: "11. Démo : Portail Public & Catalogue",
       type: "screenshots_public",
       content: {
         title: "Démonstration : Portail Public & Catalogue",
@@ -343,21 +346,45 @@ export function SoutenanceDeck() {
     },
     {
       id: 11,
-      title: "12. Démo : Espaces de Gestion",
-      type: "screenshots_pro",
+      title: "12. Démo : Espace Vendeur",
+      type: "screenshots_public",
       content: {
-        title: "Démonstration : Espaces Métiers & Messagerie",
-        subtitle: "Workspace vendeur, outils administratifs et messagerie privee",
+        title: "Démonstration : Espace Vendeur",
+        subtitle: "Workspace d'activité et de gestion pour le vendeur",
         screens: [
-          { title: "Dashboard Vendeur", img: sellerDashboardImg, desc: "Outils de suivi des gains, d'expedition de commandes et d'inventaire d'artefacts." },
-          { title: "Espace Administration", img: adminDashboardImg, desc: "Workspace central de moderation d'objets soumis et d'activation utilisateur." },
-          { title: "Messagerie Interne", img: messagesImg, desc: "Messagerie filaire securisee reliant directement acheteurs et vendeurs autour d'un objet." }
+          { title: "Dashboard Vendeur", img: sellerDashboardImg, desc: "Outils de suivi des gains, d'expédition de commandes et d'inventaire d'artefacts." }
         ]
       }
     },
     {
       id: 12,
-      title: "13. Bilan & Perspectives",
+      title: "13. Démo : Messagerie & Négociations",
+      type: "screenshots_public",
+      content: {
+        title: "Démonstration : Messagerie & Négociations",
+        subtitle: "Messagerie filaire sécurisée reliant directement acheteurs et vendeurs autour d'un objet",
+        screens: [
+          { title: "Messagerie Interne", img: messagesImg, desc: "Fil de discussion direct entre acheteur et vendeur pour négocier le prix et valider les détails." }
+        ]
+      }
+    },
+    {
+      id: 13,
+      title: "14. Démo : Espace Collectionneur",
+      type: "screenshots_public",
+      content: {
+        title: "Démonstration : Espace Collectionneur",
+        subtitle: "Espace personnel du collectionneur, liste de souhaits et panier d'achat",
+        screens: [
+          { title: "Dashboard Collectionneur", img: collectorDashboardImg, desc: "Suivi des commandes passées, des articles achetés et de l'état de livraison." },
+          { title: "Liste de Souhaits", img: wishlistImg, desc: "Liste de favoris (wishlist) pour conserver et suivre ses coups de cœur." },
+          { title: "Panier d'Achat", img: cartImg, desc: "Panier d'achat réactif pour regrouper ses objets précieux avant la validation de commande." }
+        ]
+      }
+    },
+    {
+      id: 14,
+      title: "15. Bilan & Perspectives",
       type: "synthesis",
       content: {
         title: "Bilan du Projet & Perspectives",
@@ -1186,68 +1213,114 @@ export function SoutenanceDeck() {
 function ScreenshotShowcase({ screens }: { screens: Array<{ title: string; img: string; desc: string }> }) {
   const [activeIdx, setActiveIdx] = useState(0)
 
+  useEffect(() => {
+    setActiveIdx(0)
+  }, [screens])
+
+  const hasMultiple = screens.length > 1
+
   return (
-    <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 items-stretch mt-2 w-full max-w-[1400px] mx-auto px-8">
-      {/* Left Menu Selection (Takes 3 columns) */}
-      <div className="lg:col-span-3 space-y-4 flex flex-col justify-center">
-        {screens.map((screen, idx) => (
-          <button
-            key={idx}
-            onClick={() => setActiveIdx(idx)}
-            className={`w-full text-left p-5 rounded-2xl border transition-all flex items-center gap-4 ${
-              activeIdx === idx
-                ? 'bg-[#5f70ff]/10 border-[#5f70ff] text-white shadow-[0_0_15px_rgba(95,112,255,0.08)]'
-                : 'bg-[#0f1426]/60 border-[#c8d7ef]/15 text-teal-100/60 hover:bg-white/[0.03]'
-            }`}
-          >
-            <span className={`h-8 w-8 rounded-xl flex items-center justify-center font-mono text-sm ${
-              activeIdx === idx ? 'bg-[#5f70ff]/25 text-[#7d8bff]' : 'bg-white/5 text-teal-100/40'
-            }`}>
-              {idx + 1}
-            </span>
-            <div className="text-left">
-              <p className="text-base md:text-lg font-semibold leading-tight font-serif">{screen.title}</p>
+    <div className="w-full max-w-[1400px] mx-auto px-8 mt-2">
+      {hasMultiple ? (
+        <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 items-stretch">
+          {/* Left Menu Selection (Takes 3 columns) */}
+          <div className="lg:col-span-3 space-y-4 flex flex-col justify-center">
+            {screens.map((screen, idx) => (
+              <button
+                key={idx}
+                onClick={() => setActiveIdx(idx)}
+                className={`w-full text-left p-5 rounded-2xl border transition-all flex items-center gap-4 ${
+                  activeIdx === idx
+                    ? 'bg-[#5f70ff]/10 border-[#5f70ff] text-white shadow-[0_0_15px_rgba(95,112,255,0.08)]'
+                    : 'bg-[#0f1426]/60 border-[#c8d7ef]/15 text-teal-100/60 hover:bg-white/[0.03]'
+                }`}
+              >
+                <span className={`h-8 w-8 rounded-xl flex items-center justify-center font-mono text-sm ${
+                  activeIdx === idx ? 'bg-[#5f70ff]/25 text-[#7d8bff]' : 'bg-white/5 text-teal-100/40'
+                }`}>
+                  {idx + 1}
+                </span>
+                <div className="text-left">
+                  <p className="text-base md:text-lg font-semibold leading-tight font-serif">{screen.title}</p>
+                </div>
+              </button>
+            ))}
+          </div>
+
+          {/* Right Browser Chrome replica image view (Takes 9 columns) */}
+          <div className="lg:col-span-9 flex flex-col browser-frame">
+            {/* Browser Mock Header */}
+            <div className="browser-header">
+              <div className="browser-dots">
+                <span className="browser-dot red" />
+                <span className="browser-dot yellow" />
+                <span className="browser-dot green" />
+              </div>
+              <div className="browser-address">
+                localhost:5173/artifacts/showcase
+              </div>
+              <div className="w-16" />
             </div>
-          </button>
-        ))}
-      </div>
 
-      {/* Right Browser Chrome replica image view (Takes 9 columns - much larger!) */}
-      <div className="lg:col-span-9 flex flex-col browser-frame">
-        {/* Browser Mock Header */}
-        <div className="browser-header">
-          <div className="browser-dots">
-            <span className="browser-dot red" />
-            <span className="browser-dot yellow" />
-            <span className="browser-dot green" />
+            {/* Screenshot Viewport (Enlarged) */}
+            <div className="relative overflow-hidden h-[48vh] max-h-[440px] bg-[#0b0e1a]">
+              <AnimatePresence mode="wait">
+                <motion.img
+                  key={activeIdx}
+                  src={screens[activeIdx].img}
+                  alt={screens[activeIdx].title}
+                  initial={{ opacity: 0, scale: 0.995 }}
+                  animate={{ opacity: 1, scale: 1 }}
+                  exit={{ opacity: 0, scale: 0.995 }}
+                  transition={{ duration: 0.25 }}
+                  className="w-full h-full object-cover object-top"
+                />
+              </AnimatePresence>
+            </div>
+
+            {/* Captions */}
+            <p className="text-sm md:text-base text-teal-100/80 font-mono leading-relaxed bg-[#0e1428] p-5 border-t border-[#c8d7ef]/10">
+              💡 <span className="font-semibold text-[#e5c590] font-serif">{screens[activeIdx].title} :</span> {screens[activeIdx].desc}
+            </p>
           </div>
-          <div className="browser-address">
-            localhost:5173/artifacts/showcase
+        </div>
+      ) : (
+        <div className="max-w-[1000px] mx-auto flex flex-col browser-frame">
+          {/* Browser Mock Header */}
+          <div className="browser-header">
+            <div className="browser-dots">
+              <span className="browser-dot red" />
+              <span className="browser-dot yellow" />
+              <span className="browser-dot green" />
+            </div>
+            <div className="browser-address">
+              localhost:5173/artifacts/showcase
+            </div>
+            <div className="w-16" />
           </div>
-          <div className="w-16" />
-        </div>
 
-        {/* Screenshot Viewport (Enlarged) */}
-        <div className="relative overflow-hidden aspect-video bg-[#0b0e1a]">
-          <AnimatePresence mode="wait">
-            <motion.img
-              key={activeIdx}
-              src={screens[activeIdx].img}
-              alt={screens[activeIdx].title}
-              initial={{ opacity: 0, scale: 0.995 }}
-              animate={{ opacity: 1, scale: 1 }}
-              exit={{ opacity: 0, scale: 0.995 }}
-              transition={{ duration: 0.25 }}
-              className="w-full h-[48vh] max-h-[440px] object-cover"
-            />
-          </AnimatePresence>
-        </div>
+          {/* Screenshot Viewport (Enlarged) */}
+          <div className="relative overflow-hidden h-[48vh] max-h-[440px] bg-[#0b0e1a]">
+            <AnimatePresence mode="wait">
+              <motion.img
+                key={activeIdx}
+                src={screens[activeIdx].img}
+                alt={screens[activeIdx].title}
+                initial={{ opacity: 0, scale: 0.995 }}
+                animate={{ opacity: 1, scale: 1 }}
+                exit={{ opacity: 0, scale: 0.995 }}
+                transition={{ duration: 0.25 }}
+                className="w-full h-full object-cover object-top"
+              />
+            </AnimatePresence>
+          </div>
 
-        {/* Captions */}
-        <p className="text-sm md:text-base text-teal-100/80 font-mono leading-relaxed bg-[#0e1428] p-5 border-t border-[#c8d7ef]/10">
-          💡 <span className="font-semibold text-[#e5c590] font-serif">{screens[activeIdx].title} :</span> {screens[activeIdx].desc}
-        </p>
-      </div>
+          {/* Captions */}
+          <p className="text-sm md:text-base text-teal-100/80 font-mono leading-relaxed bg-[#0e1428] p-5 border-t border-[#c8d7ef]/10">
+            💡 <span className="font-semibold text-[#e5c590] font-serif">{screens[activeIdx].title} :</span> {screens[activeIdx].desc}
+          </p>
+        </div>
+      )}
     </div>
   )
 }
