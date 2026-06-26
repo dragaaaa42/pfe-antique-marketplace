@@ -43,6 +43,8 @@ import messagesImg from './assets/docs/messages.png'
 import collectorDashboardImg from './assets/docs/collector_dashboard.png'
 import wishlistImg from './assets/docs/wishlist.png'
 import cartImg from './assets/docs/cart.png'
+import adminUsersImg from './assets/docs/admin_users.png'
+import adminArtifactsImg from './assets/docs/admin_artifacts.png'
 
 // Reusable Filigree Corner Brackets Component
 function FiligreeCorners({ colorClass = "border-[#c8d7ef]/20" }: { colorClass?: string }) {
@@ -388,9 +390,11 @@ export function SoutenanceDeck() {
       type: "screenshots_public",
       content: {
         title: "Démonstration : Espace Administration",
-        subtitle: "Workspace d'administration et de curation de la marketplace",
+        subtitle: "Workspace d'administration, de modération et de contrôle des rôles",
         screens: [
-          { title: "Dashboard Administration", img: adminDashboardImg, desc: "Espace central pour approuver/rejeter les artefacts et gérer les utilisateurs et rôles." }
+          { title: "Dashboard Overview", img: adminDashboardImg, desc: "Vue d'ensemble de la plateforme avec indicateurs clés (utilisateurs, vendeurs, commandes, modération)." },
+          { title: "Gestion des Comptes", img: adminUsersImg, desc: "Interface de contrôle des utilisateurs (activer, désactiver, suspendre et attribuer les rôles de confiance)." },
+          { title: "Modération d'Objets", img: adminArtifactsImg, desc: "Espace de curation des artefacts pour valider l'authenticité et la conformité avant publication." }
         ]
       }
     },
