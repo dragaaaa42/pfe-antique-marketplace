@@ -81,6 +81,7 @@ import { resolveMarketplaceImage } from './marketplaceImages'
 import { getDashboardPathForRole, getWorkspaceLabelForRole } from './roleRouting'
 import type { Artifact, ConversationDetail, ConversationMessage } from './types'
 import { ArtifactDetailPage } from './ArtifactDetailPage'
+import { SoutenanceDeck } from './SoutenanceDeck'
 
 export default function App() {
   return (
@@ -119,6 +120,7 @@ export default function App() {
           <Route path="/artifacts/:id/message" element={<ProductMessagePage />} />
           <Route path="/__legacy/catalog" element={<LegacyCatalogPage />} />
           <Route path="/__legacy/artifacts/:id" element={<LegacyArtifactDetailPage />} />
+          <Route path="/soutenance" element={<SoutenanceDeck />} />
         </Routes>
       </BrowserRouter>
     </AuthProvider>
